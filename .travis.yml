@@ -7,8 +7,9 @@ python:
   - "2.7"
 
 install:
-  - mkdir -p /kb/modules
-  - cd /kb/modules
+  - ls -la
+  - mkdir -p kb/modules
+  - cd kb/modules
   - git clone https://github.com/kbase/kb_sdk
   - cd kb_sdk
   - echo $(pwd)
