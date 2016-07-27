@@ -20,9 +20,9 @@ class GenomeAnnotationAPI:
     # state. A method could easily clobber the state set by another while
     # the latter method is running.
     #########################################
-    VERSION = "0.0.1"
+    VERSION = "0.0.2"
     GIT_URL = "https://github.com/mlhenderson/genome_annotation_api"
-    GIT_COMMIT_HASH = "2dd7f7597f587370ba0826ad36389737eccf861a"
+    GIT_COMMIT_HASH = "d1d0b635a24d5bfee6c5d53ad77e2903a5ebb252"
     
     #BEGIN_CLASS_HEADER
     #END_CLASS_HEADER
