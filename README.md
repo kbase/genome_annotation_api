@@ -7,7 +7,7 @@
 
 # Quickstart instructions for installation
 
-1. Required to first install [![kb_sdk](https://github.com/kbase/kb_sdk)]
+1. Required to first install [kb_sdk](https://github.com/kbase/kb_sdk "KBase SDK")
 
 2. Clone this repo
 
