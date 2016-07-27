@@ -11,12 +11,12 @@ python:
   - "2.7"
 
 before_install:
-  - sudo apt-get update
-  - sudo apt-get install apt-transport-https ca-certificates
-  - sudo apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
-  - sudo apt-get install --yes --force-yes linux-image-extra-$(uname -r)
-  - sudo apt-get install --yes --force-yes linux-image-generic-lts-trusty
-  - sudo apt-get install --yes --force-yes docker-engine
+#  - sudo apt-get update
+#  - sudo apt-get install apt-transport-https ca-certificates
+#  - sudo apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
+#  - sudo apt-get install --yes --force-yes linux-image-extra-$(uname -r)
+#  - sudo apt-get install --yes --force-yes linux-image-generic-lts-trusty
+#  - sudo apt-get install --yes --force-yes docker-engine
   - sudo service docker start
 
 install:
