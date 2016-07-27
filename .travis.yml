@@ -17,7 +17,7 @@ before_install:
 #  - sudo apt-get install --yes --force-yes linux-image-extra-$(uname -r)
 #  - sudo apt-get install --yes --force-yes linux-image-generic-lts-trusty
 #  - sudo apt-get install --yes --force-yes docker-engine
-  - sudo service docker start
+#  - sudo service docker start
 
 install:
   - pwd
