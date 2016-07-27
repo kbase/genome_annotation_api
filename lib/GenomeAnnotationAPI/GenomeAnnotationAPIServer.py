@@ -43,7 +43,7 @@ def get_config():
 
 config = get_config()
 
-from GenomeAnnotationAPI.GenomeAnnotationAPIImpl import GenomeAnnotationAPI
+from GenomeAnnotationAPIImpl import GenomeAnnotationAPI
 impl_GenomeAnnotationAPI = GenomeAnnotationAPI(config)
 
 
@@ -411,6 +411,14 @@ class Application(object):
                              name='GenomeAnnotationAPI.get_mrna_utrs',
                              types=[basestring, list])
         self.method_authentication['GenomeAnnotationAPI.get_mrna_utrs'] = 'required'
+        self.rpc_service.add(impl_GenomeAnnotationAPI.get_summary,
+                             name='GenomeAnnotationAPI.get_summary',
+                             types=[basestring])
+        self.method_authentication['GenomeAnnotationAPI.get_summary'] = 'required'
+        self.rpc_service.add(impl_GenomeAnnotationAPI.save_summary,
+                             name='GenomeAnnotationAPI.save_summary',
+                             types=[basestring])
+        self.method_authentication['GenomeAnnotationAPI.save_summary'] = 'required'
         self.rpc_service.add(impl_GenomeAnnotationAPI.status,
                              name='GenomeAnnotationAPI.status',
                              types=[dict])

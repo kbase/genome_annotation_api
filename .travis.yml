@@ -1,6 +1,28 @@
-language: 
+language: python
+
 env:
-before_install:
+  - KB_SDK_BIN="/kb/modules/kb_sdk/bin"
+
+python:
+  - "2.7"
+
 install:
+  - mkdir -p /kb/modules
+  - cd /kb/modules
+  - git clone https://github.com/kbase/kb_sdk
+  - cd kb_sdk
+  - echo $(pwd)
+  - make bin
+  - make sdkbase
+  - export PATH=$(pwd)/bin:$PATH
+  - cd -
+
 script:
-after_script:
+  - ./run_tests.sh &> test_local/debug.txt
+  - coverage report --skip-covered
+
+after_success:
+  - codecov -f test_local/workdir/.coverage
+
+after_failure:
+  - cat test_local/debug.txt

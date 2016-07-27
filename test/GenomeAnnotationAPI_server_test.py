@@ -1,22 +1,49 @@
-import unittest
+# standard libraries
+import ConfigParser
+import functools
+import logging
 import os
-import json
+import sys
 import time
+import unittest
 
-from os import environ
-from ConfigParser import ConfigParser
-from pprint import pprint
-
-from biokbase.workspace.client import Workspace as workspaceService
+# local imports
+from biokbase.workspace.client import Workspace
 from GenomeAnnotationAPI.GenomeAnnotationAPIImpl import GenomeAnnotationAPI
 from GenomeAnnotationAPI.GenomeAnnotationAPIServer import MethodContext
 
+unittest.installHandler()
 
-class genome_annotation_apiTest(unittest.TestCase):
+logging.basicConfig()
+g_logger = logging.getLogger(__file__)
+g_logger.propagate = False
+log_handler = logging.StreamHandler(sys.stdout)
+log_handler.setFormatter(logging.Formatter("%(asctime)s [%(levelname)s] %(message)s"))
+g_logger.addHandler(log_handler)
+g_logger.setLevel(logging.INFO)
+
+def log(func):
+    if not g_logger:
+        raise Exception("Missing logger for @log")
+
+    ENTRY_MSG = "Entering {} with inputs {} {}"
+    EXIT_MSG = "Exiting {}"
+
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):
+        g_logger.info(ENTRY_MSG.format(func.__name__, args, kwargs))
+        result = func(*args, **kwargs)
+        g_logger.info(EXIT_MSG.format(func.__name__))
+        return result
+
+    return wrapper
+
+
+class GenomeAnnotationAPITests(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        token = environ.get('KB_AUTH_TOKEN', None)
+        token = os.environ.get('KB_AUTH_TOKEN', None)
         # WARNING: don't call any logging methods on the context object,
         # it'll result in a NoneType error
         cls.ctx = MethodContext(None)
@@ -27,185 +54,163 @@ class genome_annotation_apiTest(unittest.TestCase):
                              'method_params': []
                              }],
                         'authenticated': 1})
-        config_file = environ.get('KB_DEPLOYMENT_CONFIG', None)
-        cls.cfg = {}
-        config = ConfigParser()
+
+        config_file = os.environ.get('KB_DEPLOYMENT_CONFIG', None)
+        config = ConfigParser.ConfigParser()
         config.read(config_file)
-        for nameval in config.items('GenomeAnnotationAPI'):
-            cls.cfg[nameval[0]] = nameval[1]
-        cls.wsURL = cls.cfg['workspace-url']
-        cls.wsClient = workspaceService(cls.wsURL, token=token)
-        cls.serviceImpl = GenomeAnnotationAPI(cls.cfg)
+        cls.cfg = {n[0]: n[1] for n in config.items('GenomeAnnotationAPI')}
+        cls.ws = Workspace(cls.cfg['workspace-url'], token=token)
+        cls.impl = GenomeAnnotationAPI(cls.cfg)
 
-        cls.obj_name="ReferenceGenomeAnnotations/kb|g.207118"
-
-        cls.obj_name="ReferenceGenomeAnnotations/kb|g.217864"
-        cls.feature='kb|g.207118.CDS.3237'
-        cls.feature='kb|g.217864.CDS.11485'
-        cls.gene='kb|g.217864.locus.10619'
-
-        cls.obj_name="ReferenceGenomeAnnotations/kb|g.140057"
-        cls.feature='kb|g.140057.CDS.2901'
-        cls.gene='kb|g.140057.locus.2922'
-        cls.mrna='kb|g.140057.mRNA.2840'
-        cls.taxon= u'1779/523209/1'
-        cls.assembly='1837/56/2'
+        cls.ga_ref = "8020/81/1"
+        cls.genome_ref = "8020/83/1"
 
     @classmethod
     def tearDownClass(cls):
         if hasattr(cls, 'wsName'):
-            cls.wsClient.delete_workspace({'workspace': cls.wsName})
+            cls.ws.delete_workspace({'workspace': cls.wsName})
             print('Test workspace was deleted')
 
-    def getWsClient(self):
-        return self.__class__.wsClient
-
-    def getWsName(self):
-        if hasattr(self.__class__, 'wsName'):
-            return self.__class__.wsName
+    def generatePesudoRandomWorkspaceName(self):
+        if hasattr(self, 'wsName'):
+            return self.wsName
         suffix = int(time.time() * 1000)
         wsName = "test_GenomeAnnotationAPI_" + str(suffix)
-        ret = self.getWsClient().create_workspace({'workspace': wsName})
-        self.__class__.wsName = wsName
+        ret = self.ws.create_workspace({'workspace': wsName})
+        self.wsName = wsName
         return wsName
 
-    def getImpl(self):
-        return self.__class__.serviceImpl
+    def getType(self, ref=None):
+        return self.ws.get_object_info_new({"objects": [{"ref": ref}]})[0][2]
 
-    def getContext(self):
-        return self.__class__.ctx
+    @log
+    def test_get_taxon_old(self):
+        ret = self.impl.get_taxon(self.ctx, self.genome_ref)
+        self.assertTrue(self.getType(ret[0]).startswith("KBaseGenomes.Genome"),
+                        "ERROR: Invalid Genome reference {} from {}".format(ret[0], self.genome_ref))
 
-    def test_your_method(self):
-        # Prepare test objects in workspace if needed using 
-        # self.getWsClient().save_objects({'workspace': self.getWsName(), 'objects': []})
-        #
-        # Run your method by
-        # ret = self.getImpl().your_method(self.getContext(), parameters...)
-        #
-        # Check returned data with
-        # self.assertEqual(ret[...], ...) or other unittest methods
-        pass
+    @log
+    def test_get_taxon_new(self):
+        ret = self.impl.get_taxon(self.ctx, self.ga_ref)
+        self.assertTrue(self.getType(ret[0]).startswith("KBaseGenomeAnnotations.Taxon"),
+                        "ERROR: Invalid Taxon reference {} from {}".format(ret[0], self.ga_ref))
 
-    def test_get_taxon(self):
-        ret = self.getImpl().get_taxon(self.getContext(), self.obj_name)
-        self.assertEqual(ret[0],self.taxon)
-    #
-    # funcdef get_assembly(ObjectReference ref) returns (ObjectReference) authentication required;
-    def test_get_assembly(self):
-        ret = self.getImpl().get_assembly(self.getContext(), self.obj_name)
-        self.assertEqual(ret[0],self.assembly)
+    @log
+    def test_get_assembly_old(self):
+        ret = self.impl.get_assembly(self.ctx, self.genome_ref)
+        self.assertTrue(self.getType(ret[0]).startswith("KBaseGenomes.ContigSet"),
+                        "ERROR: Invalid ContigSet reference {} from {}".format(ret[0], self.genome_ref))
 
-    def test_get_feature_types(self):
-        ret = self.getImpl().get_feature_types(self.getContext(), self.obj_name)
-        print ret
-        self.assertEqual(ret[0], [u'gene', u'mRNA', u'CDS'] )
-        #ObjectReference ref) returns (list<string>) authentication required;
+    @log
+    def test_get_assembly_new(self):
+        ret = self.impl.get_assembly(self.ctx, self.ga_ref)
+        self.assertTrue(self.getType(ret[0]).startswith("KBaseGenomeAnnotations.Assembly"),
+                        "ERROR: Invalid Assembly reference {} from {}".format(ret[0], self.ga_ref))
 
-    def test_get_feature_type_descriptions(self):
-        ret = self.getImpl().get_feature_type_descriptions(self.getContext(), self.obj_name,['rna'])
-        print ret
-        self.assertEqual(ret[0],{'rna': 'Ribonucliec Acid (RNA)'})
+    @log
+    def test_get_feature_types_new(self):
+        ret = self.impl.get_feature_types(self.ctx, self.ga_ref)
+        self.assertGreater(len(ret[0]), 0, "ERROR: No feature types present {}".format(self.ga_ref))
 
-    def test_get_feature_type_counts(self):
-        ret = self.getImpl().get_feature_type_counts(self.getContext(), self.obj_name,['rna'])
-        #print ret
-        #self.assertEqual(ret[0],{u'protein': 3533, u'rna': 53, u'CDS': 3533})
-        self.assertEqual(ret[0], {u'gene': 5106, u'mRNA': 5106, u'CDS': 4998})
+    @log
+    def test_get_feature_type_descriptions_all_new(self):
+        ret = self.impl.get_feature_type_descriptions(self.ctx, self.ga_ref, feature_type_list=None)
+        self.assertGreater(len(ret[0].keys()), 0, "ERROR: Feature type descriptions empty {}".format(self.ga_ref))
 
-    def test_get_feature_ids(self):
-        ret = self.getImpl().get_feature_ids(self.getContext(), self.obj_name,{'type_list':['gene']},None)
-        assert 'by_type' in ret[0]
+    @log
+    def test_get_feature_type_counts_all_new(self):
+        ret = self.impl.get_feature_type_counts(self.ctx, self.ga_ref, feature_type_list=None)
+        self.assertGreater(len(ret[0].keys()), 0, "ERROR: Feature type counts empty {}".format(self.ga_ref))
 
-    def test_get_features(self):
-        ret = self.getImpl().get_features(self.getContext(),self.obj_name,[self.feature])
-        print ret
-        assert self.feature in ret[0]
+    @log
+    def test_get_feature_ids_all_new(self):
+        ret = self.impl.get_feature_ids(self.ctx, self.ga_ref, filters=None, group_type=None)
+        self.assertGreater(len(ret[0]), 0, "ERROR: No feature ids returned for all {}".format(self.ga_ref))
 
-    # funcdef get_proteins(ObjectReference ref) returns (mapping<string, Protein_data> ) authentication required;
-    def test_get_proteins(self):
-        ret = self.getImpl().get_proteins(self.getContext(),self.obj_name)
-        assert self.feature in ret[0]
+    @log
+    def test_get_features_all_new(self):
+        ret = self.impl.get_features(self.ctx, self.ga_ref, feature_id_list=None)
+        self.assertGreater(len(ret[0]), 0, "ERROR: No feature data returned for all {}".format(self.ga_ref))
 
-    # funcdef get_feature_locations(ObjectReference ref,list<string> feature_id_list) returns (mapping<string, list<Region>> ) authentication required;
-    def test_get_feature_locations(self):
-        ret = self.getImpl().get_feature_locations(self.getContext(),self.obj_name,[self.feature])
-        print ret
-        assert self.feature in ret[0]
+    @log
+    def test_get_proteins_all_new(self):
+        ret = self.impl.get_proteins(self.ctx,self.ga_ref)
+        self.assertGreater(len(ret[0].keys()), 0, "ERROR: No proteins for all {}".format(self.ga_ref))
 
-    # funcdef get_feature_publications(ObjectReference ref,
-    def test_get_feature_publications(self):
-        ret = self.getImpl().get_feature_publications(self.getContext(),self.obj_name,[self.feature])
-        print ret
-        assert self.feature in ret[0]
+    @log
+    def test_get_feature_locations_all_new(self):
+        ret = self.impl.get_feature_locations(self.ctx,self.ga_ref, feature_id_list=None)
+        self.assertGreater(len(ret[0].keys()), 0, "ERROR: No locations for {}".format(self.ga_ref))
 
-    # funcdef get_feature_dna(ObjectReference ref,list<string> feature_id_list) returns (mapping<string,string> ) authentication required;
-    def test_get_feature_dna(self):
-        ret = self.getImpl().get_feature_dna(self.getContext(),self.obj_name,[self.feature])
-        print ret
-        assert self.feature in ret[0]
+    @log
+    def test_get_feature_publications_all_new(self):
+        ret = self.impl.get_feature_publications(self.ctx, self.ga_ref, feature_id_list=None)
+        self.assertGreater(len(ret[0].keys()), 0, "ERROR: No publications for {}".format(self.ga_ref))
 
-    # funcdef get_feature_functions(ObjectReference ref,list<string> feature_id_list) returns (mapping<string,string> ) authentication required;
-    def test_get_feature_functions(self):
-        ret = self.getImpl().get_feature_functions(self.getContext(),self.obj_name,[self.feature])
-        print ret
-        assert self.feature in ret[0]
+    @log
+    def test_get_feature_dna_all_new(self):
+        ret = self.impl.get_feature_dna(self.ctx, self.ga_ref, feature_id_list=None)
+        self.assertGreater(len(ret[0].keys()), 0, "ERROR: No DNA sequence for {}".format(self.ga_ref))
 
-    # funcdef get_feature_aliases(ObjectReference ref,list<string> feature_id_list) returns (mapping<string,list<string>> ) authentication required;
-    def test_get_feature_aliases(self):
-        ret = self.getImpl().get_feature_aliases(self.getContext(),self.obj_name,[self.feature])
-        print ret
-        assert self.feature in ret[0]
+    @log
+    def test_get_feature_functions_all_new(self):
+        ret = self.impl.get_feature_functions(self.ctx, self.ga_ref, feature_id_list=None)
+        self.assertGreater(len(ret[0].keys()), 0, "ERROR: No functions for {}".format(self.ga_ref))
 
-    # funcdef get_cds_by_gene(ObjectReference ref,
-    def test_get_cds_by_gene(self):
-        ret = self.getImpl().get_cds_by_gene(self.getContext(),self.obj_name,[self.gene])
-        print ret
-        assert self.gene in ret[0]
+    @log
+    def test_get_feature_aliases_all_new(self):
+        ret = self.impl.get_feature_aliases(self.ctx, self.ga_ref, feature_id_list=None)
+        self.assertGreater(len(ret[0].keys()), 0, "ERROR: No aliases for {}".format(self.ga_ref))
 
-    # funcdef get_cds_by_mrna(ObjectReference ref,
-    def test_get_cds_by_mrna(self):
-        #t='CDS'
-        #x=self.getImpl().get_feature_ids(self.getContext(), self.obj_name,{'type_list':[t]},None)
-        #print x
-        #list=x[0]['by_type'][t]
-        #ret = self.getImpl().get_gene_by_cds(self.getContext(),self.obj_name,list)
-        #for i in ret[0]:
-        #    if ret[0][i] is not None:
-        #      print "......  "+i+":"+ret[0][i]
-        #      assert False
-        #      break
+    @log
+    def test_get_cds_by_gene_all_new(self):
+        gene_id_list = self.impl.get_feature_ids(self.ctx, self.ga_ref,
+                                                 filters={"type_list": ["gene"]},
+                                                 group_type="type")[0]["by_type"]["gene"]
+        ret = self.impl.get_cds_by_gene(self.ctx, self.ga_ref, gene_id_list=gene_id_list)
+        self.assertGreater(len(ret[0].keys()), 0, "ERROR: No CDS results from gene ids {}".format(gene_id_list))
 
+    @log
+    def test_get_cds_by_mrna_all_new(self):
+        mrna_id_list = self.impl.get_feature_ids(self.ctx, self.ga_ref,
+                                                 filters={"type_list": ["mRNA"]},
+                                                 group_type="type")[0]["by_type"]["mRNA"]
+        ret = self.impl.get_cds_by_mrna(self.ctx, self.ga_ref, mrna_id_list=mrna_id_list)
+        self.assertGreater(len(ret[0].keys()), 0, "ERROR: No CDS results from mRNA ids {}".format(mrna_id_list))
 
-        ret = self.getImpl().get_cds_by_mrna(self.getContext(),self.obj_name,[self.mrna])
-        print ret
-        assert self.mrna in ret[0]
+    @log
+    def test_get_gene_by_cds_all_new(self):
+        cds_id_list = self.impl.get_feature_ids(self.ctx, self.ga_ref,
+                                                filters={"type_list": ["CDS"]},
+                                                group_type="type")[0]["by_type"]["CDS"]
+        ret = self.impl.get_gene_by_cds(self.ctx, self.ga_ref, cds_id_list=cds_id_list)
+        self.assertGreater(len(ret[0].keys()), 0, "ERROR: No gene results from CDS ids {}".format(cds_id_list))
 
-    # funcdef get_gene_by_cds(ObjectReference ref,
-    def test_get_gene_by_cds(self):
-        #x=self.getImpl().get_feature_ids(self.getContext(), self.obj_name,{'type_list':['CDS']},None)
-        #cds=x[0]['by_type']['CDS']
-        ret = self.getImpl().get_gene_by_cds(self.getContext(),self.obj_name,[self.feature])
-        #for i in ret[0]:
-        #    if ret[0][i] is not None:
-        #      print i+":"+ret[0][i]
-        #      break
-        assert self.feature in ret[0]
-        assert ret[0][self.feature] is not None
+    @log
+    def test_get_gene_by_mrna_all_new(self):
+        mrna_id_list = self.impl.get_feature_ids(self.ctx, self.ga_ref,
+                                                 filters={"type_list": ["mRNA"]},
+                                                 group_type="type")[0]["by_type"]["mRNA"]
+        ret = self.impl.get_gene_by_mrna(self.ctx, self.ga_ref, mrna_id_list=mrna_id_list)
+        self.assertGreater(len(ret[0].keys()), 0, "ERROR: No gene results from mRNA ids {}".format(mrna_id_list))
 
-    # funcdef get_gene_by_mrna(ObjectReference ref,
-    def test_0get_gene_by_mrna(self):
-        ret = self.getImpl().get_gene_by_mrna(self.getContext(),self.obj_name,[self.mrna])
-        print ret
-        assert self.mrna in ret[0]
+    @log
+    def test_get_mrna_by_cds_all_new(self):
+        cds_id_list = self.impl.get_feature_ids(self.ctx, self.ga_ref,
+                                                filters={"type_list": ["CDS"]},
+                                                group_type="type")[0]["by_type"]["CDS"]
+        ret = self.impl.get_gene_by_cds(self.ctx, self.ga_ref, cds_id_list=cds_id_list)
+        self.assertGreater(len(ret[0].keys()), 0, "ERROR: No mRNA results from cds ids {}".format(cds_id_list))
 
-    # funcdef get_mrna_by_cds(ObjectReference ref,
-    def test_get_mrna_by_cds(self):
-        ret = self.getImpl().get_gene_by_cds(self.getContext(),self.obj_name,[self.feature])
-        print ret
-        assert self.feature in ret[0]
+    @log
+    def test_get_mrna_by_gene_all_new(self):
+        gene_id_list = self.impl.get_feature_ids(self.ctx, self.ga_ref,
+                                                 filters={"type_list": ["gene"]},
+                                                 group_type="type")[0]["by_type"]["gene"]
+        ret = self.impl.get_mrna_by_gene(self.ctx, self.ga_ref, gene_id_list=gene_id_list)
+        self.assertGreater(len(ret[0].keys()), 0, "ERROR: No mRNA results from gene ids {}".format(gene_id_list))
 
-    # funcdef get_mrna_by_gene(ObjectReference ref,list<string> gene_id_list) returns (mapping<string, list<string>> ) authentication required;
-    def test_get_mrna_by_gene(self):
-        ret = self.getImpl().get_mrna_by_gene(self.getContext(),self.obj_name,[self.gene])
-        print ret
-        assert self.gene in ret[0]
+    @log
+    def test_get_summary_new(self):
+        ret = self.impl.get_summary(self.ctx, self.ga_ref)
+        self.assertGreater(len(ret[0].keys()), 0, "ERROR: Empty summary data returned for {}".format(self.ga_ref))

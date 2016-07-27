@@ -1,0 +1,10 @@
+[report]
+exclude_lines = 
+    pragma: no cover
+    pass
+
+[run]
+include =
+    /kb/module/lib/GenomeAnnotationAPI/GenomeAnnotationAPIImpl.py
+    /kb/module/lib/GenomeAnnotationAPI/GenomeAnnotationAPIServer.py
+    /usr/local/lib/python2.7/dist-packages/doekbase/data_api/annotation/genome_annotation/api.py
