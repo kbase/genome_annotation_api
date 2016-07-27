@@ -22,7 +22,7 @@ class GenomeAnnotationAPI:
     #########################################
     VERSION = "0.0.1"
     GIT_URL = "https://github.com/mlhenderson/genome_annotation_api"
-    GIT_COMMIT_HASH = "9482a30ef1fa68eef2b248e3179a18aba6da3043"
+    GIT_COMMIT_HASH = "2dd7f7597f587370ba0826ad36389737eccf861a"
     
     #BEGIN_CLASS_HEADER
     #END_CLASS_HEADER
