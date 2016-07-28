@@ -5,67 +5,213 @@
 #
 ############################################################
 
-from __future__ import print_function
-# the following is a hack to get the baseclient to import whether we're in a
-# package or not. This makes pep8 unhappy hence the annotations.
 try:
-    # baseclient and this client are in a package
-    from .baseclient import BaseClient as _BaseClient  # @UnusedImport
-except:
-    # no they aren't
-    from baseclient import BaseClient as _BaseClient  # @Reimport
+    import json as _json
+except ImportError:
+    import sys
+    sys.path.append('simplejson-2.3.3')
+    import simplejson as _json
+
+import requests as _requests
+import urlparse as _urlparse
+import random as _random
+import base64 as _base64
+from ConfigParser import ConfigParser as _ConfigParser
+import os as _os
+
+_CT = 'content-type'
+_AJ = 'application/json'
+_URL_SCHEME = frozenset(['http', 'https'])
+
+
+def _get_token(user_id, password,
+               auth_svc='https://nexus.api.globusonline.org/goauth/token?' +
+                        'grant_type=client_credentials'):
+    # This is bandaid helper function until we get a full
+    # KBase python auth client released
+    auth = _base64.b64encode(user_id + ':' + password)
+    headers = {'Authorization': 'Basic ' + auth}
+    ret = _requests.get(auth_svc, headers=headers, allow_redirects=True)
+    status = ret.status_code
+    if status >= 200 and status <= 299:
+        tok = _json.loads(ret.text)
+    elif status == 403:
+        raise Exception('Authentication failed: Bad user_id/password ' +
+                        'combination for user %s' % (user_id))
+    else:
+        raise Exception(ret.text)
+    return tok['access_token']
+
+
+def _read_rcfile(file=_os.environ['HOME'] + '/.authrc'):  # @ReservedAssignment
+    # Another bandaid to read in the ~/.authrc file if one is present
+    authdata = None
+    if _os.path.exists(file):
+        try:
+            with open(file) as authrc:
+                rawdata = _json.load(authrc)
+                # strip down whatever we read to only what is legit
+                authdata = {x: rawdata.get(x) for x in (
+                    'user_id', 'token', 'client_secret', 'keyfile',
+                    'keyfile_passphrase', 'password')}
+        except Exception, e:
+            print "Error while reading authrc file %s: %s" % (file, e)
+    return authdata
+
+
+def _read_inifile(file=_os.environ.get(  # @ReservedAssignment
+                  'KB_DEPLOYMENT_CONFIG', _os.environ['HOME'] +
+                  '/.kbase_config')):
+    # Another bandaid to read in the ~/.kbase_config file if one is present
+    authdata = None
+    if _os.path.exists(file):
+        try:
+            config = _ConfigParser()
+            config.read(file)
+            # strip down whatever we read to only what is legit
+            authdata = {x: config.get('authentication', x)
+                        if config.has_option('authentication', x)
+                        else None for x in ('user_id', 'token',
+                                            'client_secret', 'keyfile',
+                                            'keyfile_passphrase', 'password')}
+        except Exception, e:
+            print "Error while reading INI file %s: %s" % (file, e)
+    return authdata
+
+
+class ServerError(Exception):
+
+    def __init__(self, name, code, message, data=None, error=None):
+        self.name = name
+        self.code = code
+        self.message = '' if message is None else message
+        self.data = data or error or ''
+        # data = JSON RPC 2.0, error = 1.1
+
+    def __str__(self):
+        return self.name + ': ' + str(self.code) + '. ' + self.message + \
+            '\n' + self.data
+
+
+class _JSONObjectEncoder(_json.JSONEncoder):
+
+    def default(self, obj):
+        if isinstance(obj, set):
+            return list(obj)
+        if isinstance(obj, frozenset):
+            return list(obj)
+        return _json.JSONEncoder.default(self, obj)
 
 
 class GenomeAnnotationAPI(object):
 
-    def __init__(
-            self, url=None, timeout=30 * 60, user_id=None,
-            password=None, token=None, ignore_authrc=False,
-            trust_all_ssl_certificates=False,
-            auth_svc='https://kbase.us/services/authorization/Sessions/Login'):
+    def __init__(self, url=None, timeout=30 * 60, user_id=None,
+                 password=None, token=None, ignore_authrc=False,
+                 trust_all_ssl_certificates=False):
         if url is None:
             raise ValueError('A url is required')
-        self._service_ver = None
-        self._client = _BaseClient(
-            url, timeout=timeout, user_id=user_id, password=password,
-            token=token, ignore_authrc=ignore_authrc,
-            trust_all_ssl_certificates=trust_all_ssl_certificates,
-            auth_svc=auth_svc)
+        scheme, _, _, _, _, _ = _urlparse.urlparse(url)
+        if scheme not in _URL_SCHEME:
+            raise ValueError(url + " isn't a valid http url")
+        self.url = url
+        self.timeout = int(timeout)
+        self._headers = dict()
+        self.trust_all_ssl_certificates = trust_all_ssl_certificates
+        # token overrides user_id and password
+        if token is not None:
+            self._headers['AUTHORIZATION'] = token
+        elif user_id is not None and password is not None:
+            self._headers['AUTHORIZATION'] = _get_token(user_id, password)
+        elif 'KB_AUTH_TOKEN' in _os.environ:
+            self._headers['AUTHORIZATION'] = _os.environ.get('KB_AUTH_TOKEN')
+        elif not ignore_authrc:
+            authdata = _read_inifile()
+            if authdata is None:
+                authdata = _read_rcfile()
+            if authdata is not None:
+                if authdata.get('token') is not None:
+                    self._headers['AUTHORIZATION'] = authdata['token']
+                elif(authdata.get('user_id') is not None
+                     and authdata.get('password') is not None):
+                    self._headers['AUTHORIZATION'] = _get_token(
+                        authdata['user_id'], authdata['password'])
+        if self.timeout < 1:
+            raise ValueError('Timeout value must be at least 1 second')
 
-    def get_taxon(self, ref, context=None):
+    def _call(self, method, params, json_rpc_context = None):
+        arg_hash = {'method': method,
+                    'params': params,
+                    'version': '1.1',
+                    'id': str(_random.random())[2:]
+                    }
+        if json_rpc_context:
+            arg_hash['context'] = json_rpc_context
+
+        body = _json.dumps(arg_hash, cls=_JSONObjectEncoder)
+        ret = _requests.post(self.url, data=body, headers=self._headers,
+                             timeout=self.timeout,
+                             verify=not self.trust_all_ssl_certificates)
+        if ret.status_code == _requests.codes.server_error:
+            json_header = None
+            if _CT in ret.headers:
+                json_header = ret.headers[_CT]
+            if _CT in ret.headers and ret.headers[_CT] == _AJ:
+                err = _json.loads(ret.text)
+                if 'error' in err:
+                    raise ServerError(**err['error'])
+                else:
+                    raise ServerError('Unknown', 0, ret.text)
+            else:
+                raise ServerError('Unknown', 0, ret.text)
+        if ret.status_code != _requests.codes.OK:
+            ret.raise_for_status()
+        ret.encoding = 'utf-8'
+        resp = _json.loads(ret.text)
+        if 'result' not in resp:
+            raise ServerError('Unknown', 0, 'An unknown server error occurred')
+        return resp['result']
+        
+ 
+    def get_taxon(self, ref, json_rpc_context = None):
         """
         Retrieve the Taxon associated with this GenomeAnnotation.
         @return Reference to TaxonAPI object
         :param ref: instance of type "ObjectReference"
         :returns: instance of type "ObjectReference"
         """
-        return self._client.call_method(
-            'GenomeAnnotationAPI.get_taxon',
-            [ref], self._service_ver, context)
-
-    def get_assembly(self, ref, context=None):
+        if json_rpc_context and type(json_rpc_context) is not dict:
+            raise ValueError('Method get_taxon: argument json_rpc_context is not type dict as required.')
+        resp = self._call('GenomeAnnotationAPI.get_taxon',
+                          [ref], json_rpc_context)
+        return resp[0]
+  
+    def get_assembly(self, ref, json_rpc_context = None):
         """
         Retrieve the Assembly associated with this GenomeAnnotation.
         @return Reference to AssemblyAPI object
         :param ref: instance of type "ObjectReference"
         :returns: instance of type "ObjectReference"
         """
-        return self._client.call_method(
-            'GenomeAnnotationAPI.get_assembly',
-            [ref], self._service_ver, context)
-
-    def get_feature_types(self, ref, context=None):
+        if json_rpc_context and type(json_rpc_context) is not dict:
+            raise ValueError('Method get_assembly: argument json_rpc_context is not type dict as required.')
+        resp = self._call('GenomeAnnotationAPI.get_assembly',
+                          [ref], json_rpc_context)
+        return resp[0]
+  
+    def get_feature_types(self, ref, json_rpc_context = None):
         """
         Retrieve the list of Feature types.
         @return List of feature type identifiers (strings)
         :param ref: instance of type "ObjectReference"
         :returns: instance of list of String
         """
-        return self._client.call_method(
-            'GenomeAnnotationAPI.get_feature_types',
-            [ref], self._service_ver, context)
-
-    def get_feature_type_descriptions(self, ref, feature_type_list, context=None):
+        if json_rpc_context and type(json_rpc_context) is not dict:
+            raise ValueError('Method get_feature_types: argument json_rpc_context is not type dict as required.')
+        resp = self._call('GenomeAnnotationAPI.get_feature_types',
+                          [ref], json_rpc_context)
+        return resp[0]
+  
+    def get_feature_type_descriptions(self, ref, feature_type_list, json_rpc_context = None):
         """
         Retrieve the descriptions for each Feature type in
         this GenomeAnnotation.
@@ -77,11 +223,13 @@ class GenomeAnnotationAPI(object):
         :param feature_type_list: instance of list of String
         :returns: instance of mapping from String to String
         """
-        return self._client.call_method(
-            'GenomeAnnotationAPI.get_feature_type_descriptions',
-            [ref, feature_type_list], self._service_ver, context)
-
-    def get_feature_type_counts(self, ref, feature_type_list, context=None):
+        if json_rpc_context and type(json_rpc_context) is not dict:
+            raise ValueError('Method get_feature_type_descriptions: argument json_rpc_context is not type dict as required.')
+        resp = self._call('GenomeAnnotationAPI.get_feature_type_descriptions',
+                          [ref, feature_type_list], json_rpc_context)
+        return resp[0]
+  
+    def get_feature_type_counts(self, ref, feature_type_list, json_rpc_context = None):
         """
         Retrieve the count of each Feature type.
         @param feature_type_list  List of Feature Types. If empty,
@@ -90,11 +238,13 @@ class GenomeAnnotationAPI(object):
         :param feature_type_list: instance of list of String
         :returns: instance of mapping from String to Long
         """
-        return self._client.call_method(
-            'GenomeAnnotationAPI.get_feature_type_counts',
-            [ref, feature_type_list], self._service_ver, context)
-
-    def get_feature_ids(self, ref, filters, group_type, context=None):
+        if json_rpc_context and type(json_rpc_context) is not dict:
+            raise ValueError('Method get_feature_type_counts: argument json_rpc_context is not type dict as required.')
+        resp = self._call('GenomeAnnotationAPI.get_feature_type_counts',
+                          [ref, feature_type_list], json_rpc_context)
+        return resp[0]
+  
+    def get_feature_ids(self, ref, filters, group_type, json_rpc_context = None):
         """
         Retrieve Feature IDs, optionally filtered by type, region, function, alias.
         @param filters Dictionary of filters that can be applied to contents.
@@ -118,11 +268,13 @@ class GenomeAnnotationAPI(object):
            "by_function" of mapping from String to list of String, parameter
            "by_alias" of mapping from String to list of String
         """
-        return self._client.call_method(
-            'GenomeAnnotationAPI.get_feature_ids',
-            [ref, filters, group_type], self._service_ver, context)
-
-    def get_features(self, ref, feature_id_list, context=None):
+        if json_rpc_context and type(json_rpc_context) is not dict:
+            raise ValueError('Method get_feature_ids: argument json_rpc_context is not type dict as required.')
+        resp = self._call('GenomeAnnotationAPI.get_feature_ids',
+                          [ref, filters, group_type], json_rpc_context)
+        return resp[0]
+  
+    def get_features(self, ref, feature_id_list, json_rpc_context = None):
         """
         Retrieve Feature data.
         @param feature_id_list List of Features to retrieve.
@@ -144,11 +296,13 @@ class GenomeAnnotationAPI(object):
            "feature_quality_score" of list of String, parameter
            "feature_notes" of String, parameter "feature_inference" of String
         """
-        return self._client.call_method(
-            'GenomeAnnotationAPI.get_features',
-            [ref, feature_id_list], self._service_ver, context)
-
-    def get_proteins(self, ref, context=None):
+        if json_rpc_context and type(json_rpc_context) is not dict:
+            raise ValueError('Method get_features: argument json_rpc_context is not type dict as required.')
+        resp = self._call('GenomeAnnotationAPI.get_features',
+                          [ref, feature_id_list], json_rpc_context)
+        return resp[0]
+  
+    def get_proteins(self, ref, json_rpc_context = None):
         """
         Retrieve Protein data.
         @return Mapping from protein ID to data about the protein.
@@ -160,11 +314,13 @@ class GenomeAnnotationAPI(object):
            of String, parameter "protein_md5" of String, parameter
            "protein_domain_locations" of list of String
         """
-        return self._client.call_method(
-            'GenomeAnnotationAPI.get_proteins',
-            [ref], self._service_ver, context)
-
-    def get_feature_locations(self, ref, feature_id_list, context=None):
+        if json_rpc_context and type(json_rpc_context) is not dict:
+            raise ValueError('Method get_proteins: argument json_rpc_context is not type dict as required.')
+        resp = self._call('GenomeAnnotationAPI.get_proteins',
+                          [ref], json_rpc_context)
+        return resp[0]
+  
+    def get_feature_locations(self, ref, feature_id_list, json_rpc_context = None):
         """
         Retrieve Feature locations.
         @param feature_id_list List of Feature IDs for which to retrieve locations.
@@ -176,11 +332,13 @@ class GenomeAnnotationAPI(object):
            structure: parameter "contig_id" of String, parameter "strand" of
            String, parameter "start" of Long, parameter "length" of Long
         """
-        return self._client.call_method(
-            'GenomeAnnotationAPI.get_feature_locations',
-            [ref, feature_id_list], self._service_ver, context)
-
-    def get_feature_publications(self, ref, feature_id_list, context=None):
+        if json_rpc_context and type(json_rpc_context) is not dict:
+            raise ValueError('Method get_feature_locations: argument json_rpc_context is not type dict as required.')
+        resp = self._call('GenomeAnnotationAPI.get_feature_locations',
+                          [ref, feature_id_list], json_rpc_context)
+        return resp[0]
+  
+    def get_feature_publications(self, ref, feature_id_list, json_rpc_context = None):
         """
         Retrieve Feature publications.
         @param feature_id_list List of Feature IDs for which to retrieve publications.
@@ -190,11 +348,13 @@ class GenomeAnnotationAPI(object):
         :param feature_id_list: instance of list of String
         :returns: instance of mapping from String to list of String
         """
-        return self._client.call_method(
-            'GenomeAnnotationAPI.get_feature_publications',
-            [ref, feature_id_list], self._service_ver, context)
-
-    def get_feature_dna(self, ref, feature_id_list, context=None):
+        if json_rpc_context and type(json_rpc_context) is not dict:
+            raise ValueError('Method get_feature_publications: argument json_rpc_context is not type dict as required.')
+        resp = self._call('GenomeAnnotationAPI.get_feature_publications',
+                          [ref, feature_id_list], json_rpc_context)
+        return resp[0]
+  
+    def get_feature_dna(self, ref, feature_id_list, json_rpc_context = None):
         """
         Retrieve Feature DNA sequences.
         @param feature_id_list List of Feature IDs for which to retrieve sequences.
@@ -204,11 +364,13 @@ class GenomeAnnotationAPI(object):
         :param feature_id_list: instance of list of String
         :returns: instance of mapping from String to String
         """
-        return self._client.call_method(
-            'GenomeAnnotationAPI.get_feature_dna',
-            [ref, feature_id_list], self._service_ver, context)
-
-    def get_feature_functions(self, ref, feature_id_list, context=None):
+        if json_rpc_context and type(json_rpc_context) is not dict:
+            raise ValueError('Method get_feature_dna: argument json_rpc_context is not type dict as required.')
+        resp = self._call('GenomeAnnotationAPI.get_feature_dna',
+                          [ref, feature_id_list], json_rpc_context)
+        return resp[0]
+  
+    def get_feature_functions(self, ref, feature_id_list, json_rpc_context = None):
         """
         Retrieve Feature functions.
         @param feature_id_list List of Feature IDs for which to retrieve functions.
@@ -218,11 +380,13 @@ class GenomeAnnotationAPI(object):
         :param feature_id_list: instance of list of String
         :returns: instance of mapping from String to String
         """
-        return self._client.call_method(
-            'GenomeAnnotationAPI.get_feature_functions',
-            [ref, feature_id_list], self._service_ver, context)
-
-    def get_feature_aliases(self, ref, feature_id_list, context=None):
+        if json_rpc_context and type(json_rpc_context) is not dict:
+            raise ValueError('Method get_feature_functions: argument json_rpc_context is not type dict as required.')
+        resp = self._call('GenomeAnnotationAPI.get_feature_functions',
+                          [ref, feature_id_list], json_rpc_context)
+        return resp[0]
+  
+    def get_feature_aliases(self, ref, feature_id_list, json_rpc_context = None):
         """
         Retrieve Feature aliases.
         @param feature_id_list List of Feature IDS for which to retrieve aliases.
@@ -232,98 +396,112 @@ class GenomeAnnotationAPI(object):
         :param feature_id_list: instance of list of String
         :returns: instance of mapping from String to list of String
         """
-        return self._client.call_method(
-            'GenomeAnnotationAPI.get_feature_aliases',
-            [ref, feature_id_list], self._service_ver, context)
-
-    def get_cds_by_gene(self, ref, gene_id_list, context=None):
+        if json_rpc_context and type(json_rpc_context) is not dict:
+            raise ValueError('Method get_feature_aliases: argument json_rpc_context is not type dict as required.')
+        resp = self._call('GenomeAnnotationAPI.get_feature_aliases',
+                          [ref, feature_id_list], json_rpc_context)
+        return resp[0]
+  
+    def get_cds_by_gene(self, ref, gene_id_list, json_rpc_context = None):
         """
         Retrieves coding sequence Features (cds) for given gene Feature IDs.
-        @param feature_id_list List of gene Feature IDS for which to retrieve CDS.
+        @param gene_id_list List of gene Feature IDS for which to retrieve CDS.
             If empty, returns data for all features.
         @return Mapping of gene Feature IDs to a list of CDS Feature IDs.
         :param ref: instance of type "ObjectReference"
         :param gene_id_list: instance of list of String
         :returns: instance of mapping from String to list of String
         """
-        return self._client.call_method(
-            'GenomeAnnotationAPI.get_cds_by_gene',
-            [ref, gene_id_list], self._service_ver, context)
-
-    def get_cds_by_mrna(self, ref, mrna_id_list, context=None):
+        if json_rpc_context and type(json_rpc_context) is not dict:
+            raise ValueError('Method get_cds_by_gene: argument json_rpc_context is not type dict as required.')
+        resp = self._call('GenomeAnnotationAPI.get_cds_by_gene',
+                          [ref, gene_id_list], json_rpc_context)
+        return resp[0]
+  
+    def get_cds_by_mrna(self, ref, mrna_id_list, json_rpc_context = None):
         """
         Retrieves coding sequence (cds) Feature IDs for given mRNA Feature IDs.
-        @param feature_id_list List of mRNA Feature IDS for which to retrieve CDS.
+        @param mrna_id_list List of mRNA Feature IDS for which to retrieve CDS.
             If empty, returns data for all features.
         @return Mapping of mRNA Feature IDs to a list of CDS Feature IDs.
         :param ref: instance of type "ObjectReference"
         :param mrna_id_list: instance of list of String
         :returns: instance of mapping from String to String
         """
-        return self._client.call_method(
-            'GenomeAnnotationAPI.get_cds_by_mrna',
-            [ref, mrna_id_list], self._service_ver, context)
-
-    def get_gene_by_cds(self, ref, cds_id_list, context=None):
+        if json_rpc_context and type(json_rpc_context) is not dict:
+            raise ValueError('Method get_cds_by_mrna: argument json_rpc_context is not type dict as required.')
+        resp = self._call('GenomeAnnotationAPI.get_cds_by_mrna',
+                          [ref, mrna_id_list], json_rpc_context)
+        return resp[0]
+  
+    def get_gene_by_cds(self, ref, cds_id_list, json_rpc_context = None):
         """
         Retrieves gene Feature IDs for given coding sequence (cds) Feature IDs.
-        @param feature_id_list List of cds Feature IDS for which to retrieve gene IDs.
+        @param cds_id_list List of cds Feature IDS for which to retrieve gene IDs.
             If empty, returns all cds/gene mappings.
         @return Mapping of cds Feature IDs to gene Feature IDs.
         :param ref: instance of type "ObjectReference"
         :param cds_id_list: instance of list of String
         :returns: instance of mapping from String to String
         """
-        return self._client.call_method(
-            'GenomeAnnotationAPI.get_gene_by_cds',
-            [ref, cds_id_list], self._service_ver, context)
-
-    def get_gene_by_mrna(self, ref, mrna_id_list, context=None):
+        if json_rpc_context and type(json_rpc_context) is not dict:
+            raise ValueError('Method get_gene_by_cds: argument json_rpc_context is not type dict as required.')
+        resp = self._call('GenomeAnnotationAPI.get_gene_by_cds',
+                          [ref, cds_id_list], json_rpc_context)
+        return resp[0]
+  
+    def get_gene_by_mrna(self, ref, mrna_id_list, json_rpc_context = None):
         """
         Retrieves gene Feature IDs for given mRNA Feature IDs.
-        @param feature_id_list List of mRNA Feature IDS for which to retrieve gene IDs.
+        @param mrna_id_list List of mRNA Feature IDS for which to retrieve gene IDs.
             If empty, returns all mRNA/gene mappings.
         @return Mapping of mRNA Feature IDs to gene Feature IDs.
         :param ref: instance of type "ObjectReference"
         :param mrna_id_list: instance of list of String
         :returns: instance of mapping from String to String
         """
-        return self._client.call_method(
-            'GenomeAnnotationAPI.get_gene_by_mrna',
-            [ref, mrna_id_list], self._service_ver, context)
-
-    def get_mrna_by_cds(self, ref, cds_id_list, context=None):
+        if json_rpc_context and type(json_rpc_context) is not dict:
+            raise ValueError('Method get_gene_by_mrna: argument json_rpc_context is not type dict as required.')
+        resp = self._call('GenomeAnnotationAPI.get_gene_by_mrna',
+                          [ref, mrna_id_list], json_rpc_context)
+        return resp[0]
+  
+    def get_mrna_by_cds(self, ref, cds_id_list, json_rpc_context = None):
         """
         Retrieves mRNA Features for given coding sequences (cds) Feature IDs.
-        @param feature_id_list List of cds Feature IDS for which to retrieve mRNA IDs.
+        @param cds_id_list List of cds Feature IDS for which to retrieve mRNA IDs.
             If empty, returns all cds/mRNA mappings.
         @return Mapping of cds Feature IDs to mRNA Feature IDs.
         :param ref: instance of type "ObjectReference"
         :param cds_id_list: instance of list of String
         :returns: instance of mapping from String to String
         """
-        return self._client.call_method(
-            'GenomeAnnotationAPI.get_mrna_by_cds',
-            [ref, cds_id_list], self._service_ver, context)
-
-    def get_mrna_by_gene(self, ref, gene_id_list, context=None):
+        if json_rpc_context and type(json_rpc_context) is not dict:
+            raise ValueError('Method get_mrna_by_cds: argument json_rpc_context is not type dict as required.')
+        resp = self._call('GenomeAnnotationAPI.get_mrna_by_cds',
+                          [ref, cds_id_list], json_rpc_context)
+        return resp[0]
+  
+    def get_mrna_by_gene(self, ref, gene_id_list, json_rpc_context = None):
         """
         Retrieve the mRNA IDs for given gene IDs.
-        @param feature_id_list List of gene Feature IDS for which to retrieve mRNA IDs.
+        @param gene_id_list List of gene Feature IDS for which to retrieve mRNA IDs.
             If empty, returns all gene/mRNA mappings.
         @return Mapping of gene Feature IDs to a list of mRNA Feature IDs.
         :param ref: instance of type "ObjectReference"
         :param gene_id_list: instance of list of String
         :returns: instance of mapping from String to list of String
         """
-        return self._client.call_method(
-            'GenomeAnnotationAPI.get_mrna_by_gene',
-            [ref, gene_id_list], self._service_ver, context)
-
-    def get_mrna_exons(self, ref, mrna_id_list, context=None):
+        if json_rpc_context and type(json_rpc_context) is not dict:
+            raise ValueError('Method get_mrna_by_gene: argument json_rpc_context is not type dict as required.')
+        resp = self._call('GenomeAnnotationAPI.get_mrna_by_gene',
+                          [ref, gene_id_list], json_rpc_context)
+        return resp[0]
+  
+    def get_mrna_exons(self, ref, mrna_id_list, json_rpc_context = None):
         """
         Retrieve Exon information for each mRNA ID.
-        @param feature_id_list List of mRNA Feature IDS for which to retrieve exons.
+        @param mrna_id_list List of mRNA Feature IDS for which to retrieve exons.
             If empty, returns data for all exons.
         @return Mapping of mRNA Feature IDs to a list of exons (:js:data:`Exon_data`).
         :param ref: instance of type "ObjectReference"
@@ -335,11 +513,13 @@ class GenomeAnnotationAPI(object):
            parameter "exon_dna_sequence" of String, parameter "exon_ordinal"
            of Long
         """
-        return self._client.call_method(
-            'GenomeAnnotationAPI.get_mrna_exons',
-            [ref, mrna_id_list], self._service_ver, context)
-
-    def get_mrna_utrs(self, ref, mrna_id_list, context=None):
+        if json_rpc_context and type(json_rpc_context) is not dict:
+            raise ValueError('Method get_mrna_exons: argument json_rpc_context is not type dict as required.')
+        resp = self._call('GenomeAnnotationAPI.get_mrna_exons',
+                          [ref, mrna_id_list], json_rpc_context)
+        return resp[0]
+  
+    def get_mrna_utrs(self, ref, mrna_id_list, json_rpc_context = None):
         """
         Retrieve UTR information for each mRNA Feature ID.
          UTRs are calculated between mRNA features and corresponding CDS features.
@@ -364,6 +544,47 @@ class GenomeAnnotationAPI(object):
            parameter "strand" of String, parameter "start" of Long, parameter
            "length" of Long, parameter "utr_dna_sequence" of String
         """
-        return self._client.call_method(
-            'GenomeAnnotationAPI.get_mrna_utrs',
-            [ref, mrna_id_list], self._service_ver, context)
+        if json_rpc_context and type(json_rpc_context) is not dict:
+            raise ValueError('Method get_mrna_utrs: argument json_rpc_context is not type dict as required.')
+        resp = self._call('GenomeAnnotationAPI.get_mrna_utrs',
+                          [ref, mrna_id_list], json_rpc_context)
+        return resp[0]
+  
+    def get_summary(self, ref, json_rpc_context = None):
+        """
+        Retrieve a summary representation of this GenomeAnnotation.
+        @return summary data
+        :param ref: instance of type "ObjectReference"
+        :returns: instance of type "Summary_data" -> structure: parameter
+           "scientific_name" of String, parameter "taxonomy_id" of Long,
+           parameter "kingdom" of String, parameter "scientific_lineage" of
+           list of String, parameter "genetic_code" of Long, parameter
+           "organism_aliases" of list of String, parameter "assembly_source"
+           of String, parameter "assembly_source_id" of String, parameter
+           "assembly_source_date" of String, parameter "gc_content" of
+           Double, parameter "dna_size" of Long, parameter "num_contigs" of
+           Long, parameter "contig_ids" of list of String, parameter
+           "external_source" of String, parameter "external_source_date" of
+           String, parameter "release" of String, parameter
+           "original_source_filename" of String, parameter
+           "feature_type_counts" of mapping from String to Long
+        """
+        if json_rpc_context and type(json_rpc_context) is not dict:
+            raise ValueError('Method get_summary: argument json_rpc_context is not type dict as required.')
+        resp = self._call('GenomeAnnotationAPI.get_summary',
+                          [ref], json_rpc_context)
+        return resp[0]
+  
+    def save_summary(self, ref, json_rpc_context = None):
+        """
+        Retrieve a summary representation of this GenomeAnnotation.
+        @return summary data
+        :param ref: instance of type "ObjectReference"
+        :returns: instance of Long
+        """
+        if json_rpc_context and type(json_rpc_context) is not dict:
+            raise ValueError('Method save_summary: argument json_rpc_context is not type dict as required.')
+        resp = self._call('GenomeAnnotationAPI.save_summary',
+                          [ref], json_rpc_context)
+        return resp[0]
+ 
