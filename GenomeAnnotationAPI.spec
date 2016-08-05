@@ -243,6 +243,31 @@ module GenomeAnnotationAPI {
     funcdef get_features(ObjectReference ref, list<string> feature_id_list)
         returns (mapping<string, Feature_data>) authentication required;
 
+    /* A boolean - 0 for false, 1 for true.
+       @range (0, 1)
+    */
+    typedef int boolean;
+
+    /* exclude_sequence = set to 1 (true) or 0 (false) to indicate if sequences
+       should be included.  Defautl is false.
+    */
+    typedef structure {
+        ObjectReference ref;
+        list<string> feature_id_list;
+        boolean exclude_sequence;
+    } GetFeatures2Params;
+
+    /**
+     * Retrieve Feature data, v2.
+     *
+     * @param feature_id_list List of Features to retrieve.
+     *   If None, returns all Feature data.
+     * @return Mapping from Feature IDs to dicts of available data.
+     */
+    funcdef get_features2(GetFeatures2Params params)
+        returns (mapping<string, Feature_data>) authentication required;
+
+
     /**
      * Retrieve Protein data.
      *
