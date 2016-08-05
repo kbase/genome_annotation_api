@@ -13,12 +13,12 @@ RUN mkdir -p /kb/module && \
     rm -rf /kb/deployment/lib/biokbase/workspace && \
     cp -vr lib/biokbase/workspace /kb/deployment/lib/biokbase/workspace
 
-#install data_api - temporarily switch to msneddon fork to include PR236 + PR237
+#install data_api
 RUN mkdir -p /kb/module && \
     cd /kb/module && \
-    git clone https://github.com/msneddon/data_api && \
+    git clone https://github.com/kbase/data_api && \
     cd data_api && \
-    git checkout effc3c8 && \
+    git checkout bf1de43 && \
     cd /kb/module && \
     mkdir lib/
 
