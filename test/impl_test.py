@@ -133,6 +133,17 @@ class GenomeAnnotationAPITests(unittest.TestCase):
         self.assertGreater(len(ret[0]), 0, "ERROR: No feature data returned for all {}".format(self.ga_ref))
 
     @log
+    def test_get_features2_all_new(self):
+        ret = self.impl.get_features2(self.ctx, {'ref':self.ga_ref, 'exclude_sequence':1})
+        self.assertGreater(len(ret[0]), 0, "ERROR: No feature data returned for all {}".format(self.ga_ref))
+
+        ret = self.impl.get_features2(self.ctx, {'ref':self.ga_ref })
+        self.assertGreater(len(ret[0]), 0, "ERROR: No feature data returned for all {}".format(self.ga_ref))
+
+        ret = self.impl.get_features2(self.ctx, {'ref':self.ga_ref, 'exclude_sequence':0 })
+        self.assertGreater(len(ret[0]), 0, "ERROR: No feature data returned for all {}".format(self.ga_ref))
+
+    @log
     def test_get_proteins_all_new(self):
         ret = self.impl.get_proteins(self.ctx,self.ga_ref)
         self.assertGreater(len(ret[0].keys()), 0, "ERROR: No proteins for all {}".format(self.ga_ref))

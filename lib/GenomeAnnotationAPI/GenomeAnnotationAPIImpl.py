@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #BEGIN_HEADER
 from doekbase.data_api.annotation.genome_annotation.api import GenomeAnnotationAPI as GenomeAnnotationAPI_local
 from doekbase.data_api import cache
@@ -21,8 +22,8 @@ class GenomeAnnotationAPI:
     # the latter method is running.
     #########################################
     VERSION = "0.0.2"
-    GIT_URL = "https://github.com/mlhenderson/genome_annotation_api"
-    GIT_COMMIT_HASH = "d1d0b635a24d5bfee6c5d53ad77e2903a5ebb252"
+    GIT_URL = "git@github.com:msneddon/genome_annotation_api"
+    GIT_COMMIT_HASH = "fa25afe8fe6c6cc28dbd265242997f0834f09633"
     
     #BEGIN_CLASS_HEADER
     #END_CLASS_HEADER
@@ -255,6 +256,65 @@ class GenomeAnnotationAPI:
         # At some point might do deeper type checking...
         if not isinstance(returnVal, dict):
             raise ValueError('Method get_features return value ' +
+                             'returnVal is not type dict as required.')
+        # return the results
+        return [returnVal]
+
+    def get_features2(self, ctx, params):
+        """
+        Retrieve Feature data, v2.
+        @param feature_id_list List of Features to retrieve.
+          If None, returns all Feature data.
+        @return Mapping from Feature IDs to dicts of available data.
+        :param params: instance of type "GetFeatures2Params"
+           (exclude_sequence = set to 1 (true) or 0 (false) to indicate if
+           sequences should be included.  Defautl is false.) -> structure:
+           parameter "ref" of type "ObjectReference", parameter
+           "feature_id_list" of list of String, parameter "exclude_sequence"
+           of type "boolean" (A boolean - 0 for false, 1 for true. @range (0,
+           1))
+        :returns: instance of mapping from String to type "Feature_data" ->
+           structure: parameter "feature_id" of String, parameter
+           "feature_type" of String, parameter "feature_function" of String,
+           parameter "feature_aliases" of mapping from String to list of
+           String, parameter "feature_dna_sequence_length" of Long, parameter
+           "feature_dna_sequence" of String, parameter "feature_md5" of
+           String, parameter "feature_locations" of list of type "Region" ->
+           structure: parameter "contig_id" of String, parameter "strand" of
+           String, parameter "start" of Long, parameter "length" of Long,
+           parameter "feature_publications" of list of String, parameter
+           "feature_quality_warnings" of list of String, parameter
+           "feature_quality_score" of list of String, parameter
+           "feature_notes" of String, parameter "feature_inference" of String
+        """
+        # ctx is the context object
+        # return variables are: returnVal
+        #BEGIN get_features2
+
+        if 'ref' not in params:
+          raise ValueError('ref field in parameters object is required')
+
+        feature_id_list = None
+        if 'feature_id_list' in params:
+          feature_id_list = params['feature_id_list']
+
+        exclude_sequence = False
+        if 'exclude_sequence' in params:
+          if params['exclude_sequence'] == 1:
+            exclude_sequence = True
+          elif params['exclude_sequence'] != 0:
+            raise ValueError('exclude_sequence field in parameters object must be set to either 1 or 0')
+
+        ga = GenomeAnnotationAPI_local(self.services, ctx['token'], params['ref'])
+        returnVal = ga.get_features(
+                          feature_id_list=feature_id_list,
+                          exclude_sequence=exclude_sequence)
+
+        #END get_features2
+
+        # At some point might do deeper type checking...
+        if not isinstance(returnVal, dict):
+            raise ValueError('Method get_features2 return value ' +
                              'returnVal is not type dict as required.')
         # return the results
         return [returnVal]
