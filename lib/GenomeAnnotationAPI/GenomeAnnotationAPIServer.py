@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 from wsgiref.simple_server import make_server
 import sys
 import json
@@ -13,17 +12,16 @@ from jsonrpcbase import ServerError as JSONServerError
 from os import environ
 from ConfigParser import ConfigParser
 from biokbase import log
+import biokbase.nexus
 import requests as _requests
 import random as _random
 import os
-from GenomeAnnotationAPI.authclient import KBaseAuth as _KBaseAuth
+import requests.packages.urllib3
 
 DEPLOY = 'KB_DEPLOYMENT_CONFIG'
 SERVICE = 'KB_SERVICE_NAME'
-AUTH = 'auth-server-url'
 
 # Note that the error fields do not match the 2.0 JSONRPC spec
-
 
 def get_config_file():
     return environ.get(DEPLOY, None)
@@ -45,7 +43,7 @@ def get_config():
 
 config = get_config()
 
-from GenomeAnnotationAPI.GenomeAnnotationAPIImpl import GenomeAnnotationAPI  # @IgnorePep8
+from GenomeAnnotationAPI.GenomeAnnotationAPIImpl import GenomeAnnotationAPI
 impl_GenomeAnnotationAPI = GenomeAnnotationAPI(config)
 
 
@@ -331,31 +329,31 @@ class Application(object):
         self.method_authentication = dict()
         self.rpc_service.add(impl_GenomeAnnotationAPI.get_taxon,
                              name='GenomeAnnotationAPI.get_taxon',
-                             types=[basestring])
+                             types=[dict])
         self.method_authentication['GenomeAnnotationAPI.get_taxon'] = 'required'
         self.rpc_service.add(impl_GenomeAnnotationAPI.get_assembly,
                              name='GenomeAnnotationAPI.get_assembly',
-                             types=[basestring])
+                             types=[dict])
         self.method_authentication['GenomeAnnotationAPI.get_assembly'] = 'required'
         self.rpc_service.add(impl_GenomeAnnotationAPI.get_feature_types,
                              name='GenomeAnnotationAPI.get_feature_types',
-                             types=[basestring])
+                             types=[dict])
         self.method_authentication['GenomeAnnotationAPI.get_feature_types'] = 'required'
         self.rpc_service.add(impl_GenomeAnnotationAPI.get_feature_type_descriptions,
                              name='GenomeAnnotationAPI.get_feature_type_descriptions',
-                             types=[basestring, list])
+                             types=[dict])
         self.method_authentication['GenomeAnnotationAPI.get_feature_type_descriptions'] = 'required'
         self.rpc_service.add(impl_GenomeAnnotationAPI.get_feature_type_counts,
                              name='GenomeAnnotationAPI.get_feature_type_counts',
-                             types=[basestring, list])
+                             types=[dict])
         self.method_authentication['GenomeAnnotationAPI.get_feature_type_counts'] = 'required'
         self.rpc_service.add(impl_GenomeAnnotationAPI.get_feature_ids,
                              name='GenomeAnnotationAPI.get_feature_ids',
-                             types=[basestring, dict, basestring])
+                             types=[dict])
         self.method_authentication['GenomeAnnotationAPI.get_feature_ids'] = 'required'
         self.rpc_service.add(impl_GenomeAnnotationAPI.get_features,
                              name='GenomeAnnotationAPI.get_features',
-                             types=[basestring, list])
+                             types=[dict])
         self.method_authentication['GenomeAnnotationAPI.get_features'] = 'required'
         self.rpc_service.add(impl_GenomeAnnotationAPI.get_features2,
                              name='GenomeAnnotationAPI.get_features2',
@@ -363,73 +361,76 @@ class Application(object):
         self.method_authentication['GenomeAnnotationAPI.get_features2'] = 'required'
         self.rpc_service.add(impl_GenomeAnnotationAPI.get_proteins,
                              name='GenomeAnnotationAPI.get_proteins',
-                             types=[basestring])
+                             types=[dict])
         self.method_authentication['GenomeAnnotationAPI.get_proteins'] = 'required'
         self.rpc_service.add(impl_GenomeAnnotationAPI.get_feature_locations,
                              name='GenomeAnnotationAPI.get_feature_locations',
-                             types=[basestring, list])
+                             types=[dict])
         self.method_authentication['GenomeAnnotationAPI.get_feature_locations'] = 'required'
         self.rpc_service.add(impl_GenomeAnnotationAPI.get_feature_publications,
                              name='GenomeAnnotationAPI.get_feature_publications',
-                             types=[basestring, list])
+                             types=[dict])
         self.method_authentication['GenomeAnnotationAPI.get_feature_publications'] = 'required'
         self.rpc_service.add(impl_GenomeAnnotationAPI.get_feature_dna,
                              name='GenomeAnnotationAPI.get_feature_dna',
-                             types=[basestring, list])
+                             types=[dict])
         self.method_authentication['GenomeAnnotationAPI.get_feature_dna'] = 'required'
         self.rpc_service.add(impl_GenomeAnnotationAPI.get_feature_functions,
                              name='GenomeAnnotationAPI.get_feature_functions',
-                             types=[basestring, list])
+                             types=[dict])
         self.method_authentication['GenomeAnnotationAPI.get_feature_functions'] = 'required'
         self.rpc_service.add(impl_GenomeAnnotationAPI.get_feature_aliases,
                              name='GenomeAnnotationAPI.get_feature_aliases',
-                             types=[basestring, list])
+                             types=[dict])
         self.method_authentication['GenomeAnnotationAPI.get_feature_aliases'] = 'required'
         self.rpc_service.add(impl_GenomeAnnotationAPI.get_cds_by_gene,
                              name='GenomeAnnotationAPI.get_cds_by_gene',
-                             types=[basestring, list])
+                             types=[dict])
         self.method_authentication['GenomeAnnotationAPI.get_cds_by_gene'] = 'required'
         self.rpc_service.add(impl_GenomeAnnotationAPI.get_cds_by_mrna,
                              name='GenomeAnnotationAPI.get_cds_by_mrna',
-                             types=[basestring, list])
+                             types=[dict])
         self.method_authentication['GenomeAnnotationAPI.get_cds_by_mrna'] = 'required'
         self.rpc_service.add(impl_GenomeAnnotationAPI.get_gene_by_cds,
                              name='GenomeAnnotationAPI.get_gene_by_cds',
-                             types=[basestring, list])
+                             types=[dict])
         self.method_authentication['GenomeAnnotationAPI.get_gene_by_cds'] = 'required'
         self.rpc_service.add(impl_GenomeAnnotationAPI.get_gene_by_mrna,
                              name='GenomeAnnotationAPI.get_gene_by_mrna',
-                             types=[basestring, list])
+                             types=[dict])
         self.method_authentication['GenomeAnnotationAPI.get_gene_by_mrna'] = 'required'
         self.rpc_service.add(impl_GenomeAnnotationAPI.get_mrna_by_cds,
                              name='GenomeAnnotationAPI.get_mrna_by_cds',
-                             types=[basestring, list])
+                             types=[dict])
         self.method_authentication['GenomeAnnotationAPI.get_mrna_by_cds'] = 'required'
         self.rpc_service.add(impl_GenomeAnnotationAPI.get_mrna_by_gene,
                              name='GenomeAnnotationAPI.get_mrna_by_gene',
-                             types=[basestring, list])
+                             types=[dict])
         self.method_authentication['GenomeAnnotationAPI.get_mrna_by_gene'] = 'required'
         self.rpc_service.add(impl_GenomeAnnotationAPI.get_mrna_exons,
                              name='GenomeAnnotationAPI.get_mrna_exons',
-                             types=[basestring, list])
+                             types=[dict])
         self.method_authentication['GenomeAnnotationAPI.get_mrna_exons'] = 'required'
         self.rpc_service.add(impl_GenomeAnnotationAPI.get_mrna_utrs,
                              name='GenomeAnnotationAPI.get_mrna_utrs',
-                             types=[basestring, list])
+                             types=[dict])
         self.method_authentication['GenomeAnnotationAPI.get_mrna_utrs'] = 'required'
         self.rpc_service.add(impl_GenomeAnnotationAPI.get_summary,
                              name='GenomeAnnotationAPI.get_summary',
-                             types=[basestring])
+                             types=[dict])
         self.method_authentication['GenomeAnnotationAPI.get_summary'] = 'required'
         self.rpc_service.add(impl_GenomeAnnotationAPI.save_summary,
                              name='GenomeAnnotationAPI.save_summary',
-                             types=[basestring])
+                             types=[dict])
         self.method_authentication['GenomeAnnotationAPI.save_summary'] = 'required'
         self.rpc_service.add(impl_GenomeAnnotationAPI.status,
                              name='GenomeAnnotationAPI.status',
                              types=[dict])
-        authurl = config.get(AUTH) if config else None
-        self.auth_client = _KBaseAuth(authurl)
+        self.auth_client = biokbase.nexus.Client(
+            config={'server': 'nexus.api.globusonline.org',
+                    'verify_ssl': True,
+                    'client': None,
+                    'client_secret': None})
 
     def __call__(self, environ, start_response):
         # Context object, equivalent to the perl impl CallContext
@@ -459,35 +460,29 @@ class Application(object):
             else:
                 ctx['module'], ctx['method'] = req['method'].split('.')
                 ctx['call_id'] = req['id']
-                ctx['rpc_context'] = {
-                    'call_stack': [{'time': self.now_in_utc(),
-                                    'method': req['method']}
-                                   ]
-                }
-                prov_action = {'service': ctx['module'],
-                               'method': ctx['method'],
-                               'method_params': req['params']
-                               }
+                ctx['rpc_context'] = {'call_stack': [{'time':self.now_in_utc(), 'method': req['method']}]}
+                prov_action = {'service': ctx['module'], 'method': ctx['method'], 
+                               'method_params': req['params']}
                 ctx['provenance'] = [prov_action]
                 try:
                     token = environ.get('HTTP_AUTHORIZATION')
                     # parse out the method being requested and check if it
                     # has an authentication requirement
                     method_name = req['method']
-                    auth_req = self.method_authentication.get(
-                        method_name, 'none')
-                    if auth_req != 'none':
+                    auth_req = self.method_authentication.get(method_name,
+                                                              "none")
+                    if auth_req != "none":
                         if token is None and auth_req == 'required':
                             err = JSONServerError()
-                            err.data = (
-                                'Authentication required for GenomeAnnotationAPI ' +
-                                'but no authentication header was passed')
+                            err.data = "Authentication required for " + \
+                                "GenomeAnnotationAPI but no authentication header was passed"
                             raise err
                         elif token is None and auth_req == 'optional':
                             pass
                         else:
                             try:
-                                user = self.auth_client.get_user(token)
+                                user, _, _ = \
+                                    self.auth_client.validate_token(token)
                                 ctx['user_id'] = user
                                 ctx['authenticated'] = 1
                                 ctx['token'] = token
@@ -549,8 +544,7 @@ class Application(object):
             error['id'] = request['id']
         if 'version' in request:
             error['version'] = request['version']
-            e = error['error'].get('error')
-            if not e:
+            if 'error' not in error['error'] or error['error']['error'] is None:
                 error['error']['error'] = trace
         elif 'jsonrpc' in request:
             error['jsonrpc'] = request['jsonrpc']
@@ -561,11 +555,11 @@ class Application(object):
         return json.dumps(error)
 
     def now_in_utc(self):
-        # Taken from http://stackoverflow.com/questions/3401428/how-to-get-an-isoformat-datetime-string-including-the-default-timezone @IgnorePep8
+        # Taken from http://stackoverflow.com/questions/3401428/how-to-get-an-isoformat-datetime-string-including-the-default-timezone
         dtnow = datetime.datetime.now()
         dtutcnow = datetime.datetime.utcnow()
         delta = dtnow - dtutcnow
-        hh, mm = divmod((delta.days * 24*60*60 + delta.seconds + 30) // 60, 60)
+        hh,mm = divmod((delta.days * 24*60*60 + delta.seconds + 30) // 60, 60)
         return "%s%+02d:%02d" % (dtnow.isoformat(), hh, mm)
 
 application = Application()
@@ -632,18 +626,17 @@ def stop_server():
     _proc.terminate()
     _proc = None
 
-
 def process_async_cli(input_file_path, output_file_path, token):
     exit_code = 0
-    with open(input_file_path) as data_file:
+    with open(input_file_path) as data_file:    
         req = json.load(data_file)
     if 'version' not in req:
         req['version'] = '1.1'
-    if 'id' not in req:
+    if 'id' not in req: 
         req['id'] = str(_random.random())[2:]
     ctx = MethodContext(application.userlog)
     if token:
-        user = application.auth_client.get_user(token)
+        user, _, _ = application.auth_client.validate_token(token)
         ctx['user_id'] = user
         ctx['authenticated'] = 1
         ctx['token'] = token
@@ -651,7 +644,7 @@ def process_async_cli(input_file_path, output_file_path, token):
         ctx['rpc_context'] = req['context']
     ctx['CLI'] = 1
     ctx['module'], ctx['method'] = req['method'].split('.')
-    prov_action = {'service': ctx['module'], 'method': ctx['method'],
+    prov_action = {'service': ctx['module'], 'method': ctx['method'], 
                    'method_params': req['params']}
     ctx['provenance'] = [prov_action]
     resp = None
@@ -665,8 +658,8 @@ def process_async_cli(input_file_path, output_file_path, token):
                           'name': jre.message,
                           'message': jre.data,
                           'error': trace}
-                }
-    except Exception:
+               }
+    except Exception, e:
         trace = traceback.format_exc()
         resp = {'id': req['id'],
                 'version': req['version'],
@@ -674,20 +667,20 @@ def process_async_cli(input_file_path, output_file_path, token):
                           'name': 'Unexpected Server Error',
                           'message': 'An unexpected server error occurred',
                           'error': trace}
-                }
+               }
     if 'error' in resp:
         exit_code = 500
     with open(output_file_path, "w") as f:
         f.write(json.dumps(resp, cls=JSONObjectEncoder))
     return exit_code
-
+    
 if __name__ == "__main__":
-    if (len(sys.argv) >= 3 and len(sys.argv) <= 4 and
-            os.path.isfile(sys.argv[1])):
+    requests.packages.urllib3.disable_warnings()
+    if len(sys.argv) >= 3 and len(sys.argv) <= 4 and os.path.isfile(sys.argv[1]):
         token = None
         if len(sys.argv) == 4:
             if os.path.isfile(sys.argv[3]):
-                with open(sys.argv[3]) as token_file:
+                with open(sys.argv[3]) as token_file: 
                     token = token_file.read()
             else:
                 token = sys.argv[3]

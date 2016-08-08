@@ -16,11 +16,7 @@ RUN mkdir -p /kb/module && \
 #install data_api
 RUN mkdir -p /kb/module && \
     cd /kb/module && \
-    git clone https://github.com/kbase/data_api && \
-    cd data_api && \
-    git checkout bf1de43 && \
-    cd /kb/module && \
-    mkdir lib/
+    git clone https://github.com/kbase/data_api -b 0.3.0-dev
 
 RUN pip install //kb/module/data_api
 
