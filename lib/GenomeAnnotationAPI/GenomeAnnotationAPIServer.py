@@ -43,7 +43,7 @@ def get_config():
 
 config = get_config()
 
-from GenomeAnnotationAPI.GenomeAnnotationAPIImpl import GenomeAnnotationAPI
+from GenomeAnnotationAPIImpl import GenomeAnnotationAPI
 impl_GenomeAnnotationAPI = GenomeAnnotationAPI(config)
 
 

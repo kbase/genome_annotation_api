@@ -22,7 +22,7 @@ class GenomeAnnotationAPI:
     #########################################
     VERSION = "0.0.2"
     GIT_URL = "https://github.com/mlhenderson/genome_annotation_api"
-    GIT_COMMIT_HASH = "17e3f529b552b0aef1195c5609a55a27edcd190d"
+    GIT_COMMIT_HASH = "c7377dce18a91153fc47f4ec970f9b7b744bdef8"
     
     #BEGIN_CLASS_HEADER
     #END_CLASS_HEADER
@@ -777,8 +777,8 @@ class GenomeAnnotationAPI:
         #BEGIN save_summary
         ga = GenomeAnnotationAPI_local(self.services, ctx['token'], inputs_save_summary['ref'])
         returnVal = ga.save_summary()
-        return1 = returnVal[0]
-        return2 = returnVal[1]
+        return_1 = returnVal[0]
+        return_2 = returnVal[1]
         #END save_summary
 
         # At some point might do deeper type checking...
