@@ -14,7 +14,9 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * <p>Original spec-file type: Feature_id_mapping</p>
- * 
+ * <pre>
+ * @optional by_type by_region by_function by_alias
+ * </pre>
  * 
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)

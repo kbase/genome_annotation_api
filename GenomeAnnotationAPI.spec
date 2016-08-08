@@ -5,6 +5,11 @@ A KBase module: GenomeAnnotationAPI
 module GenomeAnnotationAPI {
     typedef string ObjectReference;
 
+    /* A boolean - 0 for false, 1 for true.
+       @range (0, 1)
+    */
+    typedef int boolean;
+
     typedef structure {
         /** The identifier for the contig to which this region corresponds. */
         string contig_id;
@@ -18,6 +23,7 @@ module GenomeAnnotationAPI {
 
     /**
      * Filters passed to :meth:`get_feature_ids`
+     * @optional type_list region_list function_list alias_list
      */
     typedef structure {
         /**
@@ -45,6 +51,7 @@ module GenomeAnnotationAPI {
         list<string> alias_list;
     }  Feature_id_filters;
 
+    /* @optional by_type by_region by_function by_alias */
     typedef structure {
         /** Mapping of Feature type string to a list of Feature IDs */
         mapping<string, list<string>> by_type;
@@ -184,21 +191,36 @@ module GenomeAnnotationAPI {
      *
      * @return Reference to TaxonAPI object
      */
-    funcdef get_taxon(ObjectReference ref)  returns (ObjectReference) authentication required;
+
+    typedef structure {
+        ObjectReference ref;
+    } inputs_get_taxon;
+
+    funcdef get_taxon(inputs_get_taxon) returns (ObjectReference) authentication required;
 
     /**
      * Retrieve the Assembly associated with this GenomeAnnotation.
      *
      * @return Reference to AssemblyAPI object
      */
-    funcdef get_assembly(ObjectReference ref)  returns (ObjectReference) authentication required;
+
+    typedef structure {
+        ObjectReference ref;
+    } inputs_get_assembly;
+
+    funcdef get_assembly(inputs_get_assembly) returns (ObjectReference) authentication required;
 
     /**
      * Retrieve the list of Feature types.
      *
      * @return List of feature type identifiers (strings)
      */
-    funcdef get_feature_types(ObjectReference ref)  returns (list<string>) authentication required;
+
+    typedef structure {
+        ObjectReference ref;
+    } inputs_get_feature_types;
+
+    funcdef get_feature_types(inputs_get_feature_types) returns (list<string>) authentication required;
 
     /**
      * Retrieve the descriptions for each Feature type in
@@ -209,7 +231,14 @@ module GenomeAnnotationAPI {
      *  the whole mapping will be returned.
      * @return Name and description for each requested Feature Type
      */
-    funcdef get_feature_type_descriptions(ObjectReference ref, list<string> feature_type_list)
+
+    /* optional feature_type_list */
+    typedef structure {
+        ObjectReference ref;
+        list<string> feature_type_list;
+    } inputs_get_feature_type_descriptions;
+
+    funcdef get_feature_type_descriptions(inputs_get_feature_type_descriptions)
         returns (mapping<string, string>) authentication required;
 
     /**
@@ -218,7 +247,14 @@ module GenomeAnnotationAPI {
      * @param feature_type_list  List of Feature Types. If empty,
      *   this will retrieve  counts for all Feature Types.
      */
-    funcdef get_feature_type_counts(ObjectReference ref, list<string> feature_type_list)
+
+    /* @optional feature_type_list */
+    typedef structure {
+        ObjectReference ref;
+        list<string> feature_type_list;
+    } inputs_get_feature_type_counts;
+
+    funcdef get_feature_type_counts(inputs_get_feature_type_counts)
         returns (mapping<string,int>) authentication required;
 
     /**
@@ -226,11 +262,19 @@ module GenomeAnnotationAPI {
      *
      * @param filters Dictionary of filters that can be applied to contents.
      *   If this is empty or missing, all Feature IDs will be returned.
-     * @param group_type How to group results, which is a single string matching one
+     * @param group_by How to group results, which is a single string matching one
      *   of the values for the ``filters`` parameter.
      * @return Grouped mapping of features.
      */
-    funcdef get_feature_ids(ObjectReference ref, Feature_id_filters filters, string group_type)
+
+    /* @optional filters group_by */
+    typedef structure {
+        ObjectReference ref;
+        Feature_id_filters filters;
+        string group_by;
+    } inputs_get_feature_ids;
+
+    funcdef get_feature_ids(inputs_get_feature_ids)
         returns (Feature_id_mapping) authentication required;
 
     /**
@@ -240,13 +284,16 @@ module GenomeAnnotationAPI {
      *   If None, returns all Feature data.
      * @return Mapping from Feature IDs to dicts of available data.
      */
-    funcdef get_features(ObjectReference ref, list<string> feature_id_list)
-        returns (mapping<string, Feature_data>) authentication required;
 
-    /* A boolean - 0 for false, 1 for true.
-       @range (0, 1)
-    */
-    typedef int boolean;
+    /* @optional feature_id_list exclude_sequence */
+    typedef structure {
+        ObjectReference ref;
+        list<string> feature_id_list;
+        boolean exclude_sequence;
+    } inputs_get_features;
+
+    funcdef get_features(inputs_get_features)
+        returns (mapping<string, Feature_data>) authentication required;
 
     /* exclude_sequence = set to 1 (true) or 0 (false) to indicate if sequences
        should be included.  Defautl is false.
@@ -273,7 +320,12 @@ module GenomeAnnotationAPI {
      *
      * @return Mapping from protein ID to data about the protein.
      */
-    funcdef get_proteins(ObjectReference ref)  returns (mapping<string, Protein_data>) authentication required;
+
+    typedef structure {
+        ObjectReference ref;
+    } inputs_get_proteins;
+
+    funcdef get_proteins(inputs_get_proteins) returns (mapping<string, Protein_data>) authentication required;
 
     /**
      * Retrieve Feature locations.
@@ -282,7 +334,14 @@ module GenomeAnnotationAPI {
      *     If empty, returns data for all features.
      * @return Mapping from Feature IDs to location information for each.
      */
-    funcdef get_feature_locations(ObjectReference ref, list<string> feature_id_list)
+
+    /* optional feature_id_list */
+    typedef structure {
+        ObjectReference ref;
+        list<string> feature_id_list;
+    } inputs_get_feature_locations;
+
+    funcdef get_feature_locations(inputs_get_feature_locations)
         returns (mapping<string, list<Region>>) authentication required;
 
     /**
@@ -292,7 +351,14 @@ module GenomeAnnotationAPI {
      *     If empty, returns data for all features.
      * @return Mapping from Feature IDs to publication info for each.
      */
-    funcdef get_feature_publications(ObjectReference ref, list<string> feature_id_list)
+
+    /* optional feature_id_list */
+    typedef structure {
+        ObjectReference ref;
+        list<string> feature_id_list;
+    } inputs_get_feature_publications;
+
+    funcdef get_feature_publications(inputs_get_feature_publications)
         returns (mapping<string, list<string>>) authentication required;
 
     /**
@@ -302,7 +368,13 @@ module GenomeAnnotationAPI {
      *     If empty, returns data for all features.
      * @return Mapping of Feature IDs to their DNA sequence.
      */
-    funcdef get_feature_dna(ObjectReference ref, list<string> feature_id_list)
+
+    typedef structure {
+        ObjectReference ref;
+        list<string> feature_id_list;
+    } inputs_get_feature_dna;
+
+    funcdef get_feature_dna(inputs_get_feature_dna)
         returns (mapping<string, string>) authentication required;
 
     /**
@@ -312,7 +384,14 @@ module GenomeAnnotationAPI {
      *     If empty, returns data for all features.
      * @return Mapping of Feature IDs to their functions.
      */
-    funcdef get_feature_functions(ObjectReference ref, list<string> feature_id_list)
+
+    /* @optional feature_id_list */
+    typedef structure {
+        ObjectReference ref;
+        list<string> feature_id_list;
+    } inputs_get_feature_functions;
+
+    funcdef get_feature_functions(inputs_get_feature_functions)
         returns (mapping<string, string>) authentication required;
 
     /**
@@ -322,7 +401,14 @@ module GenomeAnnotationAPI {
      *     If empty, returns data for all features.
      * @return Mapping of Feature IDs to a list of aliases.
      */
-    funcdef get_feature_aliases(ObjectReference ref, list<string> feature_id_list)
+
+    /* @optional feature_id_list */
+    typedef structure {
+        ObjectReference ref;
+        list<string> feature_id_list;
+    } inputs_get_feature_aliases;
+
+    funcdef get_feature_aliases(inputs_get_feature_aliases)
         returns (mapping<string, list<string>>) authentication required;
 
     /**
@@ -332,7 +418,13 @@ module GenomeAnnotationAPI {
      *     If empty, returns data for all features.
      * @return Mapping of gene Feature IDs to a list of CDS Feature IDs.
      */
-    funcdef get_cds_by_gene(ObjectReference ref, list<string> gene_id_list)
+
+    typedef structure {
+        ObjectReference ref;
+        list<string> gene_id_list;
+    } inputs_get_cds_by_gene;
+
+    funcdef get_cds_by_gene(inputs_get_cds_by_gene)
         returns (mapping<string, list<string>>) authentication required;
 
     /**
@@ -342,7 +434,14 @@ module GenomeAnnotationAPI {
      *     If empty, returns data for all features.
      * @return Mapping of mRNA Feature IDs to a list of CDS Feature IDs.
      */
-    funcdef get_cds_by_mrna(ObjectReference ref, list<string> mrna_id_list)
+
+    /* @optional mrna_id_list */
+    typedef structure {
+        ObjectReference ref;
+        list<string> mrna_id_list;
+    } inputs_mrna_id_list;
+
+    funcdef get_cds_by_mrna(inputs_mrna_id_list)
         returns (mapping<string, string>) authentication required;
 
     /**
@@ -352,7 +451,14 @@ module GenomeAnnotationAPI {
      *     If empty, returns all cds/gene mappings.
      * @return Mapping of cds Feature IDs to gene Feature IDs.
      */
-    funcdef get_gene_by_cds(ObjectReference ref, list<string> cds_id_list)
+
+    /* @optional cds_id_list */
+    typedef structure {
+        ObjectReference ref;
+        list<string> cds_id_list;
+    } inputs_get_gene_by_cds;
+
+    funcdef get_gene_by_cds(inputs_get_gene_by_cds)
         returns (mapping<string, string>) authentication required;
 
     /**
@@ -362,7 +468,14 @@ module GenomeAnnotationAPI {
      *     If empty, returns all mRNA/gene mappings.
      * @return Mapping of mRNA Feature IDs to gene Feature IDs.
      */
-    funcdef get_gene_by_mrna(ObjectReference ref, list<string> mrna_id_list)
+
+    /* @optional mrna_id_list */
+    typedef structure {
+        ObjectReference ref;
+        list<string> mrna_id_list;
+    } inputs_get_gene_by_mrna;
+
+    funcdef get_gene_by_mrna(inputs_get_gene_by_mrna)
         returns (mapping<string, string>) authentication required;
 
     /**
@@ -372,7 +485,14 @@ module GenomeAnnotationAPI {
      *     If empty, returns all cds/mRNA mappings.
      * @return Mapping of cds Feature IDs to mRNA Feature IDs.
      */
-    funcdef get_mrna_by_cds(ObjectReference ref, list<string> cds_id_list)
+
+    /* @optional cds_id_list */
+    typedef structure {
+        ObjectReference ref;
+        list<string> cds_id_list;
+    } inputs_get_mrna_by_cds;
+
+    funcdef get_mrna_by_cds(inputs_get_mrna_by_cds)
         returns (mapping<string, string>) authentication required;
 
     /**
@@ -382,7 +502,14 @@ module GenomeAnnotationAPI {
      *     If empty, returns all gene/mRNA mappings.
      * @return Mapping of gene Feature IDs to a list of mRNA Feature IDs.
      */
-    funcdef get_mrna_by_gene(ObjectReference ref, list<string> gene_id_list)
+
+    /* @optional gene_id_list */
+    typedef structure {
+        ObjectReference ref;
+        list<string> gene_id_list;
+    } inputs_get_mrna_by_gene;
+
+    funcdef get_mrna_by_gene(inputs_get_mrna_by_gene)
         returns (mapping<string, list<string>>) authentication required;
 
     /**
@@ -392,7 +519,14 @@ module GenomeAnnotationAPI {
      *     If empty, returns data for all exons.
      * @return Mapping of mRNA Feature IDs to a list of exons (:js:data:`Exon_data`).
      */
-    funcdef get_mrna_exons(ObjectReference ref, list<string> mrna_id_list)
+
+    /* @optional mrna_id_list */
+    typedef structure {
+        ObjectReference ref;
+        list<string> mrna_id_list;
+    } inputs_get_mrna_exons;
+
+    funcdef get_mrna_exons(inputs_get_mrna_exons)
         returns (mapping<string, list<Exon_data>>) authentication required;
 
     /**
@@ -415,7 +549,14 @@ module GenomeAnnotationAPI {
      * both 5' and 3' UTRs::
      *     { "5'UTR": :js:data:`UTR_data`, "3'UTR": :js:data:`UTR_data` }
      */
-    funcdef get_mrna_utrs(ObjectReference ref, list<string> mrna_id_list)
+
+    /* @optional mrna_id_list */
+    typedef structure {
+        ObjectReference ref;
+        list<string> mrna_id_list;
+    } inputs_get_mrna_utrs;
+
+    funcdef get_mrna_utrs(inputs_get_mrna_utrs)
         returns (mapping<string, mapping<string, UTR_data>>) authentication required;
 
     /**
@@ -423,13 +564,21 @@ module GenomeAnnotationAPI {
      *
      * @return summary data
      */
-    funcdef get_summary(ObjectReference ref) returns (Summary_data) authentication required;
+    typedef structure {
+        ObjectReference ref;
+    } inputs_get_summary;
+
+    funcdef get_summary(inputs_get_summary) returns (Summary_data) authentication required;
 
     /**
      * Retrieve a summary representation of this GenomeAnnotation.
      *
-     * @return summary data
+     * @return (int, Summary_data)
      */
-    funcdef save_summary(ObjectReference ref) returns (int) authentication required;
+    typedef structure {
+        ObjectReference ref;
+    } inputs_save_summary;
+
+    funcdef save_summary(inputs_save_summary) returns (int, Summary_data) authentication required;
 
 };

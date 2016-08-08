@@ -111,7 +111,7 @@ sub new
 
 =head2 get_taxon
 
-  $return = $obj->get_taxon($ref)
+  $return = $obj->get_taxon($inputs_get_taxon)
 
 =over 4
 
@@ -120,8 +120,10 @@ sub new
 =begin html
 
 <pre>
-$ref is a GenomeAnnotationAPI.ObjectReference
+$inputs_get_taxon is a GenomeAnnotationAPI.inputs_get_taxon
 $return is a GenomeAnnotationAPI.ObjectReference
+inputs_get_taxon is a reference to a hash where the following keys are defined:
+	ref has a value which is a GenomeAnnotationAPI.ObjectReference
 ObjectReference is a string
 
 </pre>
@@ -130,8 +132,10 @@ ObjectReference is a string
 
 =begin text
 
-$ref is a GenomeAnnotationAPI.ObjectReference
+$inputs_get_taxon is a GenomeAnnotationAPI.inputs_get_taxon
 $return is a GenomeAnnotationAPI.ObjectReference
+inputs_get_taxon is a reference to a hash where the following keys are defined:
+	ref has a value which is a GenomeAnnotationAPI.ObjectReference
 ObjectReference is a string
 
 
@@ -139,9 +143,7 @@ ObjectReference is a string
 
 =item Description
 
-Retrieve the Taxon associated with this GenomeAnnotation.
 
-@return Reference to TaxonAPI object
 
 =back
 
@@ -159,10 +161,10 @@ Retrieve the Taxon associated with this GenomeAnnotation.
 							       "Invalid argument count for function get_taxon (received $n, expecting 1)");
     }
     {
-	my($ref) = @args;
+	my($inputs_get_taxon) = @args;
 
 	my @_bad_arguments;
-        (!ref($ref)) or push(@_bad_arguments, "Invalid type for argument 1 \"ref\" (value was \"$ref\")");
+        (ref($inputs_get_taxon) eq 'HASH') or push(@_bad_arguments, "Invalid type for argument 1 \"inputs_get_taxon\" (value was \"$inputs_get_taxon\")");
         if (@_bad_arguments) {
 	    my $msg = "Invalid arguments passed to get_taxon:\n" . join("", map { "\t$_\n" } @_bad_arguments);
 	    Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
@@ -170,10 +172,9 @@ Retrieve the Taxon associated with this GenomeAnnotation.
 	}
     }
 
-    my $url = $self->{url};
-    my $result = $self->{client}->call($url, $self->{headers}, {
-	    method => "GenomeAnnotationAPI.get_taxon",
-	    params => \@args,
+    my $result = $self->{client}->call($self->{url}, $self->{headers}, {
+	method => "GenomeAnnotationAPI.get_taxon",
+	params => \@args,
     });
     if ($result) {
 	if ($result->is_error) {
@@ -197,7 +198,7 @@ Retrieve the Taxon associated with this GenomeAnnotation.
 
 =head2 get_assembly
 
-  $return = $obj->get_assembly($ref)
+  $return = $obj->get_assembly($inputs_get_assembly)
 
 =over 4
 
@@ -206,8 +207,10 @@ Retrieve the Taxon associated with this GenomeAnnotation.
 =begin html
 
 <pre>
-$ref is a GenomeAnnotationAPI.ObjectReference
+$inputs_get_assembly is a GenomeAnnotationAPI.inputs_get_assembly
 $return is a GenomeAnnotationAPI.ObjectReference
+inputs_get_assembly is a reference to a hash where the following keys are defined:
+	ref has a value which is a GenomeAnnotationAPI.ObjectReference
 ObjectReference is a string
 
 </pre>
@@ -216,8 +219,10 @@ ObjectReference is a string
 
 =begin text
 
-$ref is a GenomeAnnotationAPI.ObjectReference
+$inputs_get_assembly is a GenomeAnnotationAPI.inputs_get_assembly
 $return is a GenomeAnnotationAPI.ObjectReference
+inputs_get_assembly is a reference to a hash where the following keys are defined:
+	ref has a value which is a GenomeAnnotationAPI.ObjectReference
 ObjectReference is a string
 
 
@@ -225,9 +230,7 @@ ObjectReference is a string
 
 =item Description
 
-Retrieve the Assembly associated with this GenomeAnnotation.
 
-@return Reference to AssemblyAPI object
 
 =back
 
@@ -245,10 +248,10 @@ Retrieve the Assembly associated with this GenomeAnnotation.
 							       "Invalid argument count for function get_assembly (received $n, expecting 1)");
     }
     {
-	my($ref) = @args;
+	my($inputs_get_assembly) = @args;
 
 	my @_bad_arguments;
-        (!ref($ref)) or push(@_bad_arguments, "Invalid type for argument 1 \"ref\" (value was \"$ref\")");
+        (ref($inputs_get_assembly) eq 'HASH') or push(@_bad_arguments, "Invalid type for argument 1 \"inputs_get_assembly\" (value was \"$inputs_get_assembly\")");
         if (@_bad_arguments) {
 	    my $msg = "Invalid arguments passed to get_assembly:\n" . join("", map { "\t$_\n" } @_bad_arguments);
 	    Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
@@ -256,10 +259,9 @@ Retrieve the Assembly associated with this GenomeAnnotation.
 	}
     }
 
-    my $url = $self->{url};
-    my $result = $self->{client}->call($url, $self->{headers}, {
-	    method => "GenomeAnnotationAPI.get_assembly",
-	    params => \@args,
+    my $result = $self->{client}->call($self->{url}, $self->{headers}, {
+	method => "GenomeAnnotationAPI.get_assembly",
+	params => \@args,
     });
     if ($result) {
 	if ($result->is_error) {
@@ -283,7 +285,7 @@ Retrieve the Assembly associated with this GenomeAnnotation.
 
 =head2 get_feature_types
 
-  $return = $obj->get_feature_types($ref)
+  $return = $obj->get_feature_types($inputs_get_feature_types)
 
 =over 4
 
@@ -292,8 +294,10 @@ Retrieve the Assembly associated with this GenomeAnnotation.
 =begin html
 
 <pre>
-$ref is a GenomeAnnotationAPI.ObjectReference
+$inputs_get_feature_types is a GenomeAnnotationAPI.inputs_get_feature_types
 $return is a reference to a list where each element is a string
+inputs_get_feature_types is a reference to a hash where the following keys are defined:
+	ref has a value which is a GenomeAnnotationAPI.ObjectReference
 ObjectReference is a string
 
 </pre>
@@ -302,8 +306,10 @@ ObjectReference is a string
 
 =begin text
 
-$ref is a GenomeAnnotationAPI.ObjectReference
+$inputs_get_feature_types is a GenomeAnnotationAPI.inputs_get_feature_types
 $return is a reference to a list where each element is a string
+inputs_get_feature_types is a reference to a hash where the following keys are defined:
+	ref has a value which is a GenomeAnnotationAPI.ObjectReference
 ObjectReference is a string
 
 
@@ -311,9 +317,7 @@ ObjectReference is a string
 
 =item Description
 
-Retrieve the list of Feature types.
 
-@return List of feature type identifiers (strings)
 
 =back
 
@@ -331,10 +335,10 @@ Retrieve the list of Feature types.
 							       "Invalid argument count for function get_feature_types (received $n, expecting 1)");
     }
     {
-	my($ref) = @args;
+	my($inputs_get_feature_types) = @args;
 
 	my @_bad_arguments;
-        (!ref($ref)) or push(@_bad_arguments, "Invalid type for argument 1 \"ref\" (value was \"$ref\")");
+        (ref($inputs_get_feature_types) eq 'HASH') or push(@_bad_arguments, "Invalid type for argument 1 \"inputs_get_feature_types\" (value was \"$inputs_get_feature_types\")");
         if (@_bad_arguments) {
 	    my $msg = "Invalid arguments passed to get_feature_types:\n" . join("", map { "\t$_\n" } @_bad_arguments);
 	    Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
@@ -342,10 +346,9 @@ Retrieve the list of Feature types.
 	}
     }
 
-    my $url = $self->{url};
-    my $result = $self->{client}->call($url, $self->{headers}, {
-	    method => "GenomeAnnotationAPI.get_feature_types",
-	    params => \@args,
+    my $result = $self->{client}->call($self->{url}, $self->{headers}, {
+	method => "GenomeAnnotationAPI.get_feature_types",
+	params => \@args,
     });
     if ($result) {
 	if ($result->is_error) {
@@ -369,7 +372,7 @@ Retrieve the list of Feature types.
 
 =head2 get_feature_type_descriptions
 
-  $return = $obj->get_feature_type_descriptions($ref, $feature_type_list)
+  $return = $obj->get_feature_type_descriptions($inputs_get_feature_type_descriptions)
 
 =over 4
 
@@ -378,9 +381,11 @@ Retrieve the list of Feature types.
 =begin html
 
 <pre>
-$ref is a GenomeAnnotationAPI.ObjectReference
-$feature_type_list is a reference to a list where each element is a string
+$inputs_get_feature_type_descriptions is a GenomeAnnotationAPI.inputs_get_feature_type_descriptions
 $return is a reference to a hash where the key is a string and the value is a string
+inputs_get_feature_type_descriptions is a reference to a hash where the following keys are defined:
+	ref has a value which is a GenomeAnnotationAPI.ObjectReference
+	feature_type_list has a value which is a reference to a list where each element is a string
 ObjectReference is a string
 
 </pre>
@@ -389,9 +394,11 @@ ObjectReference is a string
 
 =begin text
 
-$ref is a GenomeAnnotationAPI.ObjectReference
-$feature_type_list is a reference to a list where each element is a string
+$inputs_get_feature_type_descriptions is a GenomeAnnotationAPI.inputs_get_feature_type_descriptions
 $return is a reference to a hash where the key is a string and the value is a string
+inputs_get_feature_type_descriptions is a reference to a hash where the following keys are defined:
+	ref has a value which is a GenomeAnnotationAPI.ObjectReference
+	feature_type_list has a value which is a reference to a list where each element is a string
 ObjectReference is a string
 
 
@@ -399,13 +406,7 @@ ObjectReference is a string
 
 =item Description
 
-Retrieve the descriptions for each Feature type in
-this GenomeAnnotation.
 
-@param feature_type_list List of Feature types. If this list
- is empty or None,
- the whole mapping will be returned.
-@return Name and description for each requested Feature Type
 
 =back
 
@@ -417,17 +418,16 @@ this GenomeAnnotation.
 
 # Authentication: required
 
-    if ((my $n = @args) != 2)
+    if ((my $n = @args) != 1)
     {
 	Bio::KBase::Exceptions::ArgumentValidationError->throw(error =>
-							       "Invalid argument count for function get_feature_type_descriptions (received $n, expecting 2)");
+							       "Invalid argument count for function get_feature_type_descriptions (received $n, expecting 1)");
     }
     {
-	my($ref, $feature_type_list) = @args;
+	my($inputs_get_feature_type_descriptions) = @args;
 
 	my @_bad_arguments;
-        (!ref($ref)) or push(@_bad_arguments, "Invalid type for argument 1 \"ref\" (value was \"$ref\")");
-        (ref($feature_type_list) eq 'ARRAY') or push(@_bad_arguments, "Invalid type for argument 2 \"feature_type_list\" (value was \"$feature_type_list\")");
+        (ref($inputs_get_feature_type_descriptions) eq 'HASH') or push(@_bad_arguments, "Invalid type for argument 1 \"inputs_get_feature_type_descriptions\" (value was \"$inputs_get_feature_type_descriptions\")");
         if (@_bad_arguments) {
 	    my $msg = "Invalid arguments passed to get_feature_type_descriptions:\n" . join("", map { "\t$_\n" } @_bad_arguments);
 	    Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
@@ -435,10 +435,9 @@ this GenomeAnnotation.
 	}
     }
 
-    my $url = $self->{url};
-    my $result = $self->{client}->call($url, $self->{headers}, {
-	    method => "GenomeAnnotationAPI.get_feature_type_descriptions",
-	    params => \@args,
+    my $result = $self->{client}->call($self->{url}, $self->{headers}, {
+	method => "GenomeAnnotationAPI.get_feature_type_descriptions",
+	params => \@args,
     });
     if ($result) {
 	if ($result->is_error) {
@@ -462,7 +461,7 @@ this GenomeAnnotation.
 
 =head2 get_feature_type_counts
 
-  $return = $obj->get_feature_type_counts($ref, $feature_type_list)
+  $return = $obj->get_feature_type_counts($inputs_get_feature_type_counts)
 
 =over 4
 
@@ -471,9 +470,11 @@ this GenomeAnnotation.
 =begin html
 
 <pre>
-$ref is a GenomeAnnotationAPI.ObjectReference
-$feature_type_list is a reference to a list where each element is a string
+$inputs_get_feature_type_counts is a GenomeAnnotationAPI.inputs_get_feature_type_counts
 $return is a reference to a hash where the key is a string and the value is an int
+inputs_get_feature_type_counts is a reference to a hash where the following keys are defined:
+	ref has a value which is a GenomeAnnotationAPI.ObjectReference
+	feature_type_list has a value which is a reference to a list where each element is a string
 ObjectReference is a string
 
 </pre>
@@ -482,9 +483,11 @@ ObjectReference is a string
 
 =begin text
 
-$ref is a GenomeAnnotationAPI.ObjectReference
-$feature_type_list is a reference to a list where each element is a string
+$inputs_get_feature_type_counts is a GenomeAnnotationAPI.inputs_get_feature_type_counts
 $return is a reference to a hash where the key is a string and the value is an int
+inputs_get_feature_type_counts is a reference to a hash where the following keys are defined:
+	ref has a value which is a GenomeAnnotationAPI.ObjectReference
+	feature_type_list has a value which is a reference to a list where each element is a string
 ObjectReference is a string
 
 
@@ -492,10 +495,7 @@ ObjectReference is a string
 
 =item Description
 
-Retrieve the count of each Feature type.
 
-@param feature_type_list  List of Feature Types. If empty,
-  this will retrieve  counts for all Feature Types.
 
 =back
 
@@ -507,17 +507,16 @@ Retrieve the count of each Feature type.
 
 # Authentication: required
 
-    if ((my $n = @args) != 2)
+    if ((my $n = @args) != 1)
     {
 	Bio::KBase::Exceptions::ArgumentValidationError->throw(error =>
-							       "Invalid argument count for function get_feature_type_counts (received $n, expecting 2)");
+							       "Invalid argument count for function get_feature_type_counts (received $n, expecting 1)");
     }
     {
-	my($ref, $feature_type_list) = @args;
+	my($inputs_get_feature_type_counts) = @args;
 
 	my @_bad_arguments;
-        (!ref($ref)) or push(@_bad_arguments, "Invalid type for argument 1 \"ref\" (value was \"$ref\")");
-        (ref($feature_type_list) eq 'ARRAY') or push(@_bad_arguments, "Invalid type for argument 2 \"feature_type_list\" (value was \"$feature_type_list\")");
+        (ref($inputs_get_feature_type_counts) eq 'HASH') or push(@_bad_arguments, "Invalid type for argument 1 \"inputs_get_feature_type_counts\" (value was \"$inputs_get_feature_type_counts\")");
         if (@_bad_arguments) {
 	    my $msg = "Invalid arguments passed to get_feature_type_counts:\n" . join("", map { "\t$_\n" } @_bad_arguments);
 	    Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
@@ -525,10 +524,9 @@ Retrieve the count of each Feature type.
 	}
     }
 
-    my $url = $self->{url};
-    my $result = $self->{client}->call($url, $self->{headers}, {
-	    method => "GenomeAnnotationAPI.get_feature_type_counts",
-	    params => \@args,
+    my $result = $self->{client}->call($self->{url}, $self->{headers}, {
+	method => "GenomeAnnotationAPI.get_feature_type_counts",
+	params => \@args,
     });
     if ($result) {
 	if ($result->is_error) {
@@ -552,7 +550,7 @@ Retrieve the count of each Feature type.
 
 =head2 get_feature_ids
 
-  $return = $obj->get_feature_ids($ref, $filters, $group_type)
+  $return = $obj->get_feature_ids($inputs_get_feature_ids)
 
 =over 4
 
@@ -561,10 +559,12 @@ Retrieve the count of each Feature type.
 =begin html
 
 <pre>
-$ref is a GenomeAnnotationAPI.ObjectReference
-$filters is a GenomeAnnotationAPI.Feature_id_filters
-$group_type is a string
+$inputs_get_feature_ids is a GenomeAnnotationAPI.inputs_get_feature_ids
 $return is a GenomeAnnotationAPI.Feature_id_mapping
+inputs_get_feature_ids is a reference to a hash where the following keys are defined:
+	ref has a value which is a GenomeAnnotationAPI.ObjectReference
+	filters has a value which is a GenomeAnnotationAPI.Feature_id_filters
+	group_by has a value which is a string
 ObjectReference is a string
 Feature_id_filters is a reference to a hash where the following keys are defined:
 	type_list has a value which is a reference to a list where each element is a string
@@ -588,10 +588,12 @@ Feature_id_mapping is a reference to a hash where the following keys are defined
 
 =begin text
 
-$ref is a GenomeAnnotationAPI.ObjectReference
-$filters is a GenomeAnnotationAPI.Feature_id_filters
-$group_type is a string
+$inputs_get_feature_ids is a GenomeAnnotationAPI.inputs_get_feature_ids
 $return is a GenomeAnnotationAPI.Feature_id_mapping
+inputs_get_feature_ids is a reference to a hash where the following keys are defined:
+	ref has a value which is a GenomeAnnotationAPI.ObjectReference
+	filters has a value which is a GenomeAnnotationAPI.Feature_id_filters
+	group_by has a value which is a string
 ObjectReference is a string
 Feature_id_filters is a reference to a hash where the following keys are defined:
 	type_list has a value which is a reference to a list where each element is a string
@@ -614,13 +616,7 @@ Feature_id_mapping is a reference to a hash where the following keys are defined
 
 =item Description
 
-Retrieve Feature IDs, optionally filtered by type, region, function, alias.
 
-@param filters Dictionary of filters that can be applied to contents.
-  If this is empty or missing, all Feature IDs will be returned.
-@param group_type How to group results, which is a single string matching one
-  of the values for the ``filters`` parameter.
-@return Grouped mapping of features.
 
 =back
 
@@ -632,18 +628,16 @@ Retrieve Feature IDs, optionally filtered by type, region, function, alias.
 
 # Authentication: required
 
-    if ((my $n = @args) != 3)
+    if ((my $n = @args) != 1)
     {
 	Bio::KBase::Exceptions::ArgumentValidationError->throw(error =>
-							       "Invalid argument count for function get_feature_ids (received $n, expecting 3)");
+							       "Invalid argument count for function get_feature_ids (received $n, expecting 1)");
     }
     {
-	my($ref, $filters, $group_type) = @args;
+	my($inputs_get_feature_ids) = @args;
 
 	my @_bad_arguments;
-        (!ref($ref)) or push(@_bad_arguments, "Invalid type for argument 1 \"ref\" (value was \"$ref\")");
-        (ref($filters) eq 'HASH') or push(@_bad_arguments, "Invalid type for argument 2 \"filters\" (value was \"$filters\")");
-        (!ref($group_type)) or push(@_bad_arguments, "Invalid type for argument 3 \"group_type\" (value was \"$group_type\")");
+        (ref($inputs_get_feature_ids) eq 'HASH') or push(@_bad_arguments, "Invalid type for argument 1 \"inputs_get_feature_ids\" (value was \"$inputs_get_feature_ids\")");
         if (@_bad_arguments) {
 	    my $msg = "Invalid arguments passed to get_feature_ids:\n" . join("", map { "\t$_\n" } @_bad_arguments);
 	    Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
@@ -651,10 +645,9 @@ Retrieve Feature IDs, optionally filtered by type, region, function, alias.
 	}
     }
 
-    my $url = $self->{url};
-    my $result = $self->{client}->call($url, $self->{headers}, {
-	    method => "GenomeAnnotationAPI.get_feature_ids",
-	    params => \@args,
+    my $result = $self->{client}->call($self->{url}, $self->{headers}, {
+	method => "GenomeAnnotationAPI.get_feature_ids",
+	params => \@args,
     });
     if ($result) {
 	if ($result->is_error) {
@@ -678,7 +671,7 @@ Retrieve Feature IDs, optionally filtered by type, region, function, alias.
 
 =head2 get_features
 
-  $return = $obj->get_features($ref, $feature_id_list)
+  $return = $obj->get_features($inputs_get_features)
 
 =over 4
 
@@ -687,10 +680,14 @@ Retrieve Feature IDs, optionally filtered by type, region, function, alias.
 =begin html
 
 <pre>
-$ref is a GenomeAnnotationAPI.ObjectReference
-$feature_id_list is a reference to a list where each element is a string
+$inputs_get_features is a GenomeAnnotationAPI.inputs_get_features
 $return is a reference to a hash where the key is a string and the value is a GenomeAnnotationAPI.Feature_data
+inputs_get_features is a reference to a hash where the following keys are defined:
+	ref has a value which is a GenomeAnnotationAPI.ObjectReference
+	feature_id_list has a value which is a reference to a list where each element is a string
+	exclude_sequence has a value which is a GenomeAnnotationAPI.boolean
 ObjectReference is a string
+boolean is an int
 Feature_data is a reference to a hash where the following keys are defined:
 	feature_id has a value which is a string
 	feature_type has a value which is a string
@@ -717,10 +714,14 @@ Region is a reference to a hash where the following keys are defined:
 
 =begin text
 
-$ref is a GenomeAnnotationAPI.ObjectReference
-$feature_id_list is a reference to a list where each element is a string
+$inputs_get_features is a GenomeAnnotationAPI.inputs_get_features
 $return is a reference to a hash where the key is a string and the value is a GenomeAnnotationAPI.Feature_data
+inputs_get_features is a reference to a hash where the following keys are defined:
+	ref has a value which is a GenomeAnnotationAPI.ObjectReference
+	feature_id_list has a value which is a reference to a list where each element is a string
+	exclude_sequence has a value which is a GenomeAnnotationAPI.boolean
 ObjectReference is a string
+boolean is an int
 Feature_data is a reference to a hash where the following keys are defined:
 	feature_id has a value which is a string
 	feature_type has a value which is a string
@@ -746,11 +747,7 @@ Region is a reference to a hash where the following keys are defined:
 
 =item Description
 
-Retrieve Feature data.
 
-@param feature_id_list List of Features to retrieve.
-  If None, returns all Feature data.
-@return Mapping from Feature IDs to dicts of available data.
 
 =back
 
@@ -762,17 +759,16 @@ Retrieve Feature data.
 
 # Authentication: required
 
-    if ((my $n = @args) != 2)
+    if ((my $n = @args) != 1)
     {
 	Bio::KBase::Exceptions::ArgumentValidationError->throw(error =>
-							       "Invalid argument count for function get_features (received $n, expecting 2)");
+							       "Invalid argument count for function get_features (received $n, expecting 1)");
     }
     {
-	my($ref, $feature_id_list) = @args;
+	my($inputs_get_features) = @args;
 
 	my @_bad_arguments;
-        (!ref($ref)) or push(@_bad_arguments, "Invalid type for argument 1 \"ref\" (value was \"$ref\")");
-        (ref($feature_id_list) eq 'ARRAY') or push(@_bad_arguments, "Invalid type for argument 2 \"feature_id_list\" (value was \"$feature_id_list\")");
+        (ref($inputs_get_features) eq 'HASH') or push(@_bad_arguments, "Invalid type for argument 1 \"inputs_get_features\" (value was \"$inputs_get_features\")");
         if (@_bad_arguments) {
 	    my $msg = "Invalid arguments passed to get_features:\n" . join("", map { "\t$_\n" } @_bad_arguments);
 	    Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
@@ -780,10 +776,9 @@ Retrieve Feature data.
 	}
     }
 
-    my $url = $self->{url};
-    my $result = $self->{client}->call($url, $self->{headers}, {
-	    method => "GenomeAnnotationAPI.get_features",
-	    params => \@args,
+    my $result = $self->{client}->call($self->{url}, $self->{headers}, {
+	method => "GenomeAnnotationAPI.get_features",
+	params => \@args,
     });
     if ($result) {
 	if ($result->is_error) {
@@ -916,10 +911,9 @@ Retrieve Feature data, v2.
 	}
     }
 
-    my $url = $self->{url};
-    my $result = $self->{client}->call($url, $self->{headers}, {
-	    method => "GenomeAnnotationAPI.get_features2",
-	    params => \@args,
+    my $result = $self->{client}->call($self->{url}, $self->{headers}, {
+	method => "GenomeAnnotationAPI.get_features2",
+	params => \@args,
     });
     if ($result) {
 	if ($result->is_error) {
@@ -943,7 +937,7 @@ Retrieve Feature data, v2.
 
 =head2 get_proteins
 
-  $return = $obj->get_proteins($ref)
+  $return = $obj->get_proteins($inputs_get_proteins)
 
 =over 4
 
@@ -952,8 +946,10 @@ Retrieve Feature data, v2.
 =begin html
 
 <pre>
-$ref is a GenomeAnnotationAPI.ObjectReference
+$inputs_get_proteins is a GenomeAnnotationAPI.inputs_get_proteins
 $return is a reference to a hash where the key is a string and the value is a GenomeAnnotationAPI.Protein_data
+inputs_get_proteins is a reference to a hash where the following keys are defined:
+	ref has a value which is a GenomeAnnotationAPI.ObjectReference
 ObjectReference is a string
 Protein_data is a reference to a hash where the following keys are defined:
 	protein_id has a value which is a string
@@ -969,8 +965,10 @@ Protein_data is a reference to a hash where the following keys are defined:
 
 =begin text
 
-$ref is a GenomeAnnotationAPI.ObjectReference
+$inputs_get_proteins is a GenomeAnnotationAPI.inputs_get_proteins
 $return is a reference to a hash where the key is a string and the value is a GenomeAnnotationAPI.Protein_data
+inputs_get_proteins is a reference to a hash where the following keys are defined:
+	ref has a value which is a GenomeAnnotationAPI.ObjectReference
 ObjectReference is a string
 Protein_data is a reference to a hash where the following keys are defined:
 	protein_id has a value which is a string
@@ -985,9 +983,7 @@ Protein_data is a reference to a hash where the following keys are defined:
 
 =item Description
 
-Retrieve Protein data.
 
-@return Mapping from protein ID to data about the protein.
 
 =back
 
@@ -1005,10 +1001,10 @@ Retrieve Protein data.
 							       "Invalid argument count for function get_proteins (received $n, expecting 1)");
     }
     {
-	my($ref) = @args;
+	my($inputs_get_proteins) = @args;
 
 	my @_bad_arguments;
-        (!ref($ref)) or push(@_bad_arguments, "Invalid type for argument 1 \"ref\" (value was \"$ref\")");
+        (ref($inputs_get_proteins) eq 'HASH') or push(@_bad_arguments, "Invalid type for argument 1 \"inputs_get_proteins\" (value was \"$inputs_get_proteins\")");
         if (@_bad_arguments) {
 	    my $msg = "Invalid arguments passed to get_proteins:\n" . join("", map { "\t$_\n" } @_bad_arguments);
 	    Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
@@ -1016,10 +1012,9 @@ Retrieve Protein data.
 	}
     }
 
-    my $url = $self->{url};
-    my $result = $self->{client}->call($url, $self->{headers}, {
-	    method => "GenomeAnnotationAPI.get_proteins",
-	    params => \@args,
+    my $result = $self->{client}->call($self->{url}, $self->{headers}, {
+	method => "GenomeAnnotationAPI.get_proteins",
+	params => \@args,
     });
     if ($result) {
 	if ($result->is_error) {
@@ -1043,7 +1038,7 @@ Retrieve Protein data.
 
 =head2 get_feature_locations
 
-  $return = $obj->get_feature_locations($ref, $feature_id_list)
+  $return = $obj->get_feature_locations($inputs_get_feature_locations)
 
 =over 4
 
@@ -1052,9 +1047,11 @@ Retrieve Protein data.
 =begin html
 
 <pre>
-$ref is a GenomeAnnotationAPI.ObjectReference
-$feature_id_list is a reference to a list where each element is a string
+$inputs_get_feature_locations is a GenomeAnnotationAPI.inputs_get_feature_locations
 $return is a reference to a hash where the key is a string and the value is a reference to a list where each element is a GenomeAnnotationAPI.Region
+inputs_get_feature_locations is a reference to a hash where the following keys are defined:
+	ref has a value which is a GenomeAnnotationAPI.ObjectReference
+	feature_id_list has a value which is a reference to a list where each element is a string
 ObjectReference is a string
 Region is a reference to a hash where the following keys are defined:
 	contig_id has a value which is a string
@@ -1068,9 +1065,11 @@ Region is a reference to a hash where the following keys are defined:
 
 =begin text
 
-$ref is a GenomeAnnotationAPI.ObjectReference
-$feature_id_list is a reference to a list where each element is a string
+$inputs_get_feature_locations is a GenomeAnnotationAPI.inputs_get_feature_locations
 $return is a reference to a hash where the key is a string and the value is a reference to a list where each element is a GenomeAnnotationAPI.Region
+inputs_get_feature_locations is a reference to a hash where the following keys are defined:
+	ref has a value which is a GenomeAnnotationAPI.ObjectReference
+	feature_id_list has a value which is a reference to a list where each element is a string
 ObjectReference is a string
 Region is a reference to a hash where the following keys are defined:
 	contig_id has a value which is a string
@@ -1083,11 +1082,7 @@ Region is a reference to a hash where the following keys are defined:
 
 =item Description
 
-Retrieve Feature locations.
 
-@param feature_id_list List of Feature IDs for which to retrieve locations.
-    If empty, returns data for all features.
-@return Mapping from Feature IDs to location information for each.
 
 =back
 
@@ -1099,17 +1094,16 @@ Retrieve Feature locations.
 
 # Authentication: required
 
-    if ((my $n = @args) != 2)
+    if ((my $n = @args) != 1)
     {
 	Bio::KBase::Exceptions::ArgumentValidationError->throw(error =>
-							       "Invalid argument count for function get_feature_locations (received $n, expecting 2)");
+							       "Invalid argument count for function get_feature_locations (received $n, expecting 1)");
     }
     {
-	my($ref, $feature_id_list) = @args;
+	my($inputs_get_feature_locations) = @args;
 
 	my @_bad_arguments;
-        (!ref($ref)) or push(@_bad_arguments, "Invalid type for argument 1 \"ref\" (value was \"$ref\")");
-        (ref($feature_id_list) eq 'ARRAY') or push(@_bad_arguments, "Invalid type for argument 2 \"feature_id_list\" (value was \"$feature_id_list\")");
+        (ref($inputs_get_feature_locations) eq 'HASH') or push(@_bad_arguments, "Invalid type for argument 1 \"inputs_get_feature_locations\" (value was \"$inputs_get_feature_locations\")");
         if (@_bad_arguments) {
 	    my $msg = "Invalid arguments passed to get_feature_locations:\n" . join("", map { "\t$_\n" } @_bad_arguments);
 	    Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
@@ -1117,10 +1111,9 @@ Retrieve Feature locations.
 	}
     }
 
-    my $url = $self->{url};
-    my $result = $self->{client}->call($url, $self->{headers}, {
-	    method => "GenomeAnnotationAPI.get_feature_locations",
-	    params => \@args,
+    my $result = $self->{client}->call($self->{url}, $self->{headers}, {
+	method => "GenomeAnnotationAPI.get_feature_locations",
+	params => \@args,
     });
     if ($result) {
 	if ($result->is_error) {
@@ -1144,7 +1137,7 @@ Retrieve Feature locations.
 
 =head2 get_feature_publications
 
-  $return = $obj->get_feature_publications($ref, $feature_id_list)
+  $return = $obj->get_feature_publications($inputs_get_feature_publications)
 
 =over 4
 
@@ -1153,9 +1146,11 @@ Retrieve Feature locations.
 =begin html
 
 <pre>
-$ref is a GenomeAnnotationAPI.ObjectReference
-$feature_id_list is a reference to a list where each element is a string
+$inputs_get_feature_publications is a GenomeAnnotationAPI.inputs_get_feature_publications
 $return is a reference to a hash where the key is a string and the value is a reference to a list where each element is a string
+inputs_get_feature_publications is a reference to a hash where the following keys are defined:
+	ref has a value which is a GenomeAnnotationAPI.ObjectReference
+	feature_id_list has a value which is a reference to a list where each element is a string
 ObjectReference is a string
 
 </pre>
@@ -1164,9 +1159,11 @@ ObjectReference is a string
 
 =begin text
 
-$ref is a GenomeAnnotationAPI.ObjectReference
-$feature_id_list is a reference to a list where each element is a string
+$inputs_get_feature_publications is a GenomeAnnotationAPI.inputs_get_feature_publications
 $return is a reference to a hash where the key is a string and the value is a reference to a list where each element is a string
+inputs_get_feature_publications is a reference to a hash where the following keys are defined:
+	ref has a value which is a GenomeAnnotationAPI.ObjectReference
+	feature_id_list has a value which is a reference to a list where each element is a string
 ObjectReference is a string
 
 
@@ -1174,11 +1171,7 @@ ObjectReference is a string
 
 =item Description
 
-Retrieve Feature publications.
 
-@param feature_id_list List of Feature IDs for which to retrieve publications.
-    If empty, returns data for all features.
-@return Mapping from Feature IDs to publication info for each.
 
 =back
 
@@ -1190,17 +1183,16 @@ Retrieve Feature publications.
 
 # Authentication: required
 
-    if ((my $n = @args) != 2)
+    if ((my $n = @args) != 1)
     {
 	Bio::KBase::Exceptions::ArgumentValidationError->throw(error =>
-							       "Invalid argument count for function get_feature_publications (received $n, expecting 2)");
+							       "Invalid argument count for function get_feature_publications (received $n, expecting 1)");
     }
     {
-	my($ref, $feature_id_list) = @args;
+	my($inputs_get_feature_publications) = @args;
 
 	my @_bad_arguments;
-        (!ref($ref)) or push(@_bad_arguments, "Invalid type for argument 1 \"ref\" (value was \"$ref\")");
-        (ref($feature_id_list) eq 'ARRAY') or push(@_bad_arguments, "Invalid type for argument 2 \"feature_id_list\" (value was \"$feature_id_list\")");
+        (ref($inputs_get_feature_publications) eq 'HASH') or push(@_bad_arguments, "Invalid type for argument 1 \"inputs_get_feature_publications\" (value was \"$inputs_get_feature_publications\")");
         if (@_bad_arguments) {
 	    my $msg = "Invalid arguments passed to get_feature_publications:\n" . join("", map { "\t$_\n" } @_bad_arguments);
 	    Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
@@ -1208,10 +1200,9 @@ Retrieve Feature publications.
 	}
     }
 
-    my $url = $self->{url};
-    my $result = $self->{client}->call($url, $self->{headers}, {
-	    method => "GenomeAnnotationAPI.get_feature_publications",
-	    params => \@args,
+    my $result = $self->{client}->call($self->{url}, $self->{headers}, {
+	method => "GenomeAnnotationAPI.get_feature_publications",
+	params => \@args,
     });
     if ($result) {
 	if ($result->is_error) {
@@ -1235,7 +1226,7 @@ Retrieve Feature publications.
 
 =head2 get_feature_dna
 
-  $return = $obj->get_feature_dna($ref, $feature_id_list)
+  $return = $obj->get_feature_dna($inputs_get_feature_dna)
 
 =over 4
 
@@ -1244,9 +1235,11 @@ Retrieve Feature publications.
 =begin html
 
 <pre>
-$ref is a GenomeAnnotationAPI.ObjectReference
-$feature_id_list is a reference to a list where each element is a string
+$inputs_get_feature_dna is a GenomeAnnotationAPI.inputs_get_feature_dna
 $return is a reference to a hash where the key is a string and the value is a string
+inputs_get_feature_dna is a reference to a hash where the following keys are defined:
+	ref has a value which is a GenomeAnnotationAPI.ObjectReference
+	feature_id_list has a value which is a reference to a list where each element is a string
 ObjectReference is a string
 
 </pre>
@@ -1255,9 +1248,11 @@ ObjectReference is a string
 
 =begin text
 
-$ref is a GenomeAnnotationAPI.ObjectReference
-$feature_id_list is a reference to a list where each element is a string
+$inputs_get_feature_dna is a GenomeAnnotationAPI.inputs_get_feature_dna
 $return is a reference to a hash where the key is a string and the value is a string
+inputs_get_feature_dna is a reference to a hash where the following keys are defined:
+	ref has a value which is a GenomeAnnotationAPI.ObjectReference
+	feature_id_list has a value which is a reference to a list where each element is a string
 ObjectReference is a string
 
 
@@ -1265,11 +1260,7 @@ ObjectReference is a string
 
 =item Description
 
-Retrieve Feature DNA sequences.
 
-@param feature_id_list List of Feature IDs for which to retrieve sequences.
-    If empty, returns data for all features.
-@return Mapping of Feature IDs to their DNA sequence.
 
 =back
 
@@ -1281,17 +1272,16 @@ Retrieve Feature DNA sequences.
 
 # Authentication: required
 
-    if ((my $n = @args) != 2)
+    if ((my $n = @args) != 1)
     {
 	Bio::KBase::Exceptions::ArgumentValidationError->throw(error =>
-							       "Invalid argument count for function get_feature_dna (received $n, expecting 2)");
+							       "Invalid argument count for function get_feature_dna (received $n, expecting 1)");
     }
     {
-	my($ref, $feature_id_list) = @args;
+	my($inputs_get_feature_dna) = @args;
 
 	my @_bad_arguments;
-        (!ref($ref)) or push(@_bad_arguments, "Invalid type for argument 1 \"ref\" (value was \"$ref\")");
-        (ref($feature_id_list) eq 'ARRAY') or push(@_bad_arguments, "Invalid type for argument 2 \"feature_id_list\" (value was \"$feature_id_list\")");
+        (ref($inputs_get_feature_dna) eq 'HASH') or push(@_bad_arguments, "Invalid type for argument 1 \"inputs_get_feature_dna\" (value was \"$inputs_get_feature_dna\")");
         if (@_bad_arguments) {
 	    my $msg = "Invalid arguments passed to get_feature_dna:\n" . join("", map { "\t$_\n" } @_bad_arguments);
 	    Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
@@ -1299,10 +1289,9 @@ Retrieve Feature DNA sequences.
 	}
     }
 
-    my $url = $self->{url};
-    my $result = $self->{client}->call($url, $self->{headers}, {
-	    method => "GenomeAnnotationAPI.get_feature_dna",
-	    params => \@args,
+    my $result = $self->{client}->call($self->{url}, $self->{headers}, {
+	method => "GenomeAnnotationAPI.get_feature_dna",
+	params => \@args,
     });
     if ($result) {
 	if ($result->is_error) {
@@ -1326,7 +1315,7 @@ Retrieve Feature DNA sequences.
 
 =head2 get_feature_functions
 
-  $return = $obj->get_feature_functions($ref, $feature_id_list)
+  $return = $obj->get_feature_functions($inputs_get_feature_functions)
 
 =over 4
 
@@ -1335,9 +1324,11 @@ Retrieve Feature DNA sequences.
 =begin html
 
 <pre>
-$ref is a GenomeAnnotationAPI.ObjectReference
-$feature_id_list is a reference to a list where each element is a string
+$inputs_get_feature_functions is a GenomeAnnotationAPI.inputs_get_feature_functions
 $return is a reference to a hash where the key is a string and the value is a string
+inputs_get_feature_functions is a reference to a hash where the following keys are defined:
+	ref has a value which is a GenomeAnnotationAPI.ObjectReference
+	feature_id_list has a value which is a reference to a list where each element is a string
 ObjectReference is a string
 
 </pre>
@@ -1346,9 +1337,11 @@ ObjectReference is a string
 
 =begin text
 
-$ref is a GenomeAnnotationAPI.ObjectReference
-$feature_id_list is a reference to a list where each element is a string
+$inputs_get_feature_functions is a GenomeAnnotationAPI.inputs_get_feature_functions
 $return is a reference to a hash where the key is a string and the value is a string
+inputs_get_feature_functions is a reference to a hash where the following keys are defined:
+	ref has a value which is a GenomeAnnotationAPI.ObjectReference
+	feature_id_list has a value which is a reference to a list where each element is a string
 ObjectReference is a string
 
 
@@ -1356,11 +1349,7 @@ ObjectReference is a string
 
 =item Description
 
-Retrieve Feature functions.
 
-@param feature_id_list List of Feature IDs for which to retrieve functions.
-    If empty, returns data for all features.
-@return Mapping of Feature IDs to their functions.
 
 =back
 
@@ -1372,17 +1361,16 @@ Retrieve Feature functions.
 
 # Authentication: required
 
-    if ((my $n = @args) != 2)
+    if ((my $n = @args) != 1)
     {
 	Bio::KBase::Exceptions::ArgumentValidationError->throw(error =>
-							       "Invalid argument count for function get_feature_functions (received $n, expecting 2)");
+							       "Invalid argument count for function get_feature_functions (received $n, expecting 1)");
     }
     {
-	my($ref, $feature_id_list) = @args;
+	my($inputs_get_feature_functions) = @args;
 
 	my @_bad_arguments;
-        (!ref($ref)) or push(@_bad_arguments, "Invalid type for argument 1 \"ref\" (value was \"$ref\")");
-        (ref($feature_id_list) eq 'ARRAY') or push(@_bad_arguments, "Invalid type for argument 2 \"feature_id_list\" (value was \"$feature_id_list\")");
+        (ref($inputs_get_feature_functions) eq 'HASH') or push(@_bad_arguments, "Invalid type for argument 1 \"inputs_get_feature_functions\" (value was \"$inputs_get_feature_functions\")");
         if (@_bad_arguments) {
 	    my $msg = "Invalid arguments passed to get_feature_functions:\n" . join("", map { "\t$_\n" } @_bad_arguments);
 	    Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
@@ -1390,10 +1378,9 @@ Retrieve Feature functions.
 	}
     }
 
-    my $url = $self->{url};
-    my $result = $self->{client}->call($url, $self->{headers}, {
-	    method => "GenomeAnnotationAPI.get_feature_functions",
-	    params => \@args,
+    my $result = $self->{client}->call($self->{url}, $self->{headers}, {
+	method => "GenomeAnnotationAPI.get_feature_functions",
+	params => \@args,
     });
     if ($result) {
 	if ($result->is_error) {
@@ -1417,7 +1404,7 @@ Retrieve Feature functions.
 
 =head2 get_feature_aliases
 
-  $return = $obj->get_feature_aliases($ref, $feature_id_list)
+  $return = $obj->get_feature_aliases($inputs_get_feature_aliases)
 
 =over 4
 
@@ -1426,9 +1413,11 @@ Retrieve Feature functions.
 =begin html
 
 <pre>
-$ref is a GenomeAnnotationAPI.ObjectReference
-$feature_id_list is a reference to a list where each element is a string
+$inputs_get_feature_aliases is a GenomeAnnotationAPI.inputs_get_feature_aliases
 $return is a reference to a hash where the key is a string and the value is a reference to a list where each element is a string
+inputs_get_feature_aliases is a reference to a hash where the following keys are defined:
+	ref has a value which is a GenomeAnnotationAPI.ObjectReference
+	feature_id_list has a value which is a reference to a list where each element is a string
 ObjectReference is a string
 
 </pre>
@@ -1437,9 +1426,11 @@ ObjectReference is a string
 
 =begin text
 
-$ref is a GenomeAnnotationAPI.ObjectReference
-$feature_id_list is a reference to a list where each element is a string
+$inputs_get_feature_aliases is a GenomeAnnotationAPI.inputs_get_feature_aliases
 $return is a reference to a hash where the key is a string and the value is a reference to a list where each element is a string
+inputs_get_feature_aliases is a reference to a hash where the following keys are defined:
+	ref has a value which is a GenomeAnnotationAPI.ObjectReference
+	feature_id_list has a value which is a reference to a list where each element is a string
 ObjectReference is a string
 
 
@@ -1447,11 +1438,7 @@ ObjectReference is a string
 
 =item Description
 
-Retrieve Feature aliases.
 
-@param feature_id_list List of Feature IDS for which to retrieve aliases.
-    If empty, returns data for all features.
-@return Mapping of Feature IDs to a list of aliases.
 
 =back
 
@@ -1463,17 +1450,16 @@ Retrieve Feature aliases.
 
 # Authentication: required
 
-    if ((my $n = @args) != 2)
+    if ((my $n = @args) != 1)
     {
 	Bio::KBase::Exceptions::ArgumentValidationError->throw(error =>
-							       "Invalid argument count for function get_feature_aliases (received $n, expecting 2)");
+							       "Invalid argument count for function get_feature_aliases (received $n, expecting 1)");
     }
     {
-	my($ref, $feature_id_list) = @args;
+	my($inputs_get_feature_aliases) = @args;
 
 	my @_bad_arguments;
-        (!ref($ref)) or push(@_bad_arguments, "Invalid type for argument 1 \"ref\" (value was \"$ref\")");
-        (ref($feature_id_list) eq 'ARRAY') or push(@_bad_arguments, "Invalid type for argument 2 \"feature_id_list\" (value was \"$feature_id_list\")");
+        (ref($inputs_get_feature_aliases) eq 'HASH') or push(@_bad_arguments, "Invalid type for argument 1 \"inputs_get_feature_aliases\" (value was \"$inputs_get_feature_aliases\")");
         if (@_bad_arguments) {
 	    my $msg = "Invalid arguments passed to get_feature_aliases:\n" . join("", map { "\t$_\n" } @_bad_arguments);
 	    Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
@@ -1481,10 +1467,9 @@ Retrieve Feature aliases.
 	}
     }
 
-    my $url = $self->{url};
-    my $result = $self->{client}->call($url, $self->{headers}, {
-	    method => "GenomeAnnotationAPI.get_feature_aliases",
-	    params => \@args,
+    my $result = $self->{client}->call($self->{url}, $self->{headers}, {
+	method => "GenomeAnnotationAPI.get_feature_aliases",
+	params => \@args,
     });
     if ($result) {
 	if ($result->is_error) {
@@ -1508,7 +1493,7 @@ Retrieve Feature aliases.
 
 =head2 get_cds_by_gene
 
-  $return = $obj->get_cds_by_gene($ref, $gene_id_list)
+  $return = $obj->get_cds_by_gene($inputs_get_cds_by_gene)
 
 =over 4
 
@@ -1517,9 +1502,11 @@ Retrieve Feature aliases.
 =begin html
 
 <pre>
-$ref is a GenomeAnnotationAPI.ObjectReference
-$gene_id_list is a reference to a list where each element is a string
+$inputs_get_cds_by_gene is a GenomeAnnotationAPI.inputs_get_cds_by_gene
 $return is a reference to a hash where the key is a string and the value is a reference to a list where each element is a string
+inputs_get_cds_by_gene is a reference to a hash where the following keys are defined:
+	ref has a value which is a GenomeAnnotationAPI.ObjectReference
+	gene_id_list has a value which is a reference to a list where each element is a string
 ObjectReference is a string
 
 </pre>
@@ -1528,9 +1515,11 @@ ObjectReference is a string
 
 =begin text
 
-$ref is a GenomeAnnotationAPI.ObjectReference
-$gene_id_list is a reference to a list where each element is a string
+$inputs_get_cds_by_gene is a GenomeAnnotationAPI.inputs_get_cds_by_gene
 $return is a reference to a hash where the key is a string and the value is a reference to a list where each element is a string
+inputs_get_cds_by_gene is a reference to a hash where the following keys are defined:
+	ref has a value which is a GenomeAnnotationAPI.ObjectReference
+	gene_id_list has a value which is a reference to a list where each element is a string
 ObjectReference is a string
 
 
@@ -1538,11 +1527,7 @@ ObjectReference is a string
 
 =item Description
 
-Retrieves coding sequence Features (cds) for given gene Feature IDs.
 
-@param gene_id_list List of gene Feature IDS for which to retrieve CDS.
-    If empty, returns data for all features.
-@return Mapping of gene Feature IDs to a list of CDS Feature IDs.
 
 =back
 
@@ -1554,17 +1539,16 @@ Retrieves coding sequence Features (cds) for given gene Feature IDs.
 
 # Authentication: required
 
-    if ((my $n = @args) != 2)
+    if ((my $n = @args) != 1)
     {
 	Bio::KBase::Exceptions::ArgumentValidationError->throw(error =>
-							       "Invalid argument count for function get_cds_by_gene (received $n, expecting 2)");
+							       "Invalid argument count for function get_cds_by_gene (received $n, expecting 1)");
     }
     {
-	my($ref, $gene_id_list) = @args;
+	my($inputs_get_cds_by_gene) = @args;
 
 	my @_bad_arguments;
-        (!ref($ref)) or push(@_bad_arguments, "Invalid type for argument 1 \"ref\" (value was \"$ref\")");
-        (ref($gene_id_list) eq 'ARRAY') or push(@_bad_arguments, "Invalid type for argument 2 \"gene_id_list\" (value was \"$gene_id_list\")");
+        (ref($inputs_get_cds_by_gene) eq 'HASH') or push(@_bad_arguments, "Invalid type for argument 1 \"inputs_get_cds_by_gene\" (value was \"$inputs_get_cds_by_gene\")");
         if (@_bad_arguments) {
 	    my $msg = "Invalid arguments passed to get_cds_by_gene:\n" . join("", map { "\t$_\n" } @_bad_arguments);
 	    Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
@@ -1572,10 +1556,9 @@ Retrieves coding sequence Features (cds) for given gene Feature IDs.
 	}
     }
 
-    my $url = $self->{url};
-    my $result = $self->{client}->call($url, $self->{headers}, {
-	    method => "GenomeAnnotationAPI.get_cds_by_gene",
-	    params => \@args,
+    my $result = $self->{client}->call($self->{url}, $self->{headers}, {
+	method => "GenomeAnnotationAPI.get_cds_by_gene",
+	params => \@args,
     });
     if ($result) {
 	if ($result->is_error) {
@@ -1599,7 +1582,7 @@ Retrieves coding sequence Features (cds) for given gene Feature IDs.
 
 =head2 get_cds_by_mrna
 
-  $return = $obj->get_cds_by_mrna($ref, $mrna_id_list)
+  $return = $obj->get_cds_by_mrna($inputs_mrna_id_list)
 
 =over 4
 
@@ -1608,9 +1591,11 @@ Retrieves coding sequence Features (cds) for given gene Feature IDs.
 =begin html
 
 <pre>
-$ref is a GenomeAnnotationAPI.ObjectReference
-$mrna_id_list is a reference to a list where each element is a string
+$inputs_mrna_id_list is a GenomeAnnotationAPI.inputs_mrna_id_list
 $return is a reference to a hash where the key is a string and the value is a string
+inputs_mrna_id_list is a reference to a hash where the following keys are defined:
+	ref has a value which is a GenomeAnnotationAPI.ObjectReference
+	mrna_id_list has a value which is a reference to a list where each element is a string
 ObjectReference is a string
 
 </pre>
@@ -1619,9 +1604,11 @@ ObjectReference is a string
 
 =begin text
 
-$ref is a GenomeAnnotationAPI.ObjectReference
-$mrna_id_list is a reference to a list where each element is a string
+$inputs_mrna_id_list is a GenomeAnnotationAPI.inputs_mrna_id_list
 $return is a reference to a hash where the key is a string and the value is a string
+inputs_mrna_id_list is a reference to a hash where the following keys are defined:
+	ref has a value which is a GenomeAnnotationAPI.ObjectReference
+	mrna_id_list has a value which is a reference to a list where each element is a string
 ObjectReference is a string
 
 
@@ -1629,11 +1616,7 @@ ObjectReference is a string
 
 =item Description
 
-Retrieves coding sequence (cds) Feature IDs for given mRNA Feature IDs.
 
-@param mrna_id_list List of mRNA Feature IDS for which to retrieve CDS.
-    If empty, returns data for all features.
-@return Mapping of mRNA Feature IDs to a list of CDS Feature IDs.
 
 =back
 
@@ -1645,17 +1628,16 @@ Retrieves coding sequence (cds) Feature IDs for given mRNA Feature IDs.
 
 # Authentication: required
 
-    if ((my $n = @args) != 2)
+    if ((my $n = @args) != 1)
     {
 	Bio::KBase::Exceptions::ArgumentValidationError->throw(error =>
-							       "Invalid argument count for function get_cds_by_mrna (received $n, expecting 2)");
+							       "Invalid argument count for function get_cds_by_mrna (received $n, expecting 1)");
     }
     {
-	my($ref, $mrna_id_list) = @args;
+	my($inputs_mrna_id_list) = @args;
 
 	my @_bad_arguments;
-        (!ref($ref)) or push(@_bad_arguments, "Invalid type for argument 1 \"ref\" (value was \"$ref\")");
-        (ref($mrna_id_list) eq 'ARRAY') or push(@_bad_arguments, "Invalid type for argument 2 \"mrna_id_list\" (value was \"$mrna_id_list\")");
+        (ref($inputs_mrna_id_list) eq 'HASH') or push(@_bad_arguments, "Invalid type for argument 1 \"inputs_mrna_id_list\" (value was \"$inputs_mrna_id_list\")");
         if (@_bad_arguments) {
 	    my $msg = "Invalid arguments passed to get_cds_by_mrna:\n" . join("", map { "\t$_\n" } @_bad_arguments);
 	    Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
@@ -1663,10 +1645,9 @@ Retrieves coding sequence (cds) Feature IDs for given mRNA Feature IDs.
 	}
     }
 
-    my $url = $self->{url};
-    my $result = $self->{client}->call($url, $self->{headers}, {
-	    method => "GenomeAnnotationAPI.get_cds_by_mrna",
-	    params => \@args,
+    my $result = $self->{client}->call($self->{url}, $self->{headers}, {
+	method => "GenomeAnnotationAPI.get_cds_by_mrna",
+	params => \@args,
     });
     if ($result) {
 	if ($result->is_error) {
@@ -1690,7 +1671,7 @@ Retrieves coding sequence (cds) Feature IDs for given mRNA Feature IDs.
 
 =head2 get_gene_by_cds
 
-  $return = $obj->get_gene_by_cds($ref, $cds_id_list)
+  $return = $obj->get_gene_by_cds($inputs_get_gene_by_cds)
 
 =over 4
 
@@ -1699,9 +1680,11 @@ Retrieves coding sequence (cds) Feature IDs for given mRNA Feature IDs.
 =begin html
 
 <pre>
-$ref is a GenomeAnnotationAPI.ObjectReference
-$cds_id_list is a reference to a list where each element is a string
+$inputs_get_gene_by_cds is a GenomeAnnotationAPI.inputs_get_gene_by_cds
 $return is a reference to a hash where the key is a string and the value is a string
+inputs_get_gene_by_cds is a reference to a hash where the following keys are defined:
+	ref has a value which is a GenomeAnnotationAPI.ObjectReference
+	cds_id_list has a value which is a reference to a list where each element is a string
 ObjectReference is a string
 
 </pre>
@@ -1710,9 +1693,11 @@ ObjectReference is a string
 
 =begin text
 
-$ref is a GenomeAnnotationAPI.ObjectReference
-$cds_id_list is a reference to a list where each element is a string
+$inputs_get_gene_by_cds is a GenomeAnnotationAPI.inputs_get_gene_by_cds
 $return is a reference to a hash where the key is a string and the value is a string
+inputs_get_gene_by_cds is a reference to a hash where the following keys are defined:
+	ref has a value which is a GenomeAnnotationAPI.ObjectReference
+	cds_id_list has a value which is a reference to a list where each element is a string
 ObjectReference is a string
 
 
@@ -1720,11 +1705,7 @@ ObjectReference is a string
 
 =item Description
 
-Retrieves gene Feature IDs for given coding sequence (cds) Feature IDs.
 
-@param cds_id_list List of cds Feature IDS for which to retrieve gene IDs.
-    If empty, returns all cds/gene mappings.
-@return Mapping of cds Feature IDs to gene Feature IDs.
 
 =back
 
@@ -1736,17 +1717,16 @@ Retrieves gene Feature IDs for given coding sequence (cds) Feature IDs.
 
 # Authentication: required
 
-    if ((my $n = @args) != 2)
+    if ((my $n = @args) != 1)
     {
 	Bio::KBase::Exceptions::ArgumentValidationError->throw(error =>
-							       "Invalid argument count for function get_gene_by_cds (received $n, expecting 2)");
+							       "Invalid argument count for function get_gene_by_cds (received $n, expecting 1)");
     }
     {
-	my($ref, $cds_id_list) = @args;
+	my($inputs_get_gene_by_cds) = @args;
 
 	my @_bad_arguments;
-        (!ref($ref)) or push(@_bad_arguments, "Invalid type for argument 1 \"ref\" (value was \"$ref\")");
-        (ref($cds_id_list) eq 'ARRAY') or push(@_bad_arguments, "Invalid type for argument 2 \"cds_id_list\" (value was \"$cds_id_list\")");
+        (ref($inputs_get_gene_by_cds) eq 'HASH') or push(@_bad_arguments, "Invalid type for argument 1 \"inputs_get_gene_by_cds\" (value was \"$inputs_get_gene_by_cds\")");
         if (@_bad_arguments) {
 	    my $msg = "Invalid arguments passed to get_gene_by_cds:\n" . join("", map { "\t$_\n" } @_bad_arguments);
 	    Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
@@ -1754,10 +1734,9 @@ Retrieves gene Feature IDs for given coding sequence (cds) Feature IDs.
 	}
     }
 
-    my $url = $self->{url};
-    my $result = $self->{client}->call($url, $self->{headers}, {
-	    method => "GenomeAnnotationAPI.get_gene_by_cds",
-	    params => \@args,
+    my $result = $self->{client}->call($self->{url}, $self->{headers}, {
+	method => "GenomeAnnotationAPI.get_gene_by_cds",
+	params => \@args,
     });
     if ($result) {
 	if ($result->is_error) {
@@ -1781,7 +1760,7 @@ Retrieves gene Feature IDs for given coding sequence (cds) Feature IDs.
 
 =head2 get_gene_by_mrna
 
-  $return = $obj->get_gene_by_mrna($ref, $mrna_id_list)
+  $return = $obj->get_gene_by_mrna($inputs_get_gene_by_mrna)
 
 =over 4
 
@@ -1790,9 +1769,11 @@ Retrieves gene Feature IDs for given coding sequence (cds) Feature IDs.
 =begin html
 
 <pre>
-$ref is a GenomeAnnotationAPI.ObjectReference
-$mrna_id_list is a reference to a list where each element is a string
+$inputs_get_gene_by_mrna is a GenomeAnnotationAPI.inputs_get_gene_by_mrna
 $return is a reference to a hash where the key is a string and the value is a string
+inputs_get_gene_by_mrna is a reference to a hash where the following keys are defined:
+	ref has a value which is a GenomeAnnotationAPI.ObjectReference
+	mrna_id_list has a value which is a reference to a list where each element is a string
 ObjectReference is a string
 
 </pre>
@@ -1801,9 +1782,11 @@ ObjectReference is a string
 
 =begin text
 
-$ref is a GenomeAnnotationAPI.ObjectReference
-$mrna_id_list is a reference to a list where each element is a string
+$inputs_get_gene_by_mrna is a GenomeAnnotationAPI.inputs_get_gene_by_mrna
 $return is a reference to a hash where the key is a string and the value is a string
+inputs_get_gene_by_mrna is a reference to a hash where the following keys are defined:
+	ref has a value which is a GenomeAnnotationAPI.ObjectReference
+	mrna_id_list has a value which is a reference to a list where each element is a string
 ObjectReference is a string
 
 
@@ -1811,11 +1794,7 @@ ObjectReference is a string
 
 =item Description
 
-Retrieves gene Feature IDs for given mRNA Feature IDs.
 
-@param mrna_id_list List of mRNA Feature IDS for which to retrieve gene IDs.
-    If empty, returns all mRNA/gene mappings.
-@return Mapping of mRNA Feature IDs to gene Feature IDs.
 
 =back
 
@@ -1827,17 +1806,16 @@ Retrieves gene Feature IDs for given mRNA Feature IDs.
 
 # Authentication: required
 
-    if ((my $n = @args) != 2)
+    if ((my $n = @args) != 1)
     {
 	Bio::KBase::Exceptions::ArgumentValidationError->throw(error =>
-							       "Invalid argument count for function get_gene_by_mrna (received $n, expecting 2)");
+							       "Invalid argument count for function get_gene_by_mrna (received $n, expecting 1)");
     }
     {
-	my($ref, $mrna_id_list) = @args;
+	my($inputs_get_gene_by_mrna) = @args;
 
 	my @_bad_arguments;
-        (!ref($ref)) or push(@_bad_arguments, "Invalid type for argument 1 \"ref\" (value was \"$ref\")");
-        (ref($mrna_id_list) eq 'ARRAY') or push(@_bad_arguments, "Invalid type for argument 2 \"mrna_id_list\" (value was \"$mrna_id_list\")");
+        (ref($inputs_get_gene_by_mrna) eq 'HASH') or push(@_bad_arguments, "Invalid type for argument 1 \"inputs_get_gene_by_mrna\" (value was \"$inputs_get_gene_by_mrna\")");
         if (@_bad_arguments) {
 	    my $msg = "Invalid arguments passed to get_gene_by_mrna:\n" . join("", map { "\t$_\n" } @_bad_arguments);
 	    Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
@@ -1845,10 +1823,9 @@ Retrieves gene Feature IDs for given mRNA Feature IDs.
 	}
     }
 
-    my $url = $self->{url};
-    my $result = $self->{client}->call($url, $self->{headers}, {
-	    method => "GenomeAnnotationAPI.get_gene_by_mrna",
-	    params => \@args,
+    my $result = $self->{client}->call($self->{url}, $self->{headers}, {
+	method => "GenomeAnnotationAPI.get_gene_by_mrna",
+	params => \@args,
     });
     if ($result) {
 	if ($result->is_error) {
@@ -1872,7 +1849,7 @@ Retrieves gene Feature IDs for given mRNA Feature IDs.
 
 =head2 get_mrna_by_cds
 
-  $return = $obj->get_mrna_by_cds($ref, $cds_id_list)
+  $return = $obj->get_mrna_by_cds($inputs_get_mrna_by_cds)
 
 =over 4
 
@@ -1881,9 +1858,11 @@ Retrieves gene Feature IDs for given mRNA Feature IDs.
 =begin html
 
 <pre>
-$ref is a GenomeAnnotationAPI.ObjectReference
-$cds_id_list is a reference to a list where each element is a string
+$inputs_get_mrna_by_cds is a GenomeAnnotationAPI.inputs_get_mrna_by_cds
 $return is a reference to a hash where the key is a string and the value is a string
+inputs_get_mrna_by_cds is a reference to a hash where the following keys are defined:
+	ref has a value which is a GenomeAnnotationAPI.ObjectReference
+	cds_id_list has a value which is a reference to a list where each element is a string
 ObjectReference is a string
 
 </pre>
@@ -1892,9 +1871,11 @@ ObjectReference is a string
 
 =begin text
 
-$ref is a GenomeAnnotationAPI.ObjectReference
-$cds_id_list is a reference to a list where each element is a string
+$inputs_get_mrna_by_cds is a GenomeAnnotationAPI.inputs_get_mrna_by_cds
 $return is a reference to a hash where the key is a string and the value is a string
+inputs_get_mrna_by_cds is a reference to a hash where the following keys are defined:
+	ref has a value which is a GenomeAnnotationAPI.ObjectReference
+	cds_id_list has a value which is a reference to a list where each element is a string
 ObjectReference is a string
 
 
@@ -1902,11 +1883,7 @@ ObjectReference is a string
 
 =item Description
 
-Retrieves mRNA Features for given coding sequences (cds) Feature IDs.
 
-@param cds_id_list List of cds Feature IDS for which to retrieve mRNA IDs.
-    If empty, returns all cds/mRNA mappings.
-@return Mapping of cds Feature IDs to mRNA Feature IDs.
 
 =back
 
@@ -1918,17 +1895,16 @@ Retrieves mRNA Features for given coding sequences (cds) Feature IDs.
 
 # Authentication: required
 
-    if ((my $n = @args) != 2)
+    if ((my $n = @args) != 1)
     {
 	Bio::KBase::Exceptions::ArgumentValidationError->throw(error =>
-							       "Invalid argument count for function get_mrna_by_cds (received $n, expecting 2)");
+							       "Invalid argument count for function get_mrna_by_cds (received $n, expecting 1)");
     }
     {
-	my($ref, $cds_id_list) = @args;
+	my($inputs_get_mrna_by_cds) = @args;
 
 	my @_bad_arguments;
-        (!ref($ref)) or push(@_bad_arguments, "Invalid type for argument 1 \"ref\" (value was \"$ref\")");
-        (ref($cds_id_list) eq 'ARRAY') or push(@_bad_arguments, "Invalid type for argument 2 \"cds_id_list\" (value was \"$cds_id_list\")");
+        (ref($inputs_get_mrna_by_cds) eq 'HASH') or push(@_bad_arguments, "Invalid type for argument 1 \"inputs_get_mrna_by_cds\" (value was \"$inputs_get_mrna_by_cds\")");
         if (@_bad_arguments) {
 	    my $msg = "Invalid arguments passed to get_mrna_by_cds:\n" . join("", map { "\t$_\n" } @_bad_arguments);
 	    Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
@@ -1936,10 +1912,9 @@ Retrieves mRNA Features for given coding sequences (cds) Feature IDs.
 	}
     }
 
-    my $url = $self->{url};
-    my $result = $self->{client}->call($url, $self->{headers}, {
-	    method => "GenomeAnnotationAPI.get_mrna_by_cds",
-	    params => \@args,
+    my $result = $self->{client}->call($self->{url}, $self->{headers}, {
+	method => "GenomeAnnotationAPI.get_mrna_by_cds",
+	params => \@args,
     });
     if ($result) {
 	if ($result->is_error) {
@@ -1963,7 +1938,7 @@ Retrieves mRNA Features for given coding sequences (cds) Feature IDs.
 
 =head2 get_mrna_by_gene
 
-  $return = $obj->get_mrna_by_gene($ref, $gene_id_list)
+  $return = $obj->get_mrna_by_gene($inputs_get_mrna_by_gene)
 
 =over 4
 
@@ -1972,9 +1947,11 @@ Retrieves mRNA Features for given coding sequences (cds) Feature IDs.
 =begin html
 
 <pre>
-$ref is a GenomeAnnotationAPI.ObjectReference
-$gene_id_list is a reference to a list where each element is a string
+$inputs_get_mrna_by_gene is a GenomeAnnotationAPI.inputs_get_mrna_by_gene
 $return is a reference to a hash where the key is a string and the value is a reference to a list where each element is a string
+inputs_get_mrna_by_gene is a reference to a hash where the following keys are defined:
+	ref has a value which is a GenomeAnnotationAPI.ObjectReference
+	gene_id_list has a value which is a reference to a list where each element is a string
 ObjectReference is a string
 
 </pre>
@@ -1983,9 +1960,11 @@ ObjectReference is a string
 
 =begin text
 
-$ref is a GenomeAnnotationAPI.ObjectReference
-$gene_id_list is a reference to a list where each element is a string
+$inputs_get_mrna_by_gene is a GenomeAnnotationAPI.inputs_get_mrna_by_gene
 $return is a reference to a hash where the key is a string and the value is a reference to a list where each element is a string
+inputs_get_mrna_by_gene is a reference to a hash where the following keys are defined:
+	ref has a value which is a GenomeAnnotationAPI.ObjectReference
+	gene_id_list has a value which is a reference to a list where each element is a string
 ObjectReference is a string
 
 
@@ -1993,11 +1972,7 @@ ObjectReference is a string
 
 =item Description
 
-Retrieve the mRNA IDs for given gene IDs.
 
-@param gene_id_list List of gene Feature IDS for which to retrieve mRNA IDs.
-    If empty, returns all gene/mRNA mappings.
-@return Mapping of gene Feature IDs to a list of mRNA Feature IDs.
 
 =back
 
@@ -2009,17 +1984,16 @@ Retrieve the mRNA IDs for given gene IDs.
 
 # Authentication: required
 
-    if ((my $n = @args) != 2)
+    if ((my $n = @args) != 1)
     {
 	Bio::KBase::Exceptions::ArgumentValidationError->throw(error =>
-							       "Invalid argument count for function get_mrna_by_gene (received $n, expecting 2)");
+							       "Invalid argument count for function get_mrna_by_gene (received $n, expecting 1)");
     }
     {
-	my($ref, $gene_id_list) = @args;
+	my($inputs_get_mrna_by_gene) = @args;
 
 	my @_bad_arguments;
-        (!ref($ref)) or push(@_bad_arguments, "Invalid type for argument 1 \"ref\" (value was \"$ref\")");
-        (ref($gene_id_list) eq 'ARRAY') or push(@_bad_arguments, "Invalid type for argument 2 \"gene_id_list\" (value was \"$gene_id_list\")");
+        (ref($inputs_get_mrna_by_gene) eq 'HASH') or push(@_bad_arguments, "Invalid type for argument 1 \"inputs_get_mrna_by_gene\" (value was \"$inputs_get_mrna_by_gene\")");
         if (@_bad_arguments) {
 	    my $msg = "Invalid arguments passed to get_mrna_by_gene:\n" . join("", map { "\t$_\n" } @_bad_arguments);
 	    Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
@@ -2027,10 +2001,9 @@ Retrieve the mRNA IDs for given gene IDs.
 	}
     }
 
-    my $url = $self->{url};
-    my $result = $self->{client}->call($url, $self->{headers}, {
-	    method => "GenomeAnnotationAPI.get_mrna_by_gene",
-	    params => \@args,
+    my $result = $self->{client}->call($self->{url}, $self->{headers}, {
+	method => "GenomeAnnotationAPI.get_mrna_by_gene",
+	params => \@args,
     });
     if ($result) {
 	if ($result->is_error) {
@@ -2054,7 +2027,7 @@ Retrieve the mRNA IDs for given gene IDs.
 
 =head2 get_mrna_exons
 
-  $return = $obj->get_mrna_exons($ref, $mrna_id_list)
+  $return = $obj->get_mrna_exons($inputs_get_mrna_exons)
 
 =over 4
 
@@ -2063,9 +2036,11 @@ Retrieve the mRNA IDs for given gene IDs.
 =begin html
 
 <pre>
-$ref is a GenomeAnnotationAPI.ObjectReference
-$mrna_id_list is a reference to a list where each element is a string
+$inputs_get_mrna_exons is a GenomeAnnotationAPI.inputs_get_mrna_exons
 $return is a reference to a hash where the key is a string and the value is a reference to a list where each element is a GenomeAnnotationAPI.Exon_data
+inputs_get_mrna_exons is a reference to a hash where the following keys are defined:
+	ref has a value which is a GenomeAnnotationAPI.ObjectReference
+	mrna_id_list has a value which is a reference to a list where each element is a string
 ObjectReference is a string
 Exon_data is a reference to a hash where the following keys are defined:
 	exon_location has a value which is a GenomeAnnotationAPI.Region
@@ -2083,9 +2058,11 @@ Region is a reference to a hash where the following keys are defined:
 
 =begin text
 
-$ref is a GenomeAnnotationAPI.ObjectReference
-$mrna_id_list is a reference to a list where each element is a string
+$inputs_get_mrna_exons is a GenomeAnnotationAPI.inputs_get_mrna_exons
 $return is a reference to a hash where the key is a string and the value is a reference to a list where each element is a GenomeAnnotationAPI.Exon_data
+inputs_get_mrna_exons is a reference to a hash where the following keys are defined:
+	ref has a value which is a GenomeAnnotationAPI.ObjectReference
+	mrna_id_list has a value which is a reference to a list where each element is a string
 ObjectReference is a string
 Exon_data is a reference to a hash where the following keys are defined:
 	exon_location has a value which is a GenomeAnnotationAPI.Region
@@ -2102,11 +2079,7 @@ Region is a reference to a hash where the following keys are defined:
 
 =item Description
 
-Retrieve Exon information for each mRNA ID.
 
-@param mrna_id_list List of mRNA Feature IDS for which to retrieve exons.
-    If empty, returns data for all exons.
-@return Mapping of mRNA Feature IDs to a list of exons (:js:data:`Exon_data`).
 
 =back
 
@@ -2118,17 +2091,16 @@ Retrieve Exon information for each mRNA ID.
 
 # Authentication: required
 
-    if ((my $n = @args) != 2)
+    if ((my $n = @args) != 1)
     {
 	Bio::KBase::Exceptions::ArgumentValidationError->throw(error =>
-							       "Invalid argument count for function get_mrna_exons (received $n, expecting 2)");
+							       "Invalid argument count for function get_mrna_exons (received $n, expecting 1)");
     }
     {
-	my($ref, $mrna_id_list) = @args;
+	my($inputs_get_mrna_exons) = @args;
 
 	my @_bad_arguments;
-        (!ref($ref)) or push(@_bad_arguments, "Invalid type for argument 1 \"ref\" (value was \"$ref\")");
-        (ref($mrna_id_list) eq 'ARRAY') or push(@_bad_arguments, "Invalid type for argument 2 \"mrna_id_list\" (value was \"$mrna_id_list\")");
+        (ref($inputs_get_mrna_exons) eq 'HASH') or push(@_bad_arguments, "Invalid type for argument 1 \"inputs_get_mrna_exons\" (value was \"$inputs_get_mrna_exons\")");
         if (@_bad_arguments) {
 	    my $msg = "Invalid arguments passed to get_mrna_exons:\n" . join("", map { "\t$_\n" } @_bad_arguments);
 	    Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
@@ -2136,10 +2108,9 @@ Retrieve Exon information for each mRNA ID.
 	}
     }
 
-    my $url = $self->{url};
-    my $result = $self->{client}->call($url, $self->{headers}, {
-	    method => "GenomeAnnotationAPI.get_mrna_exons",
-	    params => \@args,
+    my $result = $self->{client}->call($self->{url}, $self->{headers}, {
+	method => "GenomeAnnotationAPI.get_mrna_exons",
+	params => \@args,
     });
     if ($result) {
 	if ($result->is_error) {
@@ -2163,7 +2134,7 @@ Retrieve Exon information for each mRNA ID.
 
 =head2 get_mrna_utrs
 
-  $return = $obj->get_mrna_utrs($ref, $mrna_id_list)
+  $return = $obj->get_mrna_utrs($inputs_get_mrna_utrs)
 
 =over 4
 
@@ -2172,9 +2143,11 @@ Retrieve Exon information for each mRNA ID.
 =begin html
 
 <pre>
-$ref is a GenomeAnnotationAPI.ObjectReference
-$mrna_id_list is a reference to a list where each element is a string
+$inputs_get_mrna_utrs is a GenomeAnnotationAPI.inputs_get_mrna_utrs
 $return is a reference to a hash where the key is a string and the value is a reference to a hash where the key is a string and the value is a GenomeAnnotationAPI.UTR_data
+inputs_get_mrna_utrs is a reference to a hash where the following keys are defined:
+	ref has a value which is a GenomeAnnotationAPI.ObjectReference
+	mrna_id_list has a value which is a reference to a list where each element is a string
 ObjectReference is a string
 UTR_data is a reference to a hash where the following keys are defined:
 	utr_locations has a value which is a reference to a list where each element is a GenomeAnnotationAPI.Region
@@ -2191,9 +2164,11 @@ Region is a reference to a hash where the following keys are defined:
 
 =begin text
 
-$ref is a GenomeAnnotationAPI.ObjectReference
-$mrna_id_list is a reference to a list where each element is a string
+$inputs_get_mrna_utrs is a GenomeAnnotationAPI.inputs_get_mrna_utrs
 $return is a reference to a hash where the key is a string and the value is a reference to a hash where the key is a string and the value is a GenomeAnnotationAPI.UTR_data
+inputs_get_mrna_utrs is a reference to a hash where the following keys are defined:
+	ref has a value which is a GenomeAnnotationAPI.ObjectReference
+	mrna_id_list has a value which is a reference to a list where each element is a string
 ObjectReference is a string
 UTR_data is a reference to a hash where the following keys are defined:
 	utr_locations has a value which is a reference to a list where each element is a GenomeAnnotationAPI.Region
@@ -2209,24 +2184,7 @@ Region is a reference to a hash where the following keys are defined:
 
 =item Description
 
-Retrieve UTR information for each mRNA Feature ID.
 
- UTRs are calculated between mRNA features and corresponding CDS features.
- The return value for each mRNA can contain either:
-    - no UTRs found (empty dict)
-    -  5' UTR only
-    -  3' UTR only
-    -  5' and 3' UTRs
-
- Note: The Genome data type does not contain interfeature
- relationship information. Calling this method for Genome objects
- will raise a :js:throws:`exc.TypeException`.
-
-@param feature_id_list List of mRNA Feature IDS for which to retrieve UTRs.
-If empty, returns data for all UTRs.
-@return Mapping of mRNA Feature IDs to a mapping that contains
-both 5' and 3' UTRs::
-    { "5'UTR": :js:data:`UTR_data`, "3'UTR": :js:data:`UTR_data` }
 
 =back
 
@@ -2238,17 +2196,16 @@ both 5' and 3' UTRs::
 
 # Authentication: required
 
-    if ((my $n = @args) != 2)
+    if ((my $n = @args) != 1)
     {
 	Bio::KBase::Exceptions::ArgumentValidationError->throw(error =>
-							       "Invalid argument count for function get_mrna_utrs (received $n, expecting 2)");
+							       "Invalid argument count for function get_mrna_utrs (received $n, expecting 1)");
     }
     {
-	my($ref, $mrna_id_list) = @args;
+	my($inputs_get_mrna_utrs) = @args;
 
 	my @_bad_arguments;
-        (!ref($ref)) or push(@_bad_arguments, "Invalid type for argument 1 \"ref\" (value was \"$ref\")");
-        (ref($mrna_id_list) eq 'ARRAY') or push(@_bad_arguments, "Invalid type for argument 2 \"mrna_id_list\" (value was \"$mrna_id_list\")");
+        (ref($inputs_get_mrna_utrs) eq 'HASH') or push(@_bad_arguments, "Invalid type for argument 1 \"inputs_get_mrna_utrs\" (value was \"$inputs_get_mrna_utrs\")");
         if (@_bad_arguments) {
 	    my $msg = "Invalid arguments passed to get_mrna_utrs:\n" . join("", map { "\t$_\n" } @_bad_arguments);
 	    Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
@@ -2256,10 +2213,9 @@ both 5' and 3' UTRs::
 	}
     }
 
-    my $url = $self->{url};
-    my $result = $self->{client}->call($url, $self->{headers}, {
-	    method => "GenomeAnnotationAPI.get_mrna_utrs",
-	    params => \@args,
+    my $result = $self->{client}->call($self->{url}, $self->{headers}, {
+	method => "GenomeAnnotationAPI.get_mrna_utrs",
+	params => \@args,
     });
     if ($result) {
 	if ($result->is_error) {
@@ -2283,7 +2239,7 @@ both 5' and 3' UTRs::
 
 =head2 get_summary
 
-  $return = $obj->get_summary($ref)
+  $return = $obj->get_summary($inputs_get_summary)
 
 =over 4
 
@@ -2292,8 +2248,10 @@ both 5' and 3' UTRs::
 =begin html
 
 <pre>
-$ref is a GenomeAnnotationAPI.ObjectReference
+$inputs_get_summary is a GenomeAnnotationAPI.inputs_get_summary
 $return is a GenomeAnnotationAPI.Summary_data
+inputs_get_summary is a reference to a hash where the following keys are defined:
+	ref has a value which is a GenomeAnnotationAPI.ObjectReference
 ObjectReference is a string
 Summary_data is a reference to a hash where the following keys are defined:
 	scientific_name has a value which is a string
@@ -2321,8 +2279,10 @@ Summary_data is a reference to a hash where the following keys are defined:
 
 =begin text
 
-$ref is a GenomeAnnotationAPI.ObjectReference
+$inputs_get_summary is a GenomeAnnotationAPI.inputs_get_summary
 $return is a GenomeAnnotationAPI.Summary_data
+inputs_get_summary is a reference to a hash where the following keys are defined:
+	ref has a value which is a GenomeAnnotationAPI.ObjectReference
 ObjectReference is a string
 Summary_data is a reference to a hash where the following keys are defined:
 	scientific_name has a value which is a string
@@ -2349,9 +2309,7 @@ Summary_data is a reference to a hash where the following keys are defined:
 
 =item Description
 
-Retrieve a summary representation of this GenomeAnnotation.
 
-@return summary data
 
 =back
 
@@ -2369,10 +2327,10 @@ Retrieve a summary representation of this GenomeAnnotation.
 							       "Invalid argument count for function get_summary (received $n, expecting 1)");
     }
     {
-	my($ref) = @args;
+	my($inputs_get_summary) = @args;
 
 	my @_bad_arguments;
-        (!ref($ref)) or push(@_bad_arguments, "Invalid type for argument 1 \"ref\" (value was \"$ref\")");
+        (ref($inputs_get_summary) eq 'HASH') or push(@_bad_arguments, "Invalid type for argument 1 \"inputs_get_summary\" (value was \"$inputs_get_summary\")");
         if (@_bad_arguments) {
 	    my $msg = "Invalid arguments passed to get_summary:\n" . join("", map { "\t$_\n" } @_bad_arguments);
 	    Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
@@ -2380,10 +2338,9 @@ Retrieve a summary representation of this GenomeAnnotation.
 	}
     }
 
-    my $url = $self->{url};
-    my $result = $self->{client}->call($url, $self->{headers}, {
-	    method => "GenomeAnnotationAPI.get_summary",
-	    params => \@args,
+    my $result = $self->{client}->call($self->{url}, $self->{headers}, {
+	method => "GenomeAnnotationAPI.get_summary",
+	params => \@args,
     });
     if ($result) {
 	if ($result->is_error) {
@@ -2407,7 +2364,7 @@ Retrieve a summary representation of this GenomeAnnotation.
 
 =head2 save_summary
 
-  $return = $obj->save_summary($ref)
+  $return_1, $return_2 = $obj->save_summary($inputs_save_summary)
 
 =over 4
 
@@ -2416,9 +2373,31 @@ Retrieve a summary representation of this GenomeAnnotation.
 =begin html
 
 <pre>
-$ref is a GenomeAnnotationAPI.ObjectReference
-$return is an int
+$inputs_save_summary is a GenomeAnnotationAPI.inputs_save_summary
+$return_1 is an int
+$return_2 is a GenomeAnnotationAPI.Summary_data
+inputs_save_summary is a reference to a hash where the following keys are defined:
+	ref has a value which is a GenomeAnnotationAPI.ObjectReference
 ObjectReference is a string
+Summary_data is a reference to a hash where the following keys are defined:
+	scientific_name has a value which is a string
+	taxonomy_id has a value which is an int
+	kingdom has a value which is a string
+	scientific_lineage has a value which is a reference to a list where each element is a string
+	genetic_code has a value which is an int
+	organism_aliases has a value which is a reference to a list where each element is a string
+	assembly_source has a value which is a string
+	assembly_source_id has a value which is a string
+	assembly_source_date has a value which is a string
+	gc_content has a value which is a float
+	dna_size has a value which is an int
+	num_contigs has a value which is an int
+	contig_ids has a value which is a reference to a list where each element is a string
+	external_source has a value which is a string
+	external_source_date has a value which is a string
+	release has a value which is a string
+	original_source_filename has a value which is a string
+	feature_type_counts has a value which is a reference to a hash where the key is a string and the value is an int
 
 </pre>
 
@@ -2426,18 +2405,38 @@ ObjectReference is a string
 
 =begin text
 
-$ref is a GenomeAnnotationAPI.ObjectReference
-$return is an int
+$inputs_save_summary is a GenomeAnnotationAPI.inputs_save_summary
+$return_1 is an int
+$return_2 is a GenomeAnnotationAPI.Summary_data
+inputs_save_summary is a reference to a hash where the following keys are defined:
+	ref has a value which is a GenomeAnnotationAPI.ObjectReference
 ObjectReference is a string
+Summary_data is a reference to a hash where the following keys are defined:
+	scientific_name has a value which is a string
+	taxonomy_id has a value which is an int
+	kingdom has a value which is a string
+	scientific_lineage has a value which is a reference to a list where each element is a string
+	genetic_code has a value which is an int
+	organism_aliases has a value which is a reference to a list where each element is a string
+	assembly_source has a value which is a string
+	assembly_source_id has a value which is a string
+	assembly_source_date has a value which is a string
+	gc_content has a value which is a float
+	dna_size has a value which is an int
+	num_contigs has a value which is an int
+	contig_ids has a value which is a reference to a list where each element is a string
+	external_source has a value which is a string
+	external_source_date has a value which is a string
+	release has a value which is a string
+	original_source_filename has a value which is a string
+	feature_type_counts has a value which is a reference to a hash where the key is a string and the value is an int
 
 
 =end text
 
 =item Description
 
-Retrieve a summary representation of this GenomeAnnotation.
 
-@return summary data
 
 =back
 
@@ -2455,10 +2454,10 @@ Retrieve a summary representation of this GenomeAnnotation.
 							       "Invalid argument count for function save_summary (received $n, expecting 1)");
     }
     {
-	my($ref) = @args;
+	my($inputs_save_summary) = @args;
 
 	my @_bad_arguments;
-        (!ref($ref)) or push(@_bad_arguments, "Invalid type for argument 1 \"ref\" (value was \"$ref\")");
+        (ref($inputs_save_summary) eq 'HASH') or push(@_bad_arguments, "Invalid type for argument 1 \"inputs_save_summary\" (value was \"$inputs_save_summary\")");
         if (@_bad_arguments) {
 	    my $msg = "Invalid arguments passed to save_summary:\n" . join("", map { "\t$_\n" } @_bad_arguments);
 	    Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
@@ -2466,10 +2465,9 @@ Retrieve a summary representation of this GenomeAnnotation.
 	}
     }
 
-    my $url = $self->{url};
-    my $result = $self->{client}->call($url, $self->{headers}, {
-	    method => "GenomeAnnotationAPI.save_summary",
-	    params => \@args,
+    my $result = $self->{client}->call($self->{url}, $self->{headers}, {
+	method => "GenomeAnnotationAPI.save_summary",
+	params => \@args,
     });
     if ($result) {
 	if ($result->is_error) {
@@ -2490,36 +2488,6 @@ Retrieve a summary representation of this GenomeAnnotation.
 }
  
   
-sub status
-{
-    my($self, @args) = @_;
-    if ((my $n = @args) != 0) {
-        Bio::KBase::Exceptions::ArgumentValidationError->throw(error =>
-                                   "Invalid argument count for function status (received $n, expecting 0)");
-    }
-    my $url = $self->{url};
-    my $result = $self->{client}->call($url, $self->{headers}, {
-        method => "GenomeAnnotationAPI.status",
-        params => \@args,
-    });
-    if ($result) {
-        if ($result->is_error) {
-            Bio::KBase::Exceptions::JSONRPC->throw(error => $result->error_message,
-                           code => $result->content->{error}->{code},
-                           method_name => 'status',
-                           data => $result->content->{error}->{error} # JSON::RPC::ReturnObject only supports JSONRPC 1.1 or 1.O
-                          );
-        } else {
-            return wantarray ? @{$result->result} : $result->result->[0];
-        }
-    } else {
-        Bio::KBase::Exceptions::HTTP->throw(error => "Error invoking method status",
-                        status_line => $self->{client}->status_line,
-                        method_name => 'status',
-                       );
-    }
-}
-   
 
 sub version {
     my ($self) = @_;
@@ -2604,6 +2572,38 @@ a string
 
 
 
+=head2 boolean
+
+=over 4
+
+
+
+=item Description
+
+A boolean - 0 for false, 1 for true.
+@range (0, 1)
+
+
+=item Definition
+
+=begin html
+
+<pre>
+an int
+</pre>
+
+=end html
+
+=begin text
+
+an int
+
+=end text
+
+=back
+
+
+
 =head2 Region
 
 =over 4
@@ -2650,6 +2650,7 @@ length has a value which is an int
 
 *
 * Filters passed to :meth:`get_feature_ids`
+* @optional type_list region_list function_list alias_list
 
 
 =item Definition
@@ -2686,6 +2687,11 @@ alias_list has a value which is a reference to a list where each element is a st
 
 =over 4
 
+
+
+=item Description
+
+@optional by_type by_region by_function by_alias
 
 
 =item Definition
@@ -2942,7 +2948,7 @@ feature_type_counts has a value which is a reference to a hash where the key is 
 
 
 
-=head2 boolean
+=head2 inputs_get_taxon
 
 =over 4
 
@@ -2950,8 +2956,10 @@ feature_type_counts has a value which is a reference to a hash where the key is 
 
 =item Description
 
-A boolean - 0 for false, 1 for true.
-@range (0, 1)
+*
+* Retrieve the Taxon associated with this GenomeAnnotation.
+*
+* @return Reference to TaxonAPI object
 
 
 =item Definition
@@ -2959,14 +2967,246 @@ A boolean - 0 for false, 1 for true.
 =begin html
 
 <pre>
-an int
+a reference to a hash where the following keys are defined:
+ref has a value which is a GenomeAnnotationAPI.ObjectReference
+
 </pre>
 
 =end html
 
 =begin text
 
-an int
+a reference to a hash where the following keys are defined:
+ref has a value which is a GenomeAnnotationAPI.ObjectReference
+
+
+=end text
+
+=back
+
+
+
+=head2 inputs_get_assembly
+
+=over 4
+
+
+
+=item Description
+
+*
+* Retrieve the Assembly associated with this GenomeAnnotation.
+*
+* @return Reference to AssemblyAPI object
+
+
+=item Definition
+
+=begin html
+
+<pre>
+a reference to a hash where the following keys are defined:
+ref has a value which is a GenomeAnnotationAPI.ObjectReference
+
+</pre>
+
+=end html
+
+=begin text
+
+a reference to a hash where the following keys are defined:
+ref has a value which is a GenomeAnnotationAPI.ObjectReference
+
+
+=end text
+
+=back
+
+
+
+=head2 inputs_get_feature_types
+
+=over 4
+
+
+
+=item Description
+
+*
+* Retrieve the list of Feature types.
+*
+* @return List of feature type identifiers (strings)
+
+
+=item Definition
+
+=begin html
+
+<pre>
+a reference to a hash where the following keys are defined:
+ref has a value which is a GenomeAnnotationAPI.ObjectReference
+
+</pre>
+
+=end html
+
+=begin text
+
+a reference to a hash where the following keys are defined:
+ref has a value which is a GenomeAnnotationAPI.ObjectReference
+
+
+=end text
+
+=back
+
+
+
+=head2 inputs_get_feature_type_descriptions
+
+=over 4
+
+
+
+=item Description
+
+optional feature_type_list
+
+
+=item Definition
+
+=begin html
+
+<pre>
+a reference to a hash where the following keys are defined:
+ref has a value which is a GenomeAnnotationAPI.ObjectReference
+feature_type_list has a value which is a reference to a list where each element is a string
+
+</pre>
+
+=end html
+
+=begin text
+
+a reference to a hash where the following keys are defined:
+ref has a value which is a GenomeAnnotationAPI.ObjectReference
+feature_type_list has a value which is a reference to a list where each element is a string
+
+
+=end text
+
+=back
+
+
+
+=head2 inputs_get_feature_type_counts
+
+=over 4
+
+
+
+=item Description
+
+@optional feature_type_list
+
+
+=item Definition
+
+=begin html
+
+<pre>
+a reference to a hash where the following keys are defined:
+ref has a value which is a GenomeAnnotationAPI.ObjectReference
+feature_type_list has a value which is a reference to a list where each element is a string
+
+</pre>
+
+=end html
+
+=begin text
+
+a reference to a hash where the following keys are defined:
+ref has a value which is a GenomeAnnotationAPI.ObjectReference
+feature_type_list has a value which is a reference to a list where each element is a string
+
+
+=end text
+
+=back
+
+
+
+=head2 inputs_get_feature_ids
+
+=over 4
+
+
+
+=item Description
+
+@optional filters group_by
+
+
+=item Definition
+
+=begin html
+
+<pre>
+a reference to a hash where the following keys are defined:
+ref has a value which is a GenomeAnnotationAPI.ObjectReference
+filters has a value which is a GenomeAnnotationAPI.Feature_id_filters
+group_by has a value which is a string
+
+</pre>
+
+=end html
+
+=begin text
+
+a reference to a hash where the following keys are defined:
+ref has a value which is a GenomeAnnotationAPI.ObjectReference
+filters has a value which is a GenomeAnnotationAPI.Feature_id_filters
+group_by has a value which is a string
+
+
+=end text
+
+=back
+
+
+
+=head2 inputs_get_features
+
+=over 4
+
+
+
+=item Description
+
+@optional feature_id_list exclude_sequence
+
+
+=item Definition
+
+=begin html
+
+<pre>
+a reference to a hash where the following keys are defined:
+ref has a value which is a GenomeAnnotationAPI.ObjectReference
+feature_id_list has a value which is a reference to a list where each element is a string
+exclude_sequence has a value which is a GenomeAnnotationAPI.boolean
+
+</pre>
+
+=end html
+
+=begin text
+
+a reference to a hash where the following keys are defined:
+ref has a value which is a GenomeAnnotationAPI.ObjectReference
+feature_id_list has a value which is a reference to a list where each element is a string
+exclude_sequence has a value which is a GenomeAnnotationAPI.boolean
+
 
 =end text
 
@@ -3006,6 +3246,611 @@ a reference to a hash where the following keys are defined:
 ref has a value which is a GenomeAnnotationAPI.ObjectReference
 feature_id_list has a value which is a reference to a list where each element is a string
 exclude_sequence has a value which is a GenomeAnnotationAPI.boolean
+
+
+=end text
+
+=back
+
+
+
+=head2 inputs_get_proteins
+
+=over 4
+
+
+
+=item Description
+
+*
+* Retrieve Protein data.
+*
+* @return Mapping from protein ID to data about the protein.
+
+
+=item Definition
+
+=begin html
+
+<pre>
+a reference to a hash where the following keys are defined:
+ref has a value which is a GenomeAnnotationAPI.ObjectReference
+
+</pre>
+
+=end html
+
+=begin text
+
+a reference to a hash where the following keys are defined:
+ref has a value which is a GenomeAnnotationAPI.ObjectReference
+
+
+=end text
+
+=back
+
+
+
+=head2 inputs_get_feature_locations
+
+=over 4
+
+
+
+=item Description
+
+optional feature_id_list
+
+
+=item Definition
+
+=begin html
+
+<pre>
+a reference to a hash where the following keys are defined:
+ref has a value which is a GenomeAnnotationAPI.ObjectReference
+feature_id_list has a value which is a reference to a list where each element is a string
+
+</pre>
+
+=end html
+
+=begin text
+
+a reference to a hash where the following keys are defined:
+ref has a value which is a GenomeAnnotationAPI.ObjectReference
+feature_id_list has a value which is a reference to a list where each element is a string
+
+
+=end text
+
+=back
+
+
+
+=head2 inputs_get_feature_publications
+
+=over 4
+
+
+
+=item Description
+
+optional feature_id_list
+
+
+=item Definition
+
+=begin html
+
+<pre>
+a reference to a hash where the following keys are defined:
+ref has a value which is a GenomeAnnotationAPI.ObjectReference
+feature_id_list has a value which is a reference to a list where each element is a string
+
+</pre>
+
+=end html
+
+=begin text
+
+a reference to a hash where the following keys are defined:
+ref has a value which is a GenomeAnnotationAPI.ObjectReference
+feature_id_list has a value which is a reference to a list where each element is a string
+
+
+=end text
+
+=back
+
+
+
+=head2 inputs_get_feature_dna
+
+=over 4
+
+
+
+=item Description
+
+*
+* Retrieve Feature DNA sequences.
+*
+* @param feature_id_list List of Feature IDs for which to retrieve sequences.
+*     If empty, returns data for all features.
+* @return Mapping of Feature IDs to their DNA sequence.
+
+
+=item Definition
+
+=begin html
+
+<pre>
+a reference to a hash where the following keys are defined:
+ref has a value which is a GenomeAnnotationAPI.ObjectReference
+feature_id_list has a value which is a reference to a list where each element is a string
+
+</pre>
+
+=end html
+
+=begin text
+
+a reference to a hash where the following keys are defined:
+ref has a value which is a GenomeAnnotationAPI.ObjectReference
+feature_id_list has a value which is a reference to a list where each element is a string
+
+
+=end text
+
+=back
+
+
+
+=head2 inputs_get_feature_functions
+
+=over 4
+
+
+
+=item Description
+
+@optional feature_id_list
+
+
+=item Definition
+
+=begin html
+
+<pre>
+a reference to a hash where the following keys are defined:
+ref has a value which is a GenomeAnnotationAPI.ObjectReference
+feature_id_list has a value which is a reference to a list where each element is a string
+
+</pre>
+
+=end html
+
+=begin text
+
+a reference to a hash where the following keys are defined:
+ref has a value which is a GenomeAnnotationAPI.ObjectReference
+feature_id_list has a value which is a reference to a list where each element is a string
+
+
+=end text
+
+=back
+
+
+
+=head2 inputs_get_feature_aliases
+
+=over 4
+
+
+
+=item Description
+
+@optional feature_id_list
+
+
+=item Definition
+
+=begin html
+
+<pre>
+a reference to a hash where the following keys are defined:
+ref has a value which is a GenomeAnnotationAPI.ObjectReference
+feature_id_list has a value which is a reference to a list where each element is a string
+
+</pre>
+
+=end html
+
+=begin text
+
+a reference to a hash where the following keys are defined:
+ref has a value which is a GenomeAnnotationAPI.ObjectReference
+feature_id_list has a value which is a reference to a list where each element is a string
+
+
+=end text
+
+=back
+
+
+
+=head2 inputs_get_cds_by_gene
+
+=over 4
+
+
+
+=item Description
+
+*
+* Retrieves coding sequence Features (cds) for given gene Feature IDs.
+*
+* @param gene_id_list List of gene Feature IDS for which to retrieve CDS.
+*     If empty, returns data for all features.
+* @return Mapping of gene Feature IDs to a list of CDS Feature IDs.
+
+
+=item Definition
+
+=begin html
+
+<pre>
+a reference to a hash where the following keys are defined:
+ref has a value which is a GenomeAnnotationAPI.ObjectReference
+gene_id_list has a value which is a reference to a list where each element is a string
+
+</pre>
+
+=end html
+
+=begin text
+
+a reference to a hash where the following keys are defined:
+ref has a value which is a GenomeAnnotationAPI.ObjectReference
+gene_id_list has a value which is a reference to a list where each element is a string
+
+
+=end text
+
+=back
+
+
+
+=head2 inputs_mrna_id_list
+
+=over 4
+
+
+
+=item Description
+
+@optional mrna_id_list
+
+
+=item Definition
+
+=begin html
+
+<pre>
+a reference to a hash where the following keys are defined:
+ref has a value which is a GenomeAnnotationAPI.ObjectReference
+mrna_id_list has a value which is a reference to a list where each element is a string
+
+</pre>
+
+=end html
+
+=begin text
+
+a reference to a hash where the following keys are defined:
+ref has a value which is a GenomeAnnotationAPI.ObjectReference
+mrna_id_list has a value which is a reference to a list where each element is a string
+
+
+=end text
+
+=back
+
+
+
+=head2 inputs_get_gene_by_cds
+
+=over 4
+
+
+
+=item Description
+
+@optional cds_id_list
+
+
+=item Definition
+
+=begin html
+
+<pre>
+a reference to a hash where the following keys are defined:
+ref has a value which is a GenomeAnnotationAPI.ObjectReference
+cds_id_list has a value which is a reference to a list where each element is a string
+
+</pre>
+
+=end html
+
+=begin text
+
+a reference to a hash where the following keys are defined:
+ref has a value which is a GenomeAnnotationAPI.ObjectReference
+cds_id_list has a value which is a reference to a list where each element is a string
+
+
+=end text
+
+=back
+
+
+
+=head2 inputs_get_gene_by_mrna
+
+=over 4
+
+
+
+=item Description
+
+@optional mrna_id_list
+
+
+=item Definition
+
+=begin html
+
+<pre>
+a reference to a hash where the following keys are defined:
+ref has a value which is a GenomeAnnotationAPI.ObjectReference
+mrna_id_list has a value which is a reference to a list where each element is a string
+
+</pre>
+
+=end html
+
+=begin text
+
+a reference to a hash where the following keys are defined:
+ref has a value which is a GenomeAnnotationAPI.ObjectReference
+mrna_id_list has a value which is a reference to a list where each element is a string
+
+
+=end text
+
+=back
+
+
+
+=head2 inputs_get_mrna_by_cds
+
+=over 4
+
+
+
+=item Description
+
+@optional cds_id_list
+
+
+=item Definition
+
+=begin html
+
+<pre>
+a reference to a hash where the following keys are defined:
+ref has a value which is a GenomeAnnotationAPI.ObjectReference
+cds_id_list has a value which is a reference to a list where each element is a string
+
+</pre>
+
+=end html
+
+=begin text
+
+a reference to a hash where the following keys are defined:
+ref has a value which is a GenomeAnnotationAPI.ObjectReference
+cds_id_list has a value which is a reference to a list where each element is a string
+
+
+=end text
+
+=back
+
+
+
+=head2 inputs_get_mrna_by_gene
+
+=over 4
+
+
+
+=item Description
+
+@optional gene_id_list
+
+
+=item Definition
+
+=begin html
+
+<pre>
+a reference to a hash where the following keys are defined:
+ref has a value which is a GenomeAnnotationAPI.ObjectReference
+gene_id_list has a value which is a reference to a list where each element is a string
+
+</pre>
+
+=end html
+
+=begin text
+
+a reference to a hash where the following keys are defined:
+ref has a value which is a GenomeAnnotationAPI.ObjectReference
+gene_id_list has a value which is a reference to a list where each element is a string
+
+
+=end text
+
+=back
+
+
+
+=head2 inputs_get_mrna_exons
+
+=over 4
+
+
+
+=item Description
+
+@optional mrna_id_list
+
+
+=item Definition
+
+=begin html
+
+<pre>
+a reference to a hash where the following keys are defined:
+ref has a value which is a GenomeAnnotationAPI.ObjectReference
+mrna_id_list has a value which is a reference to a list where each element is a string
+
+</pre>
+
+=end html
+
+=begin text
+
+a reference to a hash where the following keys are defined:
+ref has a value which is a GenomeAnnotationAPI.ObjectReference
+mrna_id_list has a value which is a reference to a list where each element is a string
+
+
+=end text
+
+=back
+
+
+
+=head2 inputs_get_mrna_utrs
+
+=over 4
+
+
+
+=item Description
+
+@optional mrna_id_list
+
+
+=item Definition
+
+=begin html
+
+<pre>
+a reference to a hash where the following keys are defined:
+ref has a value which is a GenomeAnnotationAPI.ObjectReference
+mrna_id_list has a value which is a reference to a list where each element is a string
+
+</pre>
+
+=end html
+
+=begin text
+
+a reference to a hash where the following keys are defined:
+ref has a value which is a GenomeAnnotationAPI.ObjectReference
+mrna_id_list has a value which is a reference to a list where each element is a string
+
+
+=end text
+
+=back
+
+
+
+=head2 inputs_get_summary
+
+=over 4
+
+
+
+=item Description
+
+*
+* Retrieve a summary representation of this GenomeAnnotation.
+*
+* @return summary data
+
+
+=item Definition
+
+=begin html
+
+<pre>
+a reference to a hash where the following keys are defined:
+ref has a value which is a GenomeAnnotationAPI.ObjectReference
+
+</pre>
+
+=end html
+
+=begin text
+
+a reference to a hash where the following keys are defined:
+ref has a value which is a GenomeAnnotationAPI.ObjectReference
+
+
+=end text
+
+=back
+
+
+
+=head2 inputs_save_summary
+
+=over 4
+
+
+
+=item Description
+
+*
+* Retrieve a summary representation of this GenomeAnnotation.
+*
+* @return (int, Summary_data)
+
+
+=item Definition
+
+=begin html
+
+<pre>
+a reference to a hash where the following keys are defined:
+ref has a value which is a GenomeAnnotationAPI.ObjectReference
+
+</pre>
+
+=end html
+
+=begin text
+
+a reference to a hash where the following keys are defined:
+ref has a value which is a GenomeAnnotationAPI.ObjectReference
 
 
 =end text

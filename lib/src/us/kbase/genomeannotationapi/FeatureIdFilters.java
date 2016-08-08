@@ -17,6 +17,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
  * <pre>
  * *
  * * Filters passed to :meth:`get_feature_ids`
+ * * @optional type_list region_list function_list alias_list
  * </pre>
  * 
  */
