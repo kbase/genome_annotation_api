@@ -186,6 +186,27 @@ module GenomeAnnotationAPI {
         mapping<string, int> feature_type_counts;
     } Summary_data;
 
+    /*
+        gene_id is a feature id of a gene feature.
+        mrna_id is a feature id of a mrna feature.
+        cds_id is a feature id of a cds feature.
+    */
+    typedef structure {
+        string gene_type;
+        string mrna_type;
+        string cds_type;
+        list<string> feature_types;
+        mapping<string, mapping<string, Feature_data>> type_to_id_to_feature;
+        mapping<string, Protein_data> protein_id_to_protein;
+        mapping<string, list<string>> gene_id_to_mrna_ids;
+        mapping<string, list<string>> gene_id_to_cds_ids;
+        mapping<string, string> mrna_id_to_cds_id;
+        mapping<string, string> cds_id_to_protein_id;
+        mapping<string, list<Exon_data>> mrna_id_to_exons;
+        mapping<string, mapping<string, UTR_data>> mrna_id_to_utr_type_to_utr;
+        Summary_data summary;
+    } Genome_data;
+
     /**
      * Retrieve the Taxon associated with this GenomeAnnotation.
      *
@@ -581,4 +602,28 @@ module GenomeAnnotationAPI {
 
     funcdef save_summary(inputs_save_summary) returns (int, Summary_data) authentication required;
 
+    /*
+     * Retrieve any part of GenomeAnnotation.
+     * Any of load_genes, load_mrnas and load_cdss flags are additional to load_features_by_type list of types;
+     */
+    typedef structure {
+        ObjectReference ref;
+        boolean load_genes;
+        boolean load_mrnas;
+        boolean load_cdss;
+        list<string> load_features_by_type;
+        boolean load_proteins;
+        boolean load_gene_id_to_mrna_ids;
+        boolean load_gene_id_to_cds_ids;
+        boolean load_mrna_id_to_cds_id;
+        boolean load_cds_id_to_protein_id;
+        boolean load_mrna_id_to_exons;
+        boolean load_mrna_id_to_utr_type_to_utr;
+        boolean load_summary;
+    } GetGenomeDataParams;
+
+    /*
+     * Retrieve any part of GenomeAnnotation.
+     */
+    funcdef get_genome_data(GetGenomeDataParams params) returns (Genome_data) authentication required;
 };
