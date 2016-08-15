@@ -197,11 +197,10 @@ module GenomeAnnotationAPI {
         string cds_type;
         list<string> feature_types;
         mapping<string, mapping<string, Feature_data>> type_to_id_to_feature;
-        mapping<string, Protein_data> protein_id_to_protein;
+        mapping<string, Protein_data> cds_id_to_protein;
         mapping<string, list<string>> gene_id_to_mrna_ids;
         mapping<string, list<string>> gene_id_to_cds_ids;
         mapping<string, string> mrna_id_to_cds_id;
-        mapping<string, string> cds_id_to_protein_id;
         mapping<string, list<Exon_data>> mrna_id_to_exons;
         mapping<string, mapping<string, UTR_data>> mrna_id_to_utr_type_to_utr;
         Summary_data summary;
@@ -605,6 +604,7 @@ module GenomeAnnotationAPI {
     /*
      * Retrieve any part of GenomeAnnotation.
      * Any of load_genes, load_mrnas and load_cdss flags are additional to load_features_by_type list of types;
+     * By default load_genes=1, load_cdss=1, load_proteins=1, load_gene_id_to_cds_ids=1, load_summary=1.
      */
     typedef structure {
         ObjectReference ref;
@@ -616,7 +616,6 @@ module GenomeAnnotationAPI {
         boolean load_gene_id_to_mrna_ids;
         boolean load_gene_id_to_cds_ids;
         boolean load_mrna_id_to_cds_id;
-        boolean load_cds_id_to_protein_id;
         boolean load_mrna_id_to_exons;
         boolean load_mrna_id_to_utr_type_to_utr;
         boolean load_summary;
