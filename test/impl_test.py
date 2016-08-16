@@ -420,13 +420,13 @@ class GenomeAnnotationAPITests(unittest.TestCase):
         self.assertGreater(len(ret[0].keys()), 0, "ERROR: Empty summary data returned for {}".format(self.ga_ref))
 
     @log
-    def test_get_genome_data(self):
+    def test_get_combined_data(self):
         inputs = {'ref': self.ga_ref}
-        ret = self.impl.get_genome_data(self.ctx, inputs)
+        ret = self.impl.get_combined_data(self.ctx, inputs)
         self.assertGreater(len(ret[0]['feature_types']), 0, "ERROR: No feature types returned for {}".format(self.ga_ref))
-        self.assertGreater(len(ret[0]['type_to_id_to_feature']), 0, "ERROR: No features returned for {}".format(self.ga_ref))
-        self.assertGreater(len(ret[0]['type_to_id_to_feature']['gene']), 0, "ERROR: No genes returned for {}".format(self.ga_ref))
-        self.assertGreater(len(ret[0]['type_to_id_to_feature']['CDS']), 0, "ERROR: No CDSs returned for {}".format(self.ga_ref))
-        self.assertGreater(len(ret[0]['cds_id_to_protein']), 0, "ERROR: No proteins returned for {}".format(self.ga_ref))
-        self.assertGreater(len(ret[0]['gene_id_to_cds_ids']), 0, "ERROR: No gene-CDS links returned for {}".format(self.ga_ref))
+        self.assertGreater(len(ret[0]['feature_by_id_by_type']), 0, "ERROR: No features returned for {}".format(self.ga_ref))
+        self.assertGreater(len(ret[0]['feature_by_id_by_type']['gene']), 0, "ERROR: No genes returned for {}".format(self.ga_ref))
+        self.assertGreater(len(ret[0]['feature_by_id_by_type']['CDS']), 0, "ERROR: No CDSs returned for {}".format(self.ga_ref))
+        self.assertGreater(len(ret[0]['protein_by_cds_id']), 0, "ERROR: No proteins returned for {}".format(self.ga_ref))
+        self.assertGreater(len(ret[0]['cds_ids_by_gene_id']), 0, "ERROR: No gene-CDS links returned for {}".format(self.ga_ref))
         self.assertTrue('summary' in ret[0] and ret[0]['summary'] is not None, "ERROR: No summary returned for {}".format(self.ga_ref))

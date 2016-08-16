@@ -425,10 +425,10 @@ class Application(object):
                              name='GenomeAnnotationAPI.save_summary',
                              types=[dict])
         self.method_authentication['GenomeAnnotationAPI.save_summary'] = 'required'
-        self.rpc_service.add(impl_GenomeAnnotationAPI.get_genome_data,
-                             name='GenomeAnnotationAPI.get_genome_data',
+        self.rpc_service.add(impl_GenomeAnnotationAPI.get_combined_data,
+                             name='GenomeAnnotationAPI.get_combined_data',
                              types=[dict])
-        self.method_authentication['GenomeAnnotationAPI.get_genome_data'] = 'required'
+        self.method_authentication['GenomeAnnotationAPI.get_combined_data'] = 'required'
         self.rpc_service.add(impl_GenomeAnnotationAPI.status,
                              name='GenomeAnnotationAPI.status',
                              types=[dict])

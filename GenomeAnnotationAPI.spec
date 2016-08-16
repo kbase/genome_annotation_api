@@ -196,15 +196,15 @@ module GenomeAnnotationAPI {
         string mrna_type;
         string cds_type;
         list<string> feature_types;
-        mapping<string, mapping<string, Feature_data>> type_to_id_to_feature;
-        mapping<string, Protein_data> cds_id_to_protein;
-        mapping<string, list<string>> gene_id_to_mrna_ids;
-        mapping<string, list<string>> gene_id_to_cds_ids;
-        mapping<string, string> mrna_id_to_cds_id;
-        mapping<string, list<Exon_data>> mrna_id_to_exons;
-        mapping<string, mapping<string, UTR_data>> mrna_id_to_utr_type_to_utr;
+        mapping<string, mapping<string, Feature_data>> feature_by_id_by_type;
+        mapping<string, Protein_data> protein_by_cds_id;
+        mapping<string, list<string>> mrna_ids_by_gene_id;
+        mapping<string, list<string>> cds_ids_by_gene_id;
+        mapping<string, string> cds_id_by_mrna_id;
+        mapping<string, list<Exon_data>> exons_by_mrna_id;
+        mapping<string, mapping<string, UTR_data>> utr_by_utr_type_by_mrna_id;
         Summary_data summary;
-    } Genome_data;
+    } GenomeAnnotation_data;
 
     /**
      * Retrieve the Taxon associated with this GenomeAnnotation.
@@ -603,26 +603,25 @@ module GenomeAnnotationAPI {
 
     /*
      * Retrieve any part of GenomeAnnotation.
-     * Any of load_genes, load_mrnas and load_cdss flags are additional to load_features_by_type list of types;
-     * By default load_genes=1, load_cdss=1, load_proteins=1, load_gene_id_to_cds_ids=1, load_summary=1.
+     * Any of exclude_genes, include_mrnas and exclude_cdss flags override values listed in include_features_by_type.
      */
     typedef structure {
         ObjectReference ref;
-        boolean load_genes;
-        boolean load_mrnas;
-        boolean load_cdss;
-        list<string> load_features_by_type;
-        boolean load_proteins;
-        boolean load_gene_id_to_mrna_ids;
-        boolean load_gene_id_to_cds_ids;
-        boolean load_mrna_id_to_cds_id;
-        boolean load_mrna_id_to_exons;
-        boolean load_mrna_id_to_utr_type_to_utr;
-        boolean load_summary;
-    } GetGenomeDataParams;
+        boolean exclude_genes;
+        boolean include_mrnas;
+        boolean exclude_cdss;
+        list<string> include_features_by_type;
+        boolean exclude_protein_by_cds_id;
+        boolean include_mrna_ids_by_gene_id;
+        boolean exclude_cds_ids_by_gene_id;
+        boolean include_cds_id_by_mrna_id;
+        boolean include_exons_by_mrna_id;
+        boolean include_utr_by_utr_type_by_mrna_id;
+        boolean exclude_summary;
+    } GetCombinedDataParams;
 
     /*
      * Retrieve any part of GenomeAnnotation.
      */
-    funcdef get_genome_data(GetGenomeDataParams params) returns (Genome_data) authentication required;
+    funcdef get_combined_data(GetCombinedDataParams params) returns (GenomeAnnotation_data) authentication required;
 };

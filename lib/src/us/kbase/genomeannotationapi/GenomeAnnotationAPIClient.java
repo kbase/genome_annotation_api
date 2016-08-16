@@ -578,20 +578,20 @@ public class GenomeAnnotationAPIClient {
     }
 
     /**
-     * <p>Original spec-file function name: get_genome_data</p>
+     * <p>Original spec-file function name: get_combined_data</p>
      * <pre>
      * * Retrieve any part of GenomeAnnotation.
      * </pre>
-     * @param   params   instance of type {@link us.kbase.genomeannotationapi.GetGenomeDataParams GetGenomeDataParams}
-     * @return   instance of type {@link us.kbase.genomeannotationapi.GenomeData GenomeData} (original type "Genome_data")
+     * @param   params   instance of type {@link us.kbase.genomeannotationapi.GetCombinedDataParams GetCombinedDataParams}
+     * @return   instance of type {@link us.kbase.genomeannotationapi.GenomeAnnotationData GenomeAnnotationData} (original type "GenomeAnnotation_data")
      * @throws IOException if an IO exception occurs
      * @throws JsonClientException if a JSON RPC exception occurs
      */
-    public GenomeData getGenomeData(GetGenomeDataParams params, RpcContext... jsonRpcContext) throws IOException, JsonClientException {
+    public GenomeAnnotationData getCombinedData(GetCombinedDataParams params, RpcContext... jsonRpcContext) throws IOException, JsonClientException {
         List<Object> args = new ArrayList<Object>();
         args.add(params);
-        TypeReference<List<GenomeData>> retType = new TypeReference<List<GenomeData>>() {};
-        List<GenomeData> res = caller.jsonrpcCall("GenomeAnnotationAPI.get_genome_data", args, retType, true, true, jsonRpcContext, this.serviceVersion);
+        TypeReference<List<GenomeAnnotationData>> retType = new TypeReference<List<GenomeAnnotationData>>() {};
+        List<GenomeAnnotationData> res = caller.jsonrpcCall("GenomeAnnotationAPI.get_combined_data", args, retType, true, true, jsonRpcContext, this.serviceVersion);
         return res.get(0);
     }
 

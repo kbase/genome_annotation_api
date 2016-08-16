@@ -2513,9 +2513,9 @@ Summary_data is a reference to a hash where the following keys are defined:
  
 
 
-=head2 get_genome_data
+=head2 get_combined_data
 
-  $return = $obj->get_genome_data($params)
+  $return = $obj->get_combined_data($params)
 
 =over 4
 
@@ -2524,35 +2524,35 @@ Summary_data is a reference to a hash where the following keys are defined:
 =begin html
 
 <pre>
-$params is a GenomeAnnotationAPI.GetGenomeDataParams
-$return is a GenomeAnnotationAPI.Genome_data
-GetGenomeDataParams is a reference to a hash where the following keys are defined:
+$params is a GenomeAnnotationAPI.GetCombinedDataParams
+$return is a GenomeAnnotationAPI.GenomeAnnotation_data
+GetCombinedDataParams is a reference to a hash where the following keys are defined:
 	ref has a value which is a GenomeAnnotationAPI.ObjectReference
 	load_genes has a value which is a GenomeAnnotationAPI.boolean
 	load_mrnas has a value which is a GenomeAnnotationAPI.boolean
 	load_cdss has a value which is a GenomeAnnotationAPI.boolean
 	load_features_by_type has a value which is a reference to a list where each element is a string
-	load_proteins has a value which is a GenomeAnnotationAPI.boolean
-	load_gene_id_to_mrna_ids has a value which is a GenomeAnnotationAPI.boolean
-	load_gene_id_to_cds_ids has a value which is a GenomeAnnotationAPI.boolean
-	load_mrna_id_to_cds_id has a value which is a GenomeAnnotationAPI.boolean
-	load_mrna_id_to_exons has a value which is a GenomeAnnotationAPI.boolean
-	load_mrna_id_to_utr_type_to_utr has a value which is a GenomeAnnotationAPI.boolean
+	load_protein_by_cds_id has a value which is a GenomeAnnotationAPI.boolean
+	load_mrna_ids_by_gene_id has a value which is a GenomeAnnotationAPI.boolean
+	load_cds_ids_by_gene_id has a value which is a GenomeAnnotationAPI.boolean
+	load_cds_id_by_mrna_id has a value which is a GenomeAnnotationAPI.boolean
+	load_exons_by_mrna_id has a value which is a GenomeAnnotationAPI.boolean
+	load_utr_by_utr_type_by_mrna_id has a value which is a GenomeAnnotationAPI.boolean
 	load_summary has a value which is a GenomeAnnotationAPI.boolean
 ObjectReference is a string
 boolean is an int
-Genome_data is a reference to a hash where the following keys are defined:
+GenomeAnnotation_data is a reference to a hash where the following keys are defined:
 	gene_type has a value which is a string
 	mrna_type has a value which is a string
 	cds_type has a value which is a string
 	feature_types has a value which is a reference to a list where each element is a string
-	type_to_id_to_feature has a value which is a reference to a hash where the key is a string and the value is a reference to a hash where the key is a string and the value is a GenomeAnnotationAPI.Feature_data
-	cds_id_to_protein has a value which is a reference to a hash where the key is a string and the value is a GenomeAnnotationAPI.Protein_data
-	gene_id_to_mrna_ids has a value which is a reference to a hash where the key is a string and the value is a reference to a list where each element is a string
-	gene_id_to_cds_ids has a value which is a reference to a hash where the key is a string and the value is a reference to a list where each element is a string
-	mrna_id_to_cds_id has a value which is a reference to a hash where the key is a string and the value is a string
-	mrna_id_to_exons has a value which is a reference to a hash where the key is a string and the value is a reference to a list where each element is a GenomeAnnotationAPI.Exon_data
-	mrna_id_to_utr_type_to_utr has a value which is a reference to a hash where the key is a string and the value is a reference to a hash where the key is a string and the value is a GenomeAnnotationAPI.UTR_data
+	feature_by_id_by_type has a value which is a reference to a hash where the key is a string and the value is a reference to a hash where the key is a string and the value is a GenomeAnnotationAPI.Feature_data
+	protein_by_cds_id has a value which is a reference to a hash where the key is a string and the value is a GenomeAnnotationAPI.Protein_data
+	mrna_ids_by_gene_id has a value which is a reference to a hash where the key is a string and the value is a reference to a list where each element is a string
+	cds_ids_by_gene_id has a value which is a reference to a hash where the key is a string and the value is a reference to a list where each element is a string
+	cds_id_by_mrna_id has a value which is a reference to a hash where the key is a string and the value is a string
+	exons_by_mrna_id has a value which is a reference to a hash where the key is a string and the value is a reference to a list where each element is a GenomeAnnotationAPI.Exon_data
+	utr_by_utr_type_by_mrna_id has a value which is a reference to a hash where the key is a string and the value is a reference to a hash where the key is a string and the value is a GenomeAnnotationAPI.UTR_data
 	summary has a value which is a GenomeAnnotationAPI.Summary_data
 Feature_data is a reference to a hash where the following keys are defined:
 	feature_id has a value which is a string
@@ -2613,35 +2613,35 @@ Summary_data is a reference to a hash where the following keys are defined:
 
 =begin text
 
-$params is a GenomeAnnotationAPI.GetGenomeDataParams
-$return is a GenomeAnnotationAPI.Genome_data
-GetGenomeDataParams is a reference to a hash where the following keys are defined:
+$params is a GenomeAnnotationAPI.GetCombinedDataParams
+$return is a GenomeAnnotationAPI.GenomeAnnotation_data
+GetCombinedDataParams is a reference to a hash where the following keys are defined:
 	ref has a value which is a GenomeAnnotationAPI.ObjectReference
 	load_genes has a value which is a GenomeAnnotationAPI.boolean
 	load_mrnas has a value which is a GenomeAnnotationAPI.boolean
 	load_cdss has a value which is a GenomeAnnotationAPI.boolean
 	load_features_by_type has a value which is a reference to a list where each element is a string
-	load_proteins has a value which is a GenomeAnnotationAPI.boolean
-	load_gene_id_to_mrna_ids has a value which is a GenomeAnnotationAPI.boolean
-	load_gene_id_to_cds_ids has a value which is a GenomeAnnotationAPI.boolean
-	load_mrna_id_to_cds_id has a value which is a GenomeAnnotationAPI.boolean
-	load_mrna_id_to_exons has a value which is a GenomeAnnotationAPI.boolean
-	load_mrna_id_to_utr_type_to_utr has a value which is a GenomeAnnotationAPI.boolean
+	load_protein_by_cds_id has a value which is a GenomeAnnotationAPI.boolean
+	load_mrna_ids_by_gene_id has a value which is a GenomeAnnotationAPI.boolean
+	load_cds_ids_by_gene_id has a value which is a GenomeAnnotationAPI.boolean
+	load_cds_id_by_mrna_id has a value which is a GenomeAnnotationAPI.boolean
+	load_exons_by_mrna_id has a value which is a GenomeAnnotationAPI.boolean
+	load_utr_by_utr_type_by_mrna_id has a value which is a GenomeAnnotationAPI.boolean
 	load_summary has a value which is a GenomeAnnotationAPI.boolean
 ObjectReference is a string
 boolean is an int
-Genome_data is a reference to a hash where the following keys are defined:
+GenomeAnnotation_data is a reference to a hash where the following keys are defined:
 	gene_type has a value which is a string
 	mrna_type has a value which is a string
 	cds_type has a value which is a string
 	feature_types has a value which is a reference to a list where each element is a string
-	type_to_id_to_feature has a value which is a reference to a hash where the key is a string and the value is a reference to a hash where the key is a string and the value is a GenomeAnnotationAPI.Feature_data
-	cds_id_to_protein has a value which is a reference to a hash where the key is a string and the value is a GenomeAnnotationAPI.Protein_data
-	gene_id_to_mrna_ids has a value which is a reference to a hash where the key is a string and the value is a reference to a list where each element is a string
-	gene_id_to_cds_ids has a value which is a reference to a hash where the key is a string and the value is a reference to a list where each element is a string
-	mrna_id_to_cds_id has a value which is a reference to a hash where the key is a string and the value is a string
-	mrna_id_to_exons has a value which is a reference to a hash where the key is a string and the value is a reference to a list where each element is a GenomeAnnotationAPI.Exon_data
-	mrna_id_to_utr_type_to_utr has a value which is a reference to a hash where the key is a string and the value is a reference to a hash where the key is a string and the value is a GenomeAnnotationAPI.UTR_data
+	feature_by_id_by_type has a value which is a reference to a hash where the key is a string and the value is a reference to a hash where the key is a string and the value is a GenomeAnnotationAPI.Feature_data
+	protein_by_cds_id has a value which is a reference to a hash where the key is a string and the value is a GenomeAnnotationAPI.Protein_data
+	mrna_ids_by_gene_id has a value which is a reference to a hash where the key is a string and the value is a reference to a list where each element is a string
+	cds_ids_by_gene_id has a value which is a reference to a hash where the key is a string and the value is a reference to a list where each element is a string
+	cds_id_by_mrna_id has a value which is a reference to a hash where the key is a string and the value is a string
+	exons_by_mrna_id has a value which is a reference to a hash where the key is a string and the value is a reference to a list where each element is a GenomeAnnotationAPI.Exon_data
+	utr_by_utr_type_by_mrna_id has a value which is a reference to a hash where the key is a string and the value is a reference to a hash where the key is a string and the value is a GenomeAnnotationAPI.UTR_data
 	summary has a value which is a GenomeAnnotationAPI.Summary_data
 Feature_data is a reference to a hash where the following keys are defined:
 	feature_id has a value which is a string
@@ -2707,7 +2707,7 @@ Retrieve any part of GenomeAnnotation.
 
 =cut
 
- sub get_genome_data
+ sub get_combined_data
 {
     my($self, @args) = @_;
 
@@ -2716,7 +2716,7 @@ Retrieve any part of GenomeAnnotation.
     if ((my $n = @args) != 1)
     {
 	Bio::KBase::Exceptions::ArgumentValidationError->throw(error =>
-							       "Invalid argument count for function get_genome_data (received $n, expecting 1)");
+							       "Invalid argument count for function get_combined_data (received $n, expecting 1)");
     }
     {
 	my($params) = @args;
@@ -2724,31 +2724,31 @@ Retrieve any part of GenomeAnnotation.
 	my @_bad_arguments;
         (ref($params) eq 'HASH') or push(@_bad_arguments, "Invalid type for argument 1 \"params\" (value was \"$params\")");
         if (@_bad_arguments) {
-	    my $msg = "Invalid arguments passed to get_genome_data:\n" . join("", map { "\t$_\n" } @_bad_arguments);
+	    my $msg = "Invalid arguments passed to get_combined_data:\n" . join("", map { "\t$_\n" } @_bad_arguments);
 	    Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
-								   method_name => 'get_genome_data');
+								   method_name => 'get_combined_data');
 	}
     }
 
     my $url = $self->{url};
     my $result = $self->{client}->call($url, $self->{headers}, {
-	    method => "GenomeAnnotationAPI.get_genome_data",
+	    method => "GenomeAnnotationAPI.get_combined_data",
 	    params => \@args,
     });
     if ($result) {
 	if ($result->is_error) {
 	    Bio::KBase::Exceptions::JSONRPC->throw(error => $result->error_message,
 					       code => $result->content->{error}->{code},
-					       method_name => 'get_genome_data',
+					       method_name => 'get_combined_data',
 					       data => $result->content->{error}->{error} # JSON::RPC::ReturnObject only supports JSONRPC 1.1 or 1.O
 					      );
 	} else {
 	    return wantarray ? @{$result->result} : $result->result->[0];
 	}
     } else {
-        Bio::KBase::Exceptions::HTTP->throw(error => "Error invoking method get_genome_data",
+        Bio::KBase::Exceptions::HTTP->throw(error => "Error invoking method get_combined_data",
 					    status_line => $self->{client}->status_line,
-					    method_name => 'get_genome_data',
+					    method_name => 'get_combined_data',
 				       );
     }
 }
@@ -2796,16 +2796,16 @@ sub version {
             Bio::KBase::Exceptions::JSONRPC->throw(
                 error => $result->error_message,
                 code => $result->content->{code},
-                method_name => 'get_genome_data',
+                method_name => 'get_combined_data',
             );
         } else {
             return wantarray ? @{$result->result} : $result->result->[0];
         }
     } else {
         Bio::KBase::Exceptions::HTTP->throw(
-            error => "Error invoking method get_genome_data",
+            error => "Error invoking method get_combined_data",
             status_line => $self->{client}->status_line,
-            method_name => 'get_genome_data',
+            method_name => 'get_combined_data',
         );
     }
 }
@@ -3244,7 +3244,7 @@ feature_type_counts has a value which is a reference to a hash where the key is 
 
 
 
-=head2 Genome_data
+=head2 GenomeAnnotation_data
 
 =over 4
 
@@ -3267,13 +3267,13 @@ gene_type has a value which is a string
 mrna_type has a value which is a string
 cds_type has a value which is a string
 feature_types has a value which is a reference to a list where each element is a string
-type_to_id_to_feature has a value which is a reference to a hash where the key is a string and the value is a reference to a hash where the key is a string and the value is a GenomeAnnotationAPI.Feature_data
-cds_id_to_protein has a value which is a reference to a hash where the key is a string and the value is a GenomeAnnotationAPI.Protein_data
-gene_id_to_mrna_ids has a value which is a reference to a hash where the key is a string and the value is a reference to a list where each element is a string
-gene_id_to_cds_ids has a value which is a reference to a hash where the key is a string and the value is a reference to a list where each element is a string
-mrna_id_to_cds_id has a value which is a reference to a hash where the key is a string and the value is a string
-mrna_id_to_exons has a value which is a reference to a hash where the key is a string and the value is a reference to a list where each element is a GenomeAnnotationAPI.Exon_data
-mrna_id_to_utr_type_to_utr has a value which is a reference to a hash where the key is a string and the value is a reference to a hash where the key is a string and the value is a GenomeAnnotationAPI.UTR_data
+feature_by_id_by_type has a value which is a reference to a hash where the key is a string and the value is a reference to a hash where the key is a string and the value is a GenomeAnnotationAPI.Feature_data
+protein_by_cds_id has a value which is a reference to a hash where the key is a string and the value is a GenomeAnnotationAPI.Protein_data
+mrna_ids_by_gene_id has a value which is a reference to a hash where the key is a string and the value is a reference to a list where each element is a string
+cds_ids_by_gene_id has a value which is a reference to a hash where the key is a string and the value is a reference to a list where each element is a string
+cds_id_by_mrna_id has a value which is a reference to a hash where the key is a string and the value is a string
+exons_by_mrna_id has a value which is a reference to a hash where the key is a string and the value is a reference to a list where each element is a GenomeAnnotationAPI.Exon_data
+utr_by_utr_type_by_mrna_id has a value which is a reference to a hash where the key is a string and the value is a reference to a hash where the key is a string and the value is a GenomeAnnotationAPI.UTR_data
 summary has a value which is a GenomeAnnotationAPI.Summary_data
 
 </pre>
@@ -3287,13 +3287,13 @@ gene_type has a value which is a string
 mrna_type has a value which is a string
 cds_type has a value which is a string
 feature_types has a value which is a reference to a list where each element is a string
-type_to_id_to_feature has a value which is a reference to a hash where the key is a string and the value is a reference to a hash where the key is a string and the value is a GenomeAnnotationAPI.Feature_data
-cds_id_to_protein has a value which is a reference to a hash where the key is a string and the value is a GenomeAnnotationAPI.Protein_data
-gene_id_to_mrna_ids has a value which is a reference to a hash where the key is a string and the value is a reference to a list where each element is a string
-gene_id_to_cds_ids has a value which is a reference to a hash where the key is a string and the value is a reference to a list where each element is a string
-mrna_id_to_cds_id has a value which is a reference to a hash where the key is a string and the value is a string
-mrna_id_to_exons has a value which is a reference to a hash where the key is a string and the value is a reference to a list where each element is a GenomeAnnotationAPI.Exon_data
-mrna_id_to_utr_type_to_utr has a value which is a reference to a hash where the key is a string and the value is a reference to a hash where the key is a string and the value is a GenomeAnnotationAPI.UTR_data
+feature_by_id_by_type has a value which is a reference to a hash where the key is a string and the value is a reference to a hash where the key is a string and the value is a GenomeAnnotationAPI.Feature_data
+protein_by_cds_id has a value which is a reference to a hash where the key is a string and the value is a GenomeAnnotationAPI.Protein_data
+mrna_ids_by_gene_id has a value which is a reference to a hash where the key is a string and the value is a reference to a list where each element is a string
+cds_ids_by_gene_id has a value which is a reference to a hash where the key is a string and the value is a reference to a list where each element is a string
+cds_id_by_mrna_id has a value which is a reference to a hash where the key is a string and the value is a string
+exons_by_mrna_id has a value which is a reference to a hash where the key is a string and the value is a reference to a list where each element is a GenomeAnnotationAPI.Exon_data
+utr_by_utr_type_by_mrna_id has a value which is a reference to a hash where the key is a string and the value is a reference to a hash where the key is a string and the value is a GenomeAnnotationAPI.UTR_data
 summary has a value which is a GenomeAnnotationAPI.Summary_data
 
 
@@ -4214,7 +4214,7 @@ ref has a value which is a GenomeAnnotationAPI.ObjectReference
 
 
 
-=head2 GetGenomeDataParams
+=head2 GetCombinedDataParams
 
 =over 4
 
@@ -4238,12 +4238,12 @@ load_genes has a value which is a GenomeAnnotationAPI.boolean
 load_mrnas has a value which is a GenomeAnnotationAPI.boolean
 load_cdss has a value which is a GenomeAnnotationAPI.boolean
 load_features_by_type has a value which is a reference to a list where each element is a string
-load_proteins has a value which is a GenomeAnnotationAPI.boolean
-load_gene_id_to_mrna_ids has a value which is a GenomeAnnotationAPI.boolean
-load_gene_id_to_cds_ids has a value which is a GenomeAnnotationAPI.boolean
-load_mrna_id_to_cds_id has a value which is a GenomeAnnotationAPI.boolean
-load_mrna_id_to_exons has a value which is a GenomeAnnotationAPI.boolean
-load_mrna_id_to_utr_type_to_utr has a value which is a GenomeAnnotationAPI.boolean
+load_protein_by_cds_id has a value which is a GenomeAnnotationAPI.boolean
+load_mrna_ids_by_gene_id has a value which is a GenomeAnnotationAPI.boolean
+load_cds_ids_by_gene_id has a value which is a GenomeAnnotationAPI.boolean
+load_cds_id_by_mrna_id has a value which is a GenomeAnnotationAPI.boolean
+load_exons_by_mrna_id has a value which is a GenomeAnnotationAPI.boolean
+load_utr_by_utr_type_by_mrna_id has a value which is a GenomeAnnotationAPI.boolean
 load_summary has a value which is a GenomeAnnotationAPI.boolean
 
 </pre>
@@ -4258,12 +4258,12 @@ load_genes has a value which is a GenomeAnnotationAPI.boolean
 load_mrnas has a value which is a GenomeAnnotationAPI.boolean
 load_cdss has a value which is a GenomeAnnotationAPI.boolean
 load_features_by_type has a value which is a reference to a list where each element is a string
-load_proteins has a value which is a GenomeAnnotationAPI.boolean
-load_gene_id_to_mrna_ids has a value which is a GenomeAnnotationAPI.boolean
-load_gene_id_to_cds_ids has a value which is a GenomeAnnotationAPI.boolean
-load_mrna_id_to_cds_id has a value which is a GenomeAnnotationAPI.boolean
-load_mrna_id_to_exons has a value which is a GenomeAnnotationAPI.boolean
-load_mrna_id_to_utr_type_to_utr has a value which is a GenomeAnnotationAPI.boolean
+load_protein_by_cds_id has a value which is a GenomeAnnotationAPI.boolean
+load_mrna_ids_by_gene_id has a value which is a GenomeAnnotationAPI.boolean
+load_cds_ids_by_gene_id has a value which is a GenomeAnnotationAPI.boolean
+load_cds_id_by_mrna_id has a value which is a GenomeAnnotationAPI.boolean
+load_exons_by_mrna_id has a value which is a GenomeAnnotationAPI.boolean
+load_utr_by_utr_type_by_mrna_id has a value which is a GenomeAnnotationAPI.boolean
 load_summary has a value which is a GenomeAnnotationAPI.boolean
 
 
