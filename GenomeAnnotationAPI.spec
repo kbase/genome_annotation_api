@@ -186,6 +186,26 @@ module GenomeAnnotationAPI {
         mapping<string, int> feature_type_counts;
     } Summary_data;
 
+    /*
+        gene_id is a feature id of a gene feature.
+        mrna_id is a feature id of a mrna feature.
+        cds_id is a feature id of a cds feature.
+    */
+    typedef structure {
+        string gene_type;
+        string mrna_type;
+        string cds_type;
+        list<string> feature_types;
+        mapping<string, mapping<string, Feature_data>> feature_by_id_by_type;
+        mapping<string, Protein_data> protein_by_cds_id;
+        mapping<string, list<string>> mrna_ids_by_gene_id;
+        mapping<string, list<string>> cds_ids_by_gene_id;
+        mapping<string, string> cds_id_by_mrna_id;
+        mapping<string, list<Exon_data>> exons_by_mrna_id;
+        mapping<string, mapping<string, UTR_data>> utr_by_utr_type_by_mrna_id;
+        Summary_data summary;
+    } GenomeAnnotation_data;
+
     /**
      * Retrieve the Taxon associated with this GenomeAnnotation.
      *
@@ -581,4 +601,28 @@ module GenomeAnnotationAPI {
 
     funcdef save_summary(inputs_save_summary) returns (int, Summary_data) authentication required;
 
+    /*
+     * Retrieve any part of GenomeAnnotation.
+     * Any of exclude_genes, include_mrnas and exclude_cdss flags override values listed in include_features_by_type.
+     */
+    typedef structure {
+        ObjectReference ref;
+        boolean exclude_genes;
+        boolean include_mrnas;
+        boolean exclude_cdss;
+        list<string> include_features_by_type;
+        boolean exclude_protein_by_cds_id;
+        boolean include_mrna_ids_by_gene_id;
+        boolean exclude_cds_ids_by_gene_id;
+        boolean include_cds_id_by_mrna_id;
+        boolean include_exons_by_mrna_id;
+        boolean include_utr_by_utr_type_by_mrna_id;
+        boolean exclude_summary;
+    } GetCombinedDataParams;
+
+    /*
+     * Retrieve any part of GenomeAnnotation. Please don't use this method in full mode (with all parts included) in cases
+     * of large eukaryotic datasets. It may lead to out-of-memory errors.
+     */
+    funcdef get_combined_data(GetCombinedDataParams params) returns (GenomeAnnotation_data) authentication required;
 };

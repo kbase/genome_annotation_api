@@ -22,6 +22,7 @@ import us.kbase.common.service.UnauthorizedException;
  */
 public class GenomeAnnotationAPIClient {
     private JsonClientCaller caller;
+    private String serviceVersion = null;
 
 
     /** Constructs a client with a custom URL and no user credentials.
@@ -51,6 +52,20 @@ public class GenomeAnnotationAPIClient {
      */
     public GenomeAnnotationAPIClient(URL url, String user, String password) throws UnauthorizedException, IOException {
         caller = new JsonClientCaller(url, user, password);
+    }
+
+    /** Constructs a client with a custom URL
+     * and a custom authorization service URL.
+     * @param url the URL of the service.
+     * @param user the user name.
+     * @param password the password for the user name.
+     * @param auth the URL of the authorization server.
+     * @throws UnauthorizedException if the credentials are not valid.
+     * @throws IOException if an IOException occurs when checking the user's
+     * credentials.
+     */
+    public GenomeAnnotationAPIClient(URL url, String user, String password, URL auth) throws UnauthorizedException, IOException {
+        caller = new JsonClientCaller(url, user, password, auth);
     }
 
     /** Get the token this client uses to communicate with the server.
@@ -140,6 +155,14 @@ public class GenomeAnnotationAPIClient {
         caller.setFileForNextRpcResponse(f);
     }
 
+    public String getServiceVersion() {
+        return this.serviceVersion;
+    }
+
+    public void setServiceVersion(String newValue) {
+        this.serviceVersion = newValue;
+    }
+
     /**
      * <p>Original spec-file function name: get_taxon</p>
      * <pre>
@@ -153,7 +176,7 @@ public class GenomeAnnotationAPIClient {
         List<Object> args = new ArrayList<Object>();
         args.add(arg1);
         TypeReference<List<String>> retType = new TypeReference<List<String>>() {};
-        List<String> res = caller.jsonrpcCall("GenomeAnnotationAPI.get_taxon", args, retType, true, true, jsonRpcContext);
+        List<String> res = caller.jsonrpcCall("GenomeAnnotationAPI.get_taxon", args, retType, true, true, jsonRpcContext, this.serviceVersion);
         return res.get(0);
     }
 
@@ -170,7 +193,7 @@ public class GenomeAnnotationAPIClient {
         List<Object> args = new ArrayList<Object>();
         args.add(arg1);
         TypeReference<List<String>> retType = new TypeReference<List<String>>() {};
-        List<String> res = caller.jsonrpcCall("GenomeAnnotationAPI.get_assembly", args, retType, true, true, jsonRpcContext);
+        List<String> res = caller.jsonrpcCall("GenomeAnnotationAPI.get_assembly", args, retType, true, true, jsonRpcContext, this.serviceVersion);
         return res.get(0);
     }
 
@@ -187,7 +210,7 @@ public class GenomeAnnotationAPIClient {
         List<Object> args = new ArrayList<Object>();
         args.add(arg1);
         TypeReference<List<List<String>>> retType = new TypeReference<List<List<String>>>() {};
-        List<List<String>> res = caller.jsonrpcCall("GenomeAnnotationAPI.get_feature_types", args, retType, true, true, jsonRpcContext);
+        List<List<String>> res = caller.jsonrpcCall("GenomeAnnotationAPI.get_feature_types", args, retType, true, true, jsonRpcContext, this.serviceVersion);
         return res.get(0);
     }
 
@@ -204,7 +227,7 @@ public class GenomeAnnotationAPIClient {
         List<Object> args = new ArrayList<Object>();
         args.add(arg1);
         TypeReference<List<Map<String,String>>> retType = new TypeReference<List<Map<String,String>>>() {};
-        List<Map<String,String>> res = caller.jsonrpcCall("GenomeAnnotationAPI.get_feature_type_descriptions", args, retType, true, true, jsonRpcContext);
+        List<Map<String,String>> res = caller.jsonrpcCall("GenomeAnnotationAPI.get_feature_type_descriptions", args, retType, true, true, jsonRpcContext, this.serviceVersion);
         return res.get(0);
     }
 
@@ -221,7 +244,7 @@ public class GenomeAnnotationAPIClient {
         List<Object> args = new ArrayList<Object>();
         args.add(arg1);
         TypeReference<List<Map<String,Long>>> retType = new TypeReference<List<Map<String,Long>>>() {};
-        List<Map<String,Long>> res = caller.jsonrpcCall("GenomeAnnotationAPI.get_feature_type_counts", args, retType, true, true, jsonRpcContext);
+        List<Map<String,Long>> res = caller.jsonrpcCall("GenomeAnnotationAPI.get_feature_type_counts", args, retType, true, true, jsonRpcContext, this.serviceVersion);
         return res.get(0);
     }
 
@@ -238,7 +261,7 @@ public class GenomeAnnotationAPIClient {
         List<Object> args = new ArrayList<Object>();
         args.add(arg1);
         TypeReference<List<FeatureIdMapping>> retType = new TypeReference<List<FeatureIdMapping>>() {};
-        List<FeatureIdMapping> res = caller.jsonrpcCall("GenomeAnnotationAPI.get_feature_ids", args, retType, true, true, jsonRpcContext);
+        List<FeatureIdMapping> res = caller.jsonrpcCall("GenomeAnnotationAPI.get_feature_ids", args, retType, true, true, jsonRpcContext, this.serviceVersion);
         return res.get(0);
     }
 
@@ -255,7 +278,7 @@ public class GenomeAnnotationAPIClient {
         List<Object> args = new ArrayList<Object>();
         args.add(arg1);
         TypeReference<List<Map<String,FeatureData>>> retType = new TypeReference<List<Map<String,FeatureData>>>() {};
-        List<Map<String,FeatureData>> res = caller.jsonrpcCall("GenomeAnnotationAPI.get_features", args, retType, true, true, jsonRpcContext);
+        List<Map<String,FeatureData>> res = caller.jsonrpcCall("GenomeAnnotationAPI.get_features", args, retType, true, true, jsonRpcContext, this.serviceVersion);
         return res.get(0);
     }
 
@@ -278,7 +301,7 @@ public class GenomeAnnotationAPIClient {
         List<Object> args = new ArrayList<Object>();
         args.add(params);
         TypeReference<List<Map<String,FeatureData>>> retType = new TypeReference<List<Map<String,FeatureData>>>() {};
-        List<Map<String,FeatureData>> res = caller.jsonrpcCall("GenomeAnnotationAPI.get_features2", args, retType, true, true, jsonRpcContext);
+        List<Map<String,FeatureData>> res = caller.jsonrpcCall("GenomeAnnotationAPI.get_features2", args, retType, true, true, jsonRpcContext, this.serviceVersion);
         return res.get(0);
     }
 
@@ -295,7 +318,7 @@ public class GenomeAnnotationAPIClient {
         List<Object> args = new ArrayList<Object>();
         args.add(arg1);
         TypeReference<List<Map<String,ProteinData>>> retType = new TypeReference<List<Map<String,ProteinData>>>() {};
-        List<Map<String,ProteinData>> res = caller.jsonrpcCall("GenomeAnnotationAPI.get_proteins", args, retType, true, true, jsonRpcContext);
+        List<Map<String,ProteinData>> res = caller.jsonrpcCall("GenomeAnnotationAPI.get_proteins", args, retType, true, true, jsonRpcContext, this.serviceVersion);
         return res.get(0);
     }
 
@@ -312,7 +335,7 @@ public class GenomeAnnotationAPIClient {
         List<Object> args = new ArrayList<Object>();
         args.add(arg1);
         TypeReference<List<Map<String,List<Region>>>> retType = new TypeReference<List<Map<String,List<Region>>>>() {};
-        List<Map<String,List<Region>>> res = caller.jsonrpcCall("GenomeAnnotationAPI.get_feature_locations", args, retType, true, true, jsonRpcContext);
+        List<Map<String,List<Region>>> res = caller.jsonrpcCall("GenomeAnnotationAPI.get_feature_locations", args, retType, true, true, jsonRpcContext, this.serviceVersion);
         return res.get(0);
     }
 
@@ -329,7 +352,7 @@ public class GenomeAnnotationAPIClient {
         List<Object> args = new ArrayList<Object>();
         args.add(arg1);
         TypeReference<List<Map<String,List<String>>>> retType = new TypeReference<List<Map<String,List<String>>>>() {};
-        List<Map<String,List<String>>> res = caller.jsonrpcCall("GenomeAnnotationAPI.get_feature_publications", args, retType, true, true, jsonRpcContext);
+        List<Map<String,List<String>>> res = caller.jsonrpcCall("GenomeAnnotationAPI.get_feature_publications", args, retType, true, true, jsonRpcContext, this.serviceVersion);
         return res.get(0);
     }
 
@@ -346,7 +369,7 @@ public class GenomeAnnotationAPIClient {
         List<Object> args = new ArrayList<Object>();
         args.add(arg1);
         TypeReference<List<Map<String,String>>> retType = new TypeReference<List<Map<String,String>>>() {};
-        List<Map<String,String>> res = caller.jsonrpcCall("GenomeAnnotationAPI.get_feature_dna", args, retType, true, true, jsonRpcContext);
+        List<Map<String,String>> res = caller.jsonrpcCall("GenomeAnnotationAPI.get_feature_dna", args, retType, true, true, jsonRpcContext, this.serviceVersion);
         return res.get(0);
     }
 
@@ -363,7 +386,7 @@ public class GenomeAnnotationAPIClient {
         List<Object> args = new ArrayList<Object>();
         args.add(arg1);
         TypeReference<List<Map<String,String>>> retType = new TypeReference<List<Map<String,String>>>() {};
-        List<Map<String,String>> res = caller.jsonrpcCall("GenomeAnnotationAPI.get_feature_functions", args, retType, true, true, jsonRpcContext);
+        List<Map<String,String>> res = caller.jsonrpcCall("GenomeAnnotationAPI.get_feature_functions", args, retType, true, true, jsonRpcContext, this.serviceVersion);
         return res.get(0);
     }
 
@@ -380,7 +403,7 @@ public class GenomeAnnotationAPIClient {
         List<Object> args = new ArrayList<Object>();
         args.add(arg1);
         TypeReference<List<Map<String,List<String>>>> retType = new TypeReference<List<Map<String,List<String>>>>() {};
-        List<Map<String,List<String>>> res = caller.jsonrpcCall("GenomeAnnotationAPI.get_feature_aliases", args, retType, true, true, jsonRpcContext);
+        List<Map<String,List<String>>> res = caller.jsonrpcCall("GenomeAnnotationAPI.get_feature_aliases", args, retType, true, true, jsonRpcContext, this.serviceVersion);
         return res.get(0);
     }
 
@@ -397,7 +420,7 @@ public class GenomeAnnotationAPIClient {
         List<Object> args = new ArrayList<Object>();
         args.add(arg1);
         TypeReference<List<Map<String,List<String>>>> retType = new TypeReference<List<Map<String,List<String>>>>() {};
-        List<Map<String,List<String>>> res = caller.jsonrpcCall("GenomeAnnotationAPI.get_cds_by_gene", args, retType, true, true, jsonRpcContext);
+        List<Map<String,List<String>>> res = caller.jsonrpcCall("GenomeAnnotationAPI.get_cds_by_gene", args, retType, true, true, jsonRpcContext, this.serviceVersion);
         return res.get(0);
     }
 
@@ -414,7 +437,7 @@ public class GenomeAnnotationAPIClient {
         List<Object> args = new ArrayList<Object>();
         args.add(arg1);
         TypeReference<List<Map<String,String>>> retType = new TypeReference<List<Map<String,String>>>() {};
-        List<Map<String,String>> res = caller.jsonrpcCall("GenomeAnnotationAPI.get_cds_by_mrna", args, retType, true, true, jsonRpcContext);
+        List<Map<String,String>> res = caller.jsonrpcCall("GenomeAnnotationAPI.get_cds_by_mrna", args, retType, true, true, jsonRpcContext, this.serviceVersion);
         return res.get(0);
     }
 
@@ -431,7 +454,7 @@ public class GenomeAnnotationAPIClient {
         List<Object> args = new ArrayList<Object>();
         args.add(arg1);
         TypeReference<List<Map<String,String>>> retType = new TypeReference<List<Map<String,String>>>() {};
-        List<Map<String,String>> res = caller.jsonrpcCall("GenomeAnnotationAPI.get_gene_by_cds", args, retType, true, true, jsonRpcContext);
+        List<Map<String,String>> res = caller.jsonrpcCall("GenomeAnnotationAPI.get_gene_by_cds", args, retType, true, true, jsonRpcContext, this.serviceVersion);
         return res.get(0);
     }
 
@@ -448,7 +471,7 @@ public class GenomeAnnotationAPIClient {
         List<Object> args = new ArrayList<Object>();
         args.add(arg1);
         TypeReference<List<Map<String,String>>> retType = new TypeReference<List<Map<String,String>>>() {};
-        List<Map<String,String>> res = caller.jsonrpcCall("GenomeAnnotationAPI.get_gene_by_mrna", args, retType, true, true, jsonRpcContext);
+        List<Map<String,String>> res = caller.jsonrpcCall("GenomeAnnotationAPI.get_gene_by_mrna", args, retType, true, true, jsonRpcContext, this.serviceVersion);
         return res.get(0);
     }
 
@@ -465,7 +488,7 @@ public class GenomeAnnotationAPIClient {
         List<Object> args = new ArrayList<Object>();
         args.add(arg1);
         TypeReference<List<Map<String,String>>> retType = new TypeReference<List<Map<String,String>>>() {};
-        List<Map<String,String>> res = caller.jsonrpcCall("GenomeAnnotationAPI.get_mrna_by_cds", args, retType, true, true, jsonRpcContext);
+        List<Map<String,String>> res = caller.jsonrpcCall("GenomeAnnotationAPI.get_mrna_by_cds", args, retType, true, true, jsonRpcContext, this.serviceVersion);
         return res.get(0);
     }
 
@@ -482,7 +505,7 @@ public class GenomeAnnotationAPIClient {
         List<Object> args = new ArrayList<Object>();
         args.add(arg1);
         TypeReference<List<Map<String,List<String>>>> retType = new TypeReference<List<Map<String,List<String>>>>() {};
-        List<Map<String,List<String>>> res = caller.jsonrpcCall("GenomeAnnotationAPI.get_mrna_by_gene", args, retType, true, true, jsonRpcContext);
+        List<Map<String,List<String>>> res = caller.jsonrpcCall("GenomeAnnotationAPI.get_mrna_by_gene", args, retType, true, true, jsonRpcContext, this.serviceVersion);
         return res.get(0);
     }
 
@@ -499,7 +522,7 @@ public class GenomeAnnotationAPIClient {
         List<Object> args = new ArrayList<Object>();
         args.add(arg1);
         TypeReference<List<Map<String,List<ExonData>>>> retType = new TypeReference<List<Map<String,List<ExonData>>>>() {};
-        List<Map<String,List<ExonData>>> res = caller.jsonrpcCall("GenomeAnnotationAPI.get_mrna_exons", args, retType, true, true, jsonRpcContext);
+        List<Map<String,List<ExonData>>> res = caller.jsonrpcCall("GenomeAnnotationAPI.get_mrna_exons", args, retType, true, true, jsonRpcContext, this.serviceVersion);
         return res.get(0);
     }
 
@@ -516,7 +539,7 @@ public class GenomeAnnotationAPIClient {
         List<Object> args = new ArrayList<Object>();
         args.add(arg1);
         TypeReference<List<Map<String,Map<String,UTRData>>>> retType = new TypeReference<List<Map<String,Map<String,UTRData>>>>() {};
-        List<Map<String,Map<String,UTRData>>> res = caller.jsonrpcCall("GenomeAnnotationAPI.get_mrna_utrs", args, retType, true, true, jsonRpcContext);
+        List<Map<String,Map<String,UTRData>>> res = caller.jsonrpcCall("GenomeAnnotationAPI.get_mrna_utrs", args, retType, true, true, jsonRpcContext, this.serviceVersion);
         return res.get(0);
     }
 
@@ -533,7 +556,7 @@ public class GenomeAnnotationAPIClient {
         List<Object> args = new ArrayList<Object>();
         args.add(arg1);
         TypeReference<List<SummaryData>> retType = new TypeReference<List<SummaryData>>() {};
-        List<SummaryData> res = caller.jsonrpcCall("GenomeAnnotationAPI.get_summary", args, retType, true, true, jsonRpcContext);
+        List<SummaryData> res = caller.jsonrpcCall("GenomeAnnotationAPI.get_summary", args, retType, true, true, jsonRpcContext, this.serviceVersion);
         return res.get(0);
     }
 
@@ -550,7 +573,33 @@ public class GenomeAnnotationAPIClient {
         List<Object> args = new ArrayList<Object>();
         args.add(arg1);
         TypeReference<Tuple2<Long, SummaryData>> retType = new TypeReference<Tuple2<Long, SummaryData>>() {};
-        Tuple2<Long, SummaryData> res = caller.jsonrpcCall("GenomeAnnotationAPI.save_summary", args, retType, true, true, jsonRpcContext);
+        Tuple2<Long, SummaryData> res = caller.jsonrpcCall("GenomeAnnotationAPI.save_summary", args, retType, true, true, jsonRpcContext, this.serviceVersion);
         return res;
+    }
+
+    /**
+     * <p>Original spec-file function name: get_combined_data</p>
+     * <pre>
+     * * Retrieve any part of GenomeAnnotation. Please don't use this method in full mode (with all parts included) in cases
+     * * of large eukaryotic datasets. It may lead to out-of-memory errors.
+     * </pre>
+     * @param   params   instance of type {@link us.kbase.genomeannotationapi.GetCombinedDataParams GetCombinedDataParams}
+     * @return   instance of type {@link us.kbase.genomeannotationapi.GenomeAnnotationData GenomeAnnotationData} (original type "GenomeAnnotation_data")
+     * @throws IOException if an IO exception occurs
+     * @throws JsonClientException if a JSON RPC exception occurs
+     */
+    public GenomeAnnotationData getCombinedData(GetCombinedDataParams params, RpcContext... jsonRpcContext) throws IOException, JsonClientException {
+        List<Object> args = new ArrayList<Object>();
+        args.add(params);
+        TypeReference<List<GenomeAnnotationData>> retType = new TypeReference<List<GenomeAnnotationData>>() {};
+        List<GenomeAnnotationData> res = caller.jsonrpcCall("GenomeAnnotationAPI.get_combined_data", args, retType, true, true, jsonRpcContext, this.serviceVersion);
+        return res.get(0);
+    }
+
+    public Map<String, Object> status(RpcContext... jsonRpcContext) throws IOException, JsonClientException {
+        List<Object> args = new ArrayList<Object>();
+        TypeReference<List<Map<String, Object>>> retType = new TypeReference<List<Map<String, Object>>>() {};
+        List<Map<String, Object>> res = caller.jsonrpcCall("GenomeAnnotationAPI.status", args, retType, true, false, jsonRpcContext, this.serviceVersion);
+        return res.get(0);
     }
 }

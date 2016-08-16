@@ -172,9 +172,10 @@ ObjectReference is a string
 	}
     }
 
-    my $result = $self->{client}->call($self->{url}, $self->{headers}, {
-	method => "GenomeAnnotationAPI.get_taxon",
-	params => \@args,
+    my $url = $self->{url};
+    my $result = $self->{client}->call($url, $self->{headers}, {
+	    method => "GenomeAnnotationAPI.get_taxon",
+	    params => \@args,
     });
     if ($result) {
 	if ($result->is_error) {
@@ -259,9 +260,10 @@ ObjectReference is a string
 	}
     }
 
-    my $result = $self->{client}->call($self->{url}, $self->{headers}, {
-	method => "GenomeAnnotationAPI.get_assembly",
-	params => \@args,
+    my $url = $self->{url};
+    my $result = $self->{client}->call($url, $self->{headers}, {
+	    method => "GenomeAnnotationAPI.get_assembly",
+	    params => \@args,
     });
     if ($result) {
 	if ($result->is_error) {
@@ -346,9 +348,10 @@ ObjectReference is a string
 	}
     }
 
-    my $result = $self->{client}->call($self->{url}, $self->{headers}, {
-	method => "GenomeAnnotationAPI.get_feature_types",
-	params => \@args,
+    my $url = $self->{url};
+    my $result = $self->{client}->call($url, $self->{headers}, {
+	    method => "GenomeAnnotationAPI.get_feature_types",
+	    params => \@args,
     });
     if ($result) {
 	if ($result->is_error) {
@@ -435,9 +438,10 @@ ObjectReference is a string
 	}
     }
 
-    my $result = $self->{client}->call($self->{url}, $self->{headers}, {
-	method => "GenomeAnnotationAPI.get_feature_type_descriptions",
-	params => \@args,
+    my $url = $self->{url};
+    my $result = $self->{client}->call($url, $self->{headers}, {
+	    method => "GenomeAnnotationAPI.get_feature_type_descriptions",
+	    params => \@args,
     });
     if ($result) {
 	if ($result->is_error) {
@@ -524,9 +528,10 @@ ObjectReference is a string
 	}
     }
 
-    my $result = $self->{client}->call($self->{url}, $self->{headers}, {
-	method => "GenomeAnnotationAPI.get_feature_type_counts",
-	params => \@args,
+    my $url = $self->{url};
+    my $result = $self->{client}->call($url, $self->{headers}, {
+	    method => "GenomeAnnotationAPI.get_feature_type_counts",
+	    params => \@args,
     });
     if ($result) {
 	if ($result->is_error) {
@@ -645,9 +650,10 @@ Feature_id_mapping is a reference to a hash where the following keys are defined
 	}
     }
 
-    my $result = $self->{client}->call($self->{url}, $self->{headers}, {
-	method => "GenomeAnnotationAPI.get_feature_ids",
-	params => \@args,
+    my $url = $self->{url};
+    my $result = $self->{client}->call($url, $self->{headers}, {
+	    method => "GenomeAnnotationAPI.get_feature_ids",
+	    params => \@args,
     });
     if ($result) {
 	if ($result->is_error) {
@@ -776,9 +782,10 @@ Region is a reference to a hash where the following keys are defined:
 	}
     }
 
-    my $result = $self->{client}->call($self->{url}, $self->{headers}, {
-	method => "GenomeAnnotationAPI.get_features",
-	params => \@args,
+    my $url = $self->{url};
+    my $result = $self->{client}->call($url, $self->{headers}, {
+	    method => "GenomeAnnotationAPI.get_features",
+	    params => \@args,
     });
     if ($result) {
 	if ($result->is_error) {
@@ -911,9 +918,10 @@ Retrieve Feature data, v2.
 	}
     }
 
-    my $result = $self->{client}->call($self->{url}, $self->{headers}, {
-	method => "GenomeAnnotationAPI.get_features2",
-	params => \@args,
+    my $url = $self->{url};
+    my $result = $self->{client}->call($url, $self->{headers}, {
+	    method => "GenomeAnnotationAPI.get_features2",
+	    params => \@args,
     });
     if ($result) {
 	if ($result->is_error) {
@@ -1012,9 +1020,10 @@ Protein_data is a reference to a hash where the following keys are defined:
 	}
     }
 
-    my $result = $self->{client}->call($self->{url}, $self->{headers}, {
-	method => "GenomeAnnotationAPI.get_proteins",
-	params => \@args,
+    my $url = $self->{url};
+    my $result = $self->{client}->call($url, $self->{headers}, {
+	    method => "GenomeAnnotationAPI.get_proteins",
+	    params => \@args,
     });
     if ($result) {
 	if ($result->is_error) {
@@ -1111,9 +1120,10 @@ Region is a reference to a hash where the following keys are defined:
 	}
     }
 
-    my $result = $self->{client}->call($self->{url}, $self->{headers}, {
-	method => "GenomeAnnotationAPI.get_feature_locations",
-	params => \@args,
+    my $url = $self->{url};
+    my $result = $self->{client}->call($url, $self->{headers}, {
+	    method => "GenomeAnnotationAPI.get_feature_locations",
+	    params => \@args,
     });
     if ($result) {
 	if ($result->is_error) {
@@ -1200,9 +1210,10 @@ ObjectReference is a string
 	}
     }
 
-    my $result = $self->{client}->call($self->{url}, $self->{headers}, {
-	method => "GenomeAnnotationAPI.get_feature_publications",
-	params => \@args,
+    my $url = $self->{url};
+    my $result = $self->{client}->call($url, $self->{headers}, {
+	    method => "GenomeAnnotationAPI.get_feature_publications",
+	    params => \@args,
     });
     if ($result) {
 	if ($result->is_error) {
@@ -1289,9 +1300,10 @@ ObjectReference is a string
 	}
     }
 
-    my $result = $self->{client}->call($self->{url}, $self->{headers}, {
-	method => "GenomeAnnotationAPI.get_feature_dna",
-	params => \@args,
+    my $url = $self->{url};
+    my $result = $self->{client}->call($url, $self->{headers}, {
+	    method => "GenomeAnnotationAPI.get_feature_dna",
+	    params => \@args,
     });
     if ($result) {
 	if ($result->is_error) {
@@ -1378,9 +1390,10 @@ ObjectReference is a string
 	}
     }
 
-    my $result = $self->{client}->call($self->{url}, $self->{headers}, {
-	method => "GenomeAnnotationAPI.get_feature_functions",
-	params => \@args,
+    my $url = $self->{url};
+    my $result = $self->{client}->call($url, $self->{headers}, {
+	    method => "GenomeAnnotationAPI.get_feature_functions",
+	    params => \@args,
     });
     if ($result) {
 	if ($result->is_error) {
@@ -1467,9 +1480,10 @@ ObjectReference is a string
 	}
     }
 
-    my $result = $self->{client}->call($self->{url}, $self->{headers}, {
-	method => "GenomeAnnotationAPI.get_feature_aliases",
-	params => \@args,
+    my $url = $self->{url};
+    my $result = $self->{client}->call($url, $self->{headers}, {
+	    method => "GenomeAnnotationAPI.get_feature_aliases",
+	    params => \@args,
     });
     if ($result) {
 	if ($result->is_error) {
@@ -1556,9 +1570,10 @@ ObjectReference is a string
 	}
     }
 
-    my $result = $self->{client}->call($self->{url}, $self->{headers}, {
-	method => "GenomeAnnotationAPI.get_cds_by_gene",
-	params => \@args,
+    my $url = $self->{url};
+    my $result = $self->{client}->call($url, $self->{headers}, {
+	    method => "GenomeAnnotationAPI.get_cds_by_gene",
+	    params => \@args,
     });
     if ($result) {
 	if ($result->is_error) {
@@ -1645,9 +1660,10 @@ ObjectReference is a string
 	}
     }
 
-    my $result = $self->{client}->call($self->{url}, $self->{headers}, {
-	method => "GenomeAnnotationAPI.get_cds_by_mrna",
-	params => \@args,
+    my $url = $self->{url};
+    my $result = $self->{client}->call($url, $self->{headers}, {
+	    method => "GenomeAnnotationAPI.get_cds_by_mrna",
+	    params => \@args,
     });
     if ($result) {
 	if ($result->is_error) {
@@ -1734,9 +1750,10 @@ ObjectReference is a string
 	}
     }
 
-    my $result = $self->{client}->call($self->{url}, $self->{headers}, {
-	method => "GenomeAnnotationAPI.get_gene_by_cds",
-	params => \@args,
+    my $url = $self->{url};
+    my $result = $self->{client}->call($url, $self->{headers}, {
+	    method => "GenomeAnnotationAPI.get_gene_by_cds",
+	    params => \@args,
     });
     if ($result) {
 	if ($result->is_error) {
@@ -1823,9 +1840,10 @@ ObjectReference is a string
 	}
     }
 
-    my $result = $self->{client}->call($self->{url}, $self->{headers}, {
-	method => "GenomeAnnotationAPI.get_gene_by_mrna",
-	params => \@args,
+    my $url = $self->{url};
+    my $result = $self->{client}->call($url, $self->{headers}, {
+	    method => "GenomeAnnotationAPI.get_gene_by_mrna",
+	    params => \@args,
     });
     if ($result) {
 	if ($result->is_error) {
@@ -1912,9 +1930,10 @@ ObjectReference is a string
 	}
     }
 
-    my $result = $self->{client}->call($self->{url}, $self->{headers}, {
-	method => "GenomeAnnotationAPI.get_mrna_by_cds",
-	params => \@args,
+    my $url = $self->{url};
+    my $result = $self->{client}->call($url, $self->{headers}, {
+	    method => "GenomeAnnotationAPI.get_mrna_by_cds",
+	    params => \@args,
     });
     if ($result) {
 	if ($result->is_error) {
@@ -2001,9 +2020,10 @@ ObjectReference is a string
 	}
     }
 
-    my $result = $self->{client}->call($self->{url}, $self->{headers}, {
-	method => "GenomeAnnotationAPI.get_mrna_by_gene",
-	params => \@args,
+    my $url = $self->{url};
+    my $result = $self->{client}->call($url, $self->{headers}, {
+	    method => "GenomeAnnotationAPI.get_mrna_by_gene",
+	    params => \@args,
     });
     if ($result) {
 	if ($result->is_error) {
@@ -2108,9 +2128,10 @@ Region is a reference to a hash where the following keys are defined:
 	}
     }
 
-    my $result = $self->{client}->call($self->{url}, $self->{headers}, {
-	method => "GenomeAnnotationAPI.get_mrna_exons",
-	params => \@args,
+    my $url = $self->{url};
+    my $result = $self->{client}->call($url, $self->{headers}, {
+	    method => "GenomeAnnotationAPI.get_mrna_exons",
+	    params => \@args,
     });
     if ($result) {
 	if ($result->is_error) {
@@ -2213,9 +2234,10 @@ Region is a reference to a hash where the following keys are defined:
 	}
     }
 
-    my $result = $self->{client}->call($self->{url}, $self->{headers}, {
-	method => "GenomeAnnotationAPI.get_mrna_utrs",
-	params => \@args,
+    my $url = $self->{url};
+    my $result = $self->{client}->call($url, $self->{headers}, {
+	    method => "GenomeAnnotationAPI.get_mrna_utrs",
+	    params => \@args,
     });
     if ($result) {
 	if ($result->is_error) {
@@ -2338,9 +2360,10 @@ Summary_data is a reference to a hash where the following keys are defined:
 	}
     }
 
-    my $result = $self->{client}->call($self->{url}, $self->{headers}, {
-	method => "GenomeAnnotationAPI.get_summary",
-	params => \@args,
+    my $url = $self->{url};
+    my $result = $self->{client}->call($url, $self->{headers}, {
+	    method => "GenomeAnnotationAPI.get_summary",
+	    params => \@args,
     });
     if ($result) {
 	if ($result->is_error) {
@@ -2465,9 +2488,10 @@ Summary_data is a reference to a hash where the following keys are defined:
 	}
     }
 
-    my $result = $self->{client}->call($self->{url}, $self->{headers}, {
-	method => "GenomeAnnotationAPI.save_summary",
-	params => \@args,
+    my $url = $self->{url};
+    my $result = $self->{client}->call($url, $self->{headers}, {
+	    method => "GenomeAnnotationAPI.save_summary",
+	    params => \@args,
     });
     if ($result) {
 	if ($result->is_error) {
@@ -2487,7 +2511,280 @@ Summary_data is a reference to a hash where the following keys are defined:
     }
 }
  
+
+
+=head2 get_combined_data
+
+  $return = $obj->get_combined_data($params)
+
+=over 4
+
+=item Parameter and return types
+
+=begin html
+
+<pre>
+$params is a GenomeAnnotationAPI.GetCombinedDataParams
+$return is a GenomeAnnotationAPI.GenomeAnnotation_data
+GetCombinedDataParams is a reference to a hash where the following keys are defined:
+	ref has a value which is a GenomeAnnotationAPI.ObjectReference
+	exclude_genes has a value which is a GenomeAnnotationAPI.boolean
+	include_mrnas has a value which is a GenomeAnnotationAPI.boolean
+	exclude_cdss has a value which is a GenomeAnnotationAPI.boolean
+	include_features_by_type has a value which is a reference to a list where each element is a string
+	exclude_protein_by_cds_id has a value which is a GenomeAnnotationAPI.boolean
+	include_mrna_ids_by_gene_id has a value which is a GenomeAnnotationAPI.boolean
+	exclude_cds_ids_by_gene_id has a value which is a GenomeAnnotationAPI.boolean
+	include_cds_id_by_mrna_id has a value which is a GenomeAnnotationAPI.boolean
+	include_exons_by_mrna_id has a value which is a GenomeAnnotationAPI.boolean
+	include_utr_by_utr_type_by_mrna_id has a value which is a GenomeAnnotationAPI.boolean
+	exclude_summary has a value which is a GenomeAnnotationAPI.boolean
+ObjectReference is a string
+boolean is an int
+GenomeAnnotation_data is a reference to a hash where the following keys are defined:
+	gene_type has a value which is a string
+	mrna_type has a value which is a string
+	cds_type has a value which is a string
+	feature_types has a value which is a reference to a list where each element is a string
+	feature_by_id_by_type has a value which is a reference to a hash where the key is a string and the value is a reference to a hash where the key is a string and the value is a GenomeAnnotationAPI.Feature_data
+	protein_by_cds_id has a value which is a reference to a hash where the key is a string and the value is a GenomeAnnotationAPI.Protein_data
+	mrna_ids_by_gene_id has a value which is a reference to a hash where the key is a string and the value is a reference to a list where each element is a string
+	cds_ids_by_gene_id has a value which is a reference to a hash where the key is a string and the value is a reference to a list where each element is a string
+	cds_id_by_mrna_id has a value which is a reference to a hash where the key is a string and the value is a string
+	exons_by_mrna_id has a value which is a reference to a hash where the key is a string and the value is a reference to a list where each element is a GenomeAnnotationAPI.Exon_data
+	utr_by_utr_type_by_mrna_id has a value which is a reference to a hash where the key is a string and the value is a reference to a hash where the key is a string and the value is a GenomeAnnotationAPI.UTR_data
+	summary has a value which is a GenomeAnnotationAPI.Summary_data
+Feature_data is a reference to a hash where the following keys are defined:
+	feature_id has a value which is a string
+	feature_type has a value which is a string
+	feature_function has a value which is a string
+	feature_aliases has a value which is a reference to a hash where the key is a string and the value is a reference to a list where each element is a string
+	feature_dna_sequence_length has a value which is an int
+	feature_dna_sequence has a value which is a string
+	feature_md5 has a value which is a string
+	feature_locations has a value which is a reference to a list where each element is a GenomeAnnotationAPI.Region
+	feature_publications has a value which is a reference to a list where each element is a string
+	feature_quality_warnings has a value which is a reference to a list where each element is a string
+	feature_quality_score has a value which is a reference to a list where each element is a string
+	feature_notes has a value which is a string
+	feature_inference has a value which is a string
+Region is a reference to a hash where the following keys are defined:
+	contig_id has a value which is a string
+	strand has a value which is a string
+	start has a value which is an int
+	length has a value which is an int
+Protein_data is a reference to a hash where the following keys are defined:
+	protein_id has a value which is a string
+	protein_amino_acid_sequence has a value which is a string
+	protein_function has a value which is a string
+	protein_aliases has a value which is a reference to a list where each element is a string
+	protein_md5 has a value which is a string
+	protein_domain_locations has a value which is a reference to a list where each element is a string
+Exon_data is a reference to a hash where the following keys are defined:
+	exon_location has a value which is a GenomeAnnotationAPI.Region
+	exon_dna_sequence has a value which is a string
+	exon_ordinal has a value which is an int
+UTR_data is a reference to a hash where the following keys are defined:
+	utr_locations has a value which is a reference to a list where each element is a GenomeAnnotationAPI.Region
+	utr_dna_sequence has a value which is a string
+Summary_data is a reference to a hash where the following keys are defined:
+	scientific_name has a value which is a string
+	taxonomy_id has a value which is an int
+	kingdom has a value which is a string
+	scientific_lineage has a value which is a reference to a list where each element is a string
+	genetic_code has a value which is an int
+	organism_aliases has a value which is a reference to a list where each element is a string
+	assembly_source has a value which is a string
+	assembly_source_id has a value which is a string
+	assembly_source_date has a value which is a string
+	gc_content has a value which is a float
+	dna_size has a value which is an int
+	num_contigs has a value which is an int
+	contig_ids has a value which is a reference to a list where each element is a string
+	external_source has a value which is a string
+	external_source_date has a value which is a string
+	release has a value which is a string
+	original_source_filename has a value which is a string
+	feature_type_counts has a value which is a reference to a hash where the key is a string and the value is an int
+
+</pre>
+
+=end html
+
+=begin text
+
+$params is a GenomeAnnotationAPI.GetCombinedDataParams
+$return is a GenomeAnnotationAPI.GenomeAnnotation_data
+GetCombinedDataParams is a reference to a hash where the following keys are defined:
+	ref has a value which is a GenomeAnnotationAPI.ObjectReference
+	exclude_genes has a value which is a GenomeAnnotationAPI.boolean
+	include_mrnas has a value which is a GenomeAnnotationAPI.boolean
+	exclude_cdss has a value which is a GenomeAnnotationAPI.boolean
+	include_features_by_type has a value which is a reference to a list where each element is a string
+	exclude_protein_by_cds_id has a value which is a GenomeAnnotationAPI.boolean
+	include_mrna_ids_by_gene_id has a value which is a GenomeAnnotationAPI.boolean
+	exclude_cds_ids_by_gene_id has a value which is a GenomeAnnotationAPI.boolean
+	include_cds_id_by_mrna_id has a value which is a GenomeAnnotationAPI.boolean
+	include_exons_by_mrna_id has a value which is a GenomeAnnotationAPI.boolean
+	include_utr_by_utr_type_by_mrna_id has a value which is a GenomeAnnotationAPI.boolean
+	exclude_summary has a value which is a GenomeAnnotationAPI.boolean
+ObjectReference is a string
+boolean is an int
+GenomeAnnotation_data is a reference to a hash where the following keys are defined:
+	gene_type has a value which is a string
+	mrna_type has a value which is a string
+	cds_type has a value which is a string
+	feature_types has a value which is a reference to a list where each element is a string
+	feature_by_id_by_type has a value which is a reference to a hash where the key is a string and the value is a reference to a hash where the key is a string and the value is a GenomeAnnotationAPI.Feature_data
+	protein_by_cds_id has a value which is a reference to a hash where the key is a string and the value is a GenomeAnnotationAPI.Protein_data
+	mrna_ids_by_gene_id has a value which is a reference to a hash where the key is a string and the value is a reference to a list where each element is a string
+	cds_ids_by_gene_id has a value which is a reference to a hash where the key is a string and the value is a reference to a list where each element is a string
+	cds_id_by_mrna_id has a value which is a reference to a hash where the key is a string and the value is a string
+	exons_by_mrna_id has a value which is a reference to a hash where the key is a string and the value is a reference to a list where each element is a GenomeAnnotationAPI.Exon_data
+	utr_by_utr_type_by_mrna_id has a value which is a reference to a hash where the key is a string and the value is a reference to a hash where the key is a string and the value is a GenomeAnnotationAPI.UTR_data
+	summary has a value which is a GenomeAnnotationAPI.Summary_data
+Feature_data is a reference to a hash where the following keys are defined:
+	feature_id has a value which is a string
+	feature_type has a value which is a string
+	feature_function has a value which is a string
+	feature_aliases has a value which is a reference to a hash where the key is a string and the value is a reference to a list where each element is a string
+	feature_dna_sequence_length has a value which is an int
+	feature_dna_sequence has a value which is a string
+	feature_md5 has a value which is a string
+	feature_locations has a value which is a reference to a list where each element is a GenomeAnnotationAPI.Region
+	feature_publications has a value which is a reference to a list where each element is a string
+	feature_quality_warnings has a value which is a reference to a list where each element is a string
+	feature_quality_score has a value which is a reference to a list where each element is a string
+	feature_notes has a value which is a string
+	feature_inference has a value which is a string
+Region is a reference to a hash where the following keys are defined:
+	contig_id has a value which is a string
+	strand has a value which is a string
+	start has a value which is an int
+	length has a value which is an int
+Protein_data is a reference to a hash where the following keys are defined:
+	protein_id has a value which is a string
+	protein_amino_acid_sequence has a value which is a string
+	protein_function has a value which is a string
+	protein_aliases has a value which is a reference to a list where each element is a string
+	protein_md5 has a value which is a string
+	protein_domain_locations has a value which is a reference to a list where each element is a string
+Exon_data is a reference to a hash where the following keys are defined:
+	exon_location has a value which is a GenomeAnnotationAPI.Region
+	exon_dna_sequence has a value which is a string
+	exon_ordinal has a value which is an int
+UTR_data is a reference to a hash where the following keys are defined:
+	utr_locations has a value which is a reference to a list where each element is a GenomeAnnotationAPI.Region
+	utr_dna_sequence has a value which is a string
+Summary_data is a reference to a hash where the following keys are defined:
+	scientific_name has a value which is a string
+	taxonomy_id has a value which is an int
+	kingdom has a value which is a string
+	scientific_lineage has a value which is a reference to a list where each element is a string
+	genetic_code has a value which is an int
+	organism_aliases has a value which is a reference to a list where each element is a string
+	assembly_source has a value which is a string
+	assembly_source_id has a value which is a string
+	assembly_source_date has a value which is a string
+	gc_content has a value which is a float
+	dna_size has a value which is an int
+	num_contigs has a value which is an int
+	contig_ids has a value which is a reference to a list where each element is a string
+	external_source has a value which is a string
+	external_source_date has a value which is a string
+	release has a value which is a string
+	original_source_filename has a value which is a string
+	feature_type_counts has a value which is a reference to a hash where the key is a string and the value is an int
+
+
+=end text
+
+=item Description
+
+Retrieve any part of GenomeAnnotation. Please don't use this method in full mode (with all parts included) in cases
+of large eukaryotic datasets. It may lead to out-of-memory errors.
+
+=back
+
+=cut
+
+ sub get_combined_data
+{
+    my($self, @args) = @_;
+
+# Authentication: required
+
+    if ((my $n = @args) != 1)
+    {
+	Bio::KBase::Exceptions::ArgumentValidationError->throw(error =>
+							       "Invalid argument count for function get_combined_data (received $n, expecting 1)");
+    }
+    {
+	my($params) = @args;
+
+	my @_bad_arguments;
+        (ref($params) eq 'HASH') or push(@_bad_arguments, "Invalid type for argument 1 \"params\" (value was \"$params\")");
+        if (@_bad_arguments) {
+	    my $msg = "Invalid arguments passed to get_combined_data:\n" . join("", map { "\t$_\n" } @_bad_arguments);
+	    Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
+								   method_name => 'get_combined_data');
+	}
+    }
+
+    my $url = $self->{url};
+    my $result = $self->{client}->call($url, $self->{headers}, {
+	    method => "GenomeAnnotationAPI.get_combined_data",
+	    params => \@args,
+    });
+    if ($result) {
+	if ($result->is_error) {
+	    Bio::KBase::Exceptions::JSONRPC->throw(error => $result->error_message,
+					       code => $result->content->{error}->{code},
+					       method_name => 'get_combined_data',
+					       data => $result->content->{error}->{error} # JSON::RPC::ReturnObject only supports JSONRPC 1.1 or 1.O
+					      );
+	} else {
+	    return wantarray ? @{$result->result} : $result->result->[0];
+	}
+    } else {
+        Bio::KBase::Exceptions::HTTP->throw(error => "Error invoking method get_combined_data",
+					    status_line => $self->{client}->status_line,
+					    method_name => 'get_combined_data',
+				       );
+    }
+}
+ 
   
+sub status
+{
+    my($self, @args) = @_;
+    if ((my $n = @args) != 0) {
+        Bio::KBase::Exceptions::ArgumentValidationError->throw(error =>
+                                   "Invalid argument count for function status (received $n, expecting 0)");
+    }
+    my $url = $self->{url};
+    my $result = $self->{client}->call($url, $self->{headers}, {
+        method => "GenomeAnnotationAPI.status",
+        params => \@args,
+    });
+    if ($result) {
+        if ($result->is_error) {
+            Bio::KBase::Exceptions::JSONRPC->throw(error => $result->error_message,
+                           code => $result->content->{error}->{code},
+                           method_name => 'status',
+                           data => $result->content->{error}->{error} # JSON::RPC::ReturnObject only supports JSONRPC 1.1 or 1.O
+                          );
+        } else {
+            return wantarray ? @{$result->result} : $result->result->[0];
+        }
+    } else {
+        Bio::KBase::Exceptions::HTTP->throw(error => "Error invoking method status",
+                        status_line => $self->{client}->status_line,
+                        method_name => 'status',
+                       );
+    }
+}
+   
 
 sub version {
     my ($self) = @_;
@@ -2500,16 +2797,16 @@ sub version {
             Bio::KBase::Exceptions::JSONRPC->throw(
                 error => $result->error_message,
                 code => $result->content->{code},
-                method_name => 'save_summary',
+                method_name => 'get_combined_data',
             );
         } else {
             return wantarray ? @{$result->result} : $result->result->[0];
         }
     } else {
         Bio::KBase::Exceptions::HTTP->throw(
-            error => "Error invoking method save_summary",
+            error => "Error invoking method get_combined_data",
             status_line => $self->{client}->status_line,
-            method_name => 'save_summary',
+            method_name => 'get_combined_data',
         );
     }
 }
@@ -2940,6 +3237,65 @@ external_source_date has a value which is a string
 release has a value which is a string
 original_source_filename has a value which is a string
 feature_type_counts has a value which is a reference to a hash where the key is a string and the value is an int
+
+
+=end text
+
+=back
+
+
+
+=head2 GenomeAnnotation_data
+
+=over 4
+
+
+
+=item Description
+
+gene_id is a feature id of a gene feature.
+mrna_id is a feature id of a mrna feature.
+cds_id is a feature id of a cds feature.
+
+
+=item Definition
+
+=begin html
+
+<pre>
+a reference to a hash where the following keys are defined:
+gene_type has a value which is a string
+mrna_type has a value which is a string
+cds_type has a value which is a string
+feature_types has a value which is a reference to a list where each element is a string
+feature_by_id_by_type has a value which is a reference to a hash where the key is a string and the value is a reference to a hash where the key is a string and the value is a GenomeAnnotationAPI.Feature_data
+protein_by_cds_id has a value which is a reference to a hash where the key is a string and the value is a GenomeAnnotationAPI.Protein_data
+mrna_ids_by_gene_id has a value which is a reference to a hash where the key is a string and the value is a reference to a list where each element is a string
+cds_ids_by_gene_id has a value which is a reference to a hash where the key is a string and the value is a reference to a list where each element is a string
+cds_id_by_mrna_id has a value which is a reference to a hash where the key is a string and the value is a string
+exons_by_mrna_id has a value which is a reference to a hash where the key is a string and the value is a reference to a list where each element is a GenomeAnnotationAPI.Exon_data
+utr_by_utr_type_by_mrna_id has a value which is a reference to a hash where the key is a string and the value is a reference to a hash where the key is a string and the value is a GenomeAnnotationAPI.UTR_data
+summary has a value which is a GenomeAnnotationAPI.Summary_data
+
+</pre>
+
+=end html
+
+=begin text
+
+a reference to a hash where the following keys are defined:
+gene_type has a value which is a string
+mrna_type has a value which is a string
+cds_type has a value which is a string
+feature_types has a value which is a reference to a list where each element is a string
+feature_by_id_by_type has a value which is a reference to a hash where the key is a string and the value is a reference to a hash where the key is a string and the value is a GenomeAnnotationAPI.Feature_data
+protein_by_cds_id has a value which is a reference to a hash where the key is a string and the value is a GenomeAnnotationAPI.Protein_data
+mrna_ids_by_gene_id has a value which is a reference to a hash where the key is a string and the value is a reference to a list where each element is a string
+cds_ids_by_gene_id has a value which is a reference to a hash where the key is a string and the value is a reference to a list where each element is a string
+cds_id_by_mrna_id has a value which is a reference to a hash where the key is a string and the value is a string
+exons_by_mrna_id has a value which is a reference to a hash where the key is a string and the value is a reference to a list where each element is a GenomeAnnotationAPI.Exon_data
+utr_by_utr_type_by_mrna_id has a value which is a reference to a hash where the key is a string and the value is a reference to a hash where the key is a string and the value is a GenomeAnnotationAPI.UTR_data
+summary has a value which is a GenomeAnnotationAPI.Summary_data
 
 
 =end text
@@ -3851,6 +4207,64 @@ ref has a value which is a GenomeAnnotationAPI.ObjectReference
 
 a reference to a hash where the following keys are defined:
 ref has a value which is a GenomeAnnotationAPI.ObjectReference
+
+
+=end text
+
+=back
+
+
+
+=head2 GetCombinedDataParams
+
+=over 4
+
+
+
+=item Description
+
+* Retrieve any part of GenomeAnnotation.
+* Any of exclude_genes, include_mrnas and exclude_cdss flags override values listed in include_features_by_type.
+
+
+=item Definition
+
+=begin html
+
+<pre>
+a reference to a hash where the following keys are defined:
+ref has a value which is a GenomeAnnotationAPI.ObjectReference
+exclude_genes has a value which is a GenomeAnnotationAPI.boolean
+include_mrnas has a value which is a GenomeAnnotationAPI.boolean
+exclude_cdss has a value which is a GenomeAnnotationAPI.boolean
+include_features_by_type has a value which is a reference to a list where each element is a string
+exclude_protein_by_cds_id has a value which is a GenomeAnnotationAPI.boolean
+include_mrna_ids_by_gene_id has a value which is a GenomeAnnotationAPI.boolean
+exclude_cds_ids_by_gene_id has a value which is a GenomeAnnotationAPI.boolean
+include_cds_id_by_mrna_id has a value which is a GenomeAnnotationAPI.boolean
+include_exons_by_mrna_id has a value which is a GenomeAnnotationAPI.boolean
+include_utr_by_utr_type_by_mrna_id has a value which is a GenomeAnnotationAPI.boolean
+exclude_summary has a value which is a GenomeAnnotationAPI.boolean
+
+</pre>
+
+=end html
+
+=begin text
+
+a reference to a hash where the following keys are defined:
+ref has a value which is a GenomeAnnotationAPI.ObjectReference
+exclude_genes has a value which is a GenomeAnnotationAPI.boolean
+include_mrnas has a value which is a GenomeAnnotationAPI.boolean
+exclude_cdss has a value which is a GenomeAnnotationAPI.boolean
+include_features_by_type has a value which is a reference to a list where each element is a string
+exclude_protein_by_cds_id has a value which is a GenomeAnnotationAPI.boolean
+include_mrna_ids_by_gene_id has a value which is a GenomeAnnotationAPI.boolean
+exclude_cds_ids_by_gene_id has a value which is a GenomeAnnotationAPI.boolean
+include_cds_id_by_mrna_id has a value which is a GenomeAnnotationAPI.boolean
+include_exons_by_mrna_id has a value which is a GenomeAnnotationAPI.boolean
+include_utr_by_utr_type_by_mrna_id has a value which is a GenomeAnnotationAPI.boolean
+exclude_summary has a value which is a GenomeAnnotationAPI.boolean
 
 
 =end text
