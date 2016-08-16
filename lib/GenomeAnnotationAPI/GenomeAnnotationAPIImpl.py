@@ -23,7 +23,7 @@ class GenomeAnnotationAPI:
     #########################################
     VERSION = "0.1.1"
     GIT_URL = "https://github.com/rsutormin/genome_annotation_api"
-    GIT_COMMIT_HASH = "a6235cd90a081ed51b430a76e213c67af0ad15e3"
+    GIT_COMMIT_HASH = "c1d28d03b4c119b5c2d0437c961c50ff13fef55a"
     
     #BEGIN_CLASS_HEADER
     #END_CLASS_HEADER
@@ -794,7 +794,8 @@ class GenomeAnnotationAPI:
 
     def get_combined_data(self, ctx, params):
         """
-        Retrieve any part of GenomeAnnotation.
+        Retrieve any part of GenomeAnnotation. Please don't use this method in full mode (with all parts included) in cases
+        of large eukaryotic datasets. It may lead to out-of-memory errors.
         :param params: instance of type "GetCombinedDataParams" (* Retrieve
            any part of GenomeAnnotation. * Any of exclude_genes,
            include_mrnas and exclude_cdss flags override values listed in

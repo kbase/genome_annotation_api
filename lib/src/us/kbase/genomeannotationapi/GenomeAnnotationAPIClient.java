@@ -580,7 +580,8 @@ public class GenomeAnnotationAPIClient {
     /**
      * <p>Original spec-file function name: get_combined_data</p>
      * <pre>
-     * * Retrieve any part of GenomeAnnotation.
+     * * Retrieve any part of GenomeAnnotation. Please don't use this method in full mode (with all parts included) in cases
+     * * of large eukaryotic datasets. It may lead to out-of-memory errors.
      * </pre>
      * @param   params   instance of type {@link us.kbase.genomeannotationapi.GetCombinedDataParams GetCombinedDataParams}
      * @return   instance of type {@link us.kbase.genomeannotationapi.GenomeAnnotationData GenomeAnnotationData} (original type "GenomeAnnotation_data")

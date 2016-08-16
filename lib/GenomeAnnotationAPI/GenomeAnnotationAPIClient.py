@@ -414,7 +414,8 @@ class GenomeAnnotationAPI(object):
 
     def get_combined_data(self, params, context=None):
         """
-        Retrieve any part of GenomeAnnotation.
+        Retrieve any part of GenomeAnnotation. Please don't use this method in full mode (with all parts included) in cases
+        of large eukaryotic datasets. It may lead to out-of-memory errors.
         :param params: instance of type "GetCombinedDataParams" (* Retrieve
            any part of GenomeAnnotation. * Any of exclude_genes,
            include_mrnas and exclude_cdss flags override values listed in

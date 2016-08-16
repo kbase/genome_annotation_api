@@ -2701,7 +2701,8 @@ Summary_data is a reference to a hash where the following keys are defined:
 
 =item Description
 
-Retrieve any part of GenomeAnnotation.
+Retrieve any part of GenomeAnnotation. Please don't use this method in full mode (with all parts included) in cases
+of large eukaryotic datasets. It may lead to out-of-memory errors.
 
 =back
 

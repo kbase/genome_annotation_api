@@ -621,7 +621,8 @@ module GenomeAnnotationAPI {
     } GetCombinedDataParams;
 
     /*
-     * Retrieve any part of GenomeAnnotation.
+     * Retrieve any part of GenomeAnnotation. Please don't use this method in full mode (with all parts included) in cases
+     * of large eukaryotic datasets. It may lead to out-of-memory errors.
      */
     funcdef get_combined_data(GetCombinedDataParams params) returns (GenomeAnnotation_data) authentication required;
 };
