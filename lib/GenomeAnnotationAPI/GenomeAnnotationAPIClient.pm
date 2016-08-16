@@ -2528,17 +2528,17 @@ $params is a GenomeAnnotationAPI.GetCombinedDataParams
 $return is a GenomeAnnotationAPI.GenomeAnnotation_data
 GetCombinedDataParams is a reference to a hash where the following keys are defined:
 	ref has a value which is a GenomeAnnotationAPI.ObjectReference
-	load_genes has a value which is a GenomeAnnotationAPI.boolean
-	load_mrnas has a value which is a GenomeAnnotationAPI.boolean
-	load_cdss has a value which is a GenomeAnnotationAPI.boolean
-	load_features_by_type has a value which is a reference to a list where each element is a string
-	load_protein_by_cds_id has a value which is a GenomeAnnotationAPI.boolean
-	load_mrna_ids_by_gene_id has a value which is a GenomeAnnotationAPI.boolean
-	load_cds_ids_by_gene_id has a value which is a GenomeAnnotationAPI.boolean
-	load_cds_id_by_mrna_id has a value which is a GenomeAnnotationAPI.boolean
-	load_exons_by_mrna_id has a value which is a GenomeAnnotationAPI.boolean
-	load_utr_by_utr_type_by_mrna_id has a value which is a GenomeAnnotationAPI.boolean
-	load_summary has a value which is a GenomeAnnotationAPI.boolean
+	exclude_genes has a value which is a GenomeAnnotationAPI.boolean
+	include_mrnas has a value which is a GenomeAnnotationAPI.boolean
+	exclude_cdss has a value which is a GenomeAnnotationAPI.boolean
+	include_features_by_type has a value which is a reference to a list where each element is a string
+	exclude_protein_by_cds_id has a value which is a GenomeAnnotationAPI.boolean
+	include_mrna_ids_by_gene_id has a value which is a GenomeAnnotationAPI.boolean
+	exclude_cds_ids_by_gene_id has a value which is a GenomeAnnotationAPI.boolean
+	include_cds_id_by_mrna_id has a value which is a GenomeAnnotationAPI.boolean
+	include_exons_by_mrna_id has a value which is a GenomeAnnotationAPI.boolean
+	include_utr_by_utr_type_by_mrna_id has a value which is a GenomeAnnotationAPI.boolean
+	exclude_summary has a value which is a GenomeAnnotationAPI.boolean
 ObjectReference is a string
 boolean is an int
 GenomeAnnotation_data is a reference to a hash where the following keys are defined:
@@ -2617,17 +2617,17 @@ $params is a GenomeAnnotationAPI.GetCombinedDataParams
 $return is a GenomeAnnotationAPI.GenomeAnnotation_data
 GetCombinedDataParams is a reference to a hash where the following keys are defined:
 	ref has a value which is a GenomeAnnotationAPI.ObjectReference
-	load_genes has a value which is a GenomeAnnotationAPI.boolean
-	load_mrnas has a value which is a GenomeAnnotationAPI.boolean
-	load_cdss has a value which is a GenomeAnnotationAPI.boolean
-	load_features_by_type has a value which is a reference to a list where each element is a string
-	load_protein_by_cds_id has a value which is a GenomeAnnotationAPI.boolean
-	load_mrna_ids_by_gene_id has a value which is a GenomeAnnotationAPI.boolean
-	load_cds_ids_by_gene_id has a value which is a GenomeAnnotationAPI.boolean
-	load_cds_id_by_mrna_id has a value which is a GenomeAnnotationAPI.boolean
-	load_exons_by_mrna_id has a value which is a GenomeAnnotationAPI.boolean
-	load_utr_by_utr_type_by_mrna_id has a value which is a GenomeAnnotationAPI.boolean
-	load_summary has a value which is a GenomeAnnotationAPI.boolean
+	exclude_genes has a value which is a GenomeAnnotationAPI.boolean
+	include_mrnas has a value which is a GenomeAnnotationAPI.boolean
+	exclude_cdss has a value which is a GenomeAnnotationAPI.boolean
+	include_features_by_type has a value which is a reference to a list where each element is a string
+	exclude_protein_by_cds_id has a value which is a GenomeAnnotationAPI.boolean
+	include_mrna_ids_by_gene_id has a value which is a GenomeAnnotationAPI.boolean
+	exclude_cds_ids_by_gene_id has a value which is a GenomeAnnotationAPI.boolean
+	include_cds_id_by_mrna_id has a value which is a GenomeAnnotationAPI.boolean
+	include_exons_by_mrna_id has a value which is a GenomeAnnotationAPI.boolean
+	include_utr_by_utr_type_by_mrna_id has a value which is a GenomeAnnotationAPI.boolean
+	exclude_summary has a value which is a GenomeAnnotationAPI.boolean
 ObjectReference is a string
 boolean is an int
 GenomeAnnotation_data is a reference to a hash where the following keys are defined:
@@ -4223,8 +4223,7 @@ ref has a value which is a GenomeAnnotationAPI.ObjectReference
 =item Description
 
 * Retrieve any part of GenomeAnnotation.
-* Any of load_genes, load_mrnas and load_cdss flags are additional to load_features_by_type list of types;
-* By default load_genes=1, load_cdss=1, load_proteins=1, load_gene_id_to_cds_ids=1, load_summary=1.
+* Any of exclude_genes, include_mrnas and exclude_cdss flags override values listed in include_features_by_type.
 
 
 =item Definition
@@ -4234,17 +4233,17 @@ ref has a value which is a GenomeAnnotationAPI.ObjectReference
 <pre>
 a reference to a hash where the following keys are defined:
 ref has a value which is a GenomeAnnotationAPI.ObjectReference
-load_genes has a value which is a GenomeAnnotationAPI.boolean
-load_mrnas has a value which is a GenomeAnnotationAPI.boolean
-load_cdss has a value which is a GenomeAnnotationAPI.boolean
-load_features_by_type has a value which is a reference to a list where each element is a string
-load_protein_by_cds_id has a value which is a GenomeAnnotationAPI.boolean
-load_mrna_ids_by_gene_id has a value which is a GenomeAnnotationAPI.boolean
-load_cds_ids_by_gene_id has a value which is a GenomeAnnotationAPI.boolean
-load_cds_id_by_mrna_id has a value which is a GenomeAnnotationAPI.boolean
-load_exons_by_mrna_id has a value which is a GenomeAnnotationAPI.boolean
-load_utr_by_utr_type_by_mrna_id has a value which is a GenomeAnnotationAPI.boolean
-load_summary has a value which is a GenomeAnnotationAPI.boolean
+exclude_genes has a value which is a GenomeAnnotationAPI.boolean
+include_mrnas has a value which is a GenomeAnnotationAPI.boolean
+exclude_cdss has a value which is a GenomeAnnotationAPI.boolean
+include_features_by_type has a value which is a reference to a list where each element is a string
+exclude_protein_by_cds_id has a value which is a GenomeAnnotationAPI.boolean
+include_mrna_ids_by_gene_id has a value which is a GenomeAnnotationAPI.boolean
+exclude_cds_ids_by_gene_id has a value which is a GenomeAnnotationAPI.boolean
+include_cds_id_by_mrna_id has a value which is a GenomeAnnotationAPI.boolean
+include_exons_by_mrna_id has a value which is a GenomeAnnotationAPI.boolean
+include_utr_by_utr_type_by_mrna_id has a value which is a GenomeAnnotationAPI.boolean
+exclude_summary has a value which is a GenomeAnnotationAPI.boolean
 
 </pre>
 
@@ -4254,17 +4253,17 @@ load_summary has a value which is a GenomeAnnotationAPI.boolean
 
 a reference to a hash where the following keys are defined:
 ref has a value which is a GenomeAnnotationAPI.ObjectReference
-load_genes has a value which is a GenomeAnnotationAPI.boolean
-load_mrnas has a value which is a GenomeAnnotationAPI.boolean
-load_cdss has a value which is a GenomeAnnotationAPI.boolean
-load_features_by_type has a value which is a reference to a list where each element is a string
-load_protein_by_cds_id has a value which is a GenomeAnnotationAPI.boolean
-load_mrna_ids_by_gene_id has a value which is a GenomeAnnotationAPI.boolean
-load_cds_ids_by_gene_id has a value which is a GenomeAnnotationAPI.boolean
-load_cds_id_by_mrna_id has a value which is a GenomeAnnotationAPI.boolean
-load_exons_by_mrna_id has a value which is a GenomeAnnotationAPI.boolean
-load_utr_by_utr_type_by_mrna_id has a value which is a GenomeAnnotationAPI.boolean
-load_summary has a value which is a GenomeAnnotationAPI.boolean
+exclude_genes has a value which is a GenomeAnnotationAPI.boolean
+include_mrnas has a value which is a GenomeAnnotationAPI.boolean
+exclude_cdss has a value which is a GenomeAnnotationAPI.boolean
+include_features_by_type has a value which is a reference to a list where each element is a string
+exclude_protein_by_cds_id has a value which is a GenomeAnnotationAPI.boolean
+include_mrna_ids_by_gene_id has a value which is a GenomeAnnotationAPI.boolean
+exclude_cds_ids_by_gene_id has a value which is a GenomeAnnotationAPI.boolean
+include_cds_id_by_mrna_id has a value which is a GenomeAnnotationAPI.boolean
+include_exons_by_mrna_id has a value which is a GenomeAnnotationAPI.boolean
+include_utr_by_utr_type_by_mrna_id has a value which is a GenomeAnnotationAPI.boolean
+exclude_summary has a value which is a GenomeAnnotationAPI.boolean
 
 
 =end text

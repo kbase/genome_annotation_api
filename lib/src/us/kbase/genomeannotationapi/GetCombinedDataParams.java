@@ -16,8 +16,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
  * <p>Original spec-file type: GetCombinedDataParams</p>
  * <pre>
  * * Retrieve any part of GenomeAnnotation.
- * * Any of load_genes, load_mrnas and load_cdss flags are additional to load_features_by_type list of types;
- * * By default load_genes=1, load_cdss=1, load_proteins=1, load_gene_id_to_cds_ids=1, load_summary=1.
+ * * Any of exclude_genes, include_mrnas and exclude_cdss flags override values listed in include_features_by_type.
  * </pre>
  * 
  */
@@ -25,44 +24,44 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @Generated("com.googlecode.jsonschema2pojo")
 @JsonPropertyOrder({
     "ref",
-    "load_genes",
-    "load_mrnas",
-    "load_cdss",
-    "load_features_by_type",
-    "load_protein_by_cds_id",
-    "load_mrna_ids_by_gene_id",
-    "load_cds_ids_by_gene_id",
-    "load_cds_id_by_mrna_id",
-    "load_exons_by_mrna_id",
-    "load_utr_by_utr_type_by_mrna_id",
-    "load_summary"
+    "exclude_genes",
+    "include_mrnas",
+    "exclude_cdss",
+    "include_features_by_type",
+    "exclude_protein_by_cds_id",
+    "include_mrna_ids_by_gene_id",
+    "exclude_cds_ids_by_gene_id",
+    "include_cds_id_by_mrna_id",
+    "include_exons_by_mrna_id",
+    "include_utr_by_utr_type_by_mrna_id",
+    "exclude_summary"
 })
 public class GetCombinedDataParams {
 
     @JsonProperty("ref")
     private java.lang.String ref;
-    @JsonProperty("load_genes")
-    private Long loadGenes;
-    @JsonProperty("load_mrnas")
-    private Long loadMrnas;
-    @JsonProperty("load_cdss")
-    private Long loadCdss;
-    @JsonProperty("load_features_by_type")
-    private List<String> loadFeaturesByType;
-    @JsonProperty("load_protein_by_cds_id")
-    private Long loadProteinByCdsId;
-    @JsonProperty("load_mrna_ids_by_gene_id")
-    private Long loadMrnaIdsByGeneId;
-    @JsonProperty("load_cds_ids_by_gene_id")
-    private Long loadCdsIdsByGeneId;
-    @JsonProperty("load_cds_id_by_mrna_id")
-    private Long loadCdsIdByMrnaId;
-    @JsonProperty("load_exons_by_mrna_id")
-    private Long loadExonsByMrnaId;
-    @JsonProperty("load_utr_by_utr_type_by_mrna_id")
-    private Long loadUtrByUtrTypeByMrnaId;
-    @JsonProperty("load_summary")
-    private Long loadSummary;
+    @JsonProperty("exclude_genes")
+    private Long excludeGenes;
+    @JsonProperty("include_mrnas")
+    private Long includeMrnas;
+    @JsonProperty("exclude_cdss")
+    private Long excludeCdss;
+    @JsonProperty("include_features_by_type")
+    private List<String> includeFeaturesByType;
+    @JsonProperty("exclude_protein_by_cds_id")
+    private Long excludeProteinByCdsId;
+    @JsonProperty("include_mrna_ids_by_gene_id")
+    private Long includeMrnaIdsByGeneId;
+    @JsonProperty("exclude_cds_ids_by_gene_id")
+    private Long excludeCdsIdsByGeneId;
+    @JsonProperty("include_cds_id_by_mrna_id")
+    private Long includeCdsIdByMrnaId;
+    @JsonProperty("include_exons_by_mrna_id")
+    private Long includeExonsByMrnaId;
+    @JsonProperty("include_utr_by_utr_type_by_mrna_id")
+    private Long includeUtrByUtrTypeByMrnaId;
+    @JsonProperty("exclude_summary")
+    private Long excludeSummary;
     private Map<java.lang.String, Object> additionalProperties = new HashMap<java.lang.String, Object>();
 
     @JsonProperty("ref")
@@ -80,168 +79,168 @@ public class GetCombinedDataParams {
         return this;
     }
 
-    @JsonProperty("load_genes")
-    public Long getLoadGenes() {
-        return loadGenes;
+    @JsonProperty("exclude_genes")
+    public Long getExcludeGenes() {
+        return excludeGenes;
     }
 
-    @JsonProperty("load_genes")
-    public void setLoadGenes(Long loadGenes) {
-        this.loadGenes = loadGenes;
+    @JsonProperty("exclude_genes")
+    public void setExcludeGenes(Long excludeGenes) {
+        this.excludeGenes = excludeGenes;
     }
 
-    public GetCombinedDataParams withLoadGenes(Long loadGenes) {
-        this.loadGenes = loadGenes;
+    public GetCombinedDataParams withExcludeGenes(Long excludeGenes) {
+        this.excludeGenes = excludeGenes;
         return this;
     }
 
-    @JsonProperty("load_mrnas")
-    public Long getLoadMrnas() {
-        return loadMrnas;
+    @JsonProperty("include_mrnas")
+    public Long getIncludeMrnas() {
+        return includeMrnas;
     }
 
-    @JsonProperty("load_mrnas")
-    public void setLoadMrnas(Long loadMrnas) {
-        this.loadMrnas = loadMrnas;
+    @JsonProperty("include_mrnas")
+    public void setIncludeMrnas(Long includeMrnas) {
+        this.includeMrnas = includeMrnas;
     }
 
-    public GetCombinedDataParams withLoadMrnas(Long loadMrnas) {
-        this.loadMrnas = loadMrnas;
+    public GetCombinedDataParams withIncludeMrnas(Long includeMrnas) {
+        this.includeMrnas = includeMrnas;
         return this;
     }
 
-    @JsonProperty("load_cdss")
-    public Long getLoadCdss() {
-        return loadCdss;
+    @JsonProperty("exclude_cdss")
+    public Long getExcludeCdss() {
+        return excludeCdss;
     }
 
-    @JsonProperty("load_cdss")
-    public void setLoadCdss(Long loadCdss) {
-        this.loadCdss = loadCdss;
+    @JsonProperty("exclude_cdss")
+    public void setExcludeCdss(Long excludeCdss) {
+        this.excludeCdss = excludeCdss;
     }
 
-    public GetCombinedDataParams withLoadCdss(Long loadCdss) {
-        this.loadCdss = loadCdss;
+    public GetCombinedDataParams withExcludeCdss(Long excludeCdss) {
+        this.excludeCdss = excludeCdss;
         return this;
     }
 
-    @JsonProperty("load_features_by_type")
-    public List<String> getLoadFeaturesByType() {
-        return loadFeaturesByType;
+    @JsonProperty("include_features_by_type")
+    public List<String> getIncludeFeaturesByType() {
+        return includeFeaturesByType;
     }
 
-    @JsonProperty("load_features_by_type")
-    public void setLoadFeaturesByType(List<String> loadFeaturesByType) {
-        this.loadFeaturesByType = loadFeaturesByType;
+    @JsonProperty("include_features_by_type")
+    public void setIncludeFeaturesByType(List<String> includeFeaturesByType) {
+        this.includeFeaturesByType = includeFeaturesByType;
     }
 
-    public GetCombinedDataParams withLoadFeaturesByType(List<String> loadFeaturesByType) {
-        this.loadFeaturesByType = loadFeaturesByType;
+    public GetCombinedDataParams withIncludeFeaturesByType(List<String> includeFeaturesByType) {
+        this.includeFeaturesByType = includeFeaturesByType;
         return this;
     }
 
-    @JsonProperty("load_protein_by_cds_id")
-    public Long getLoadProteinByCdsId() {
-        return loadProteinByCdsId;
+    @JsonProperty("exclude_protein_by_cds_id")
+    public Long getExcludeProteinByCdsId() {
+        return excludeProteinByCdsId;
     }
 
-    @JsonProperty("load_protein_by_cds_id")
-    public void setLoadProteinByCdsId(Long loadProteinByCdsId) {
-        this.loadProteinByCdsId = loadProteinByCdsId;
+    @JsonProperty("exclude_protein_by_cds_id")
+    public void setExcludeProteinByCdsId(Long excludeProteinByCdsId) {
+        this.excludeProteinByCdsId = excludeProteinByCdsId;
     }
 
-    public GetCombinedDataParams withLoadProteinByCdsId(Long loadProteinByCdsId) {
-        this.loadProteinByCdsId = loadProteinByCdsId;
+    public GetCombinedDataParams withExcludeProteinByCdsId(Long excludeProteinByCdsId) {
+        this.excludeProteinByCdsId = excludeProteinByCdsId;
         return this;
     }
 
-    @JsonProperty("load_mrna_ids_by_gene_id")
-    public Long getLoadMrnaIdsByGeneId() {
-        return loadMrnaIdsByGeneId;
+    @JsonProperty("include_mrna_ids_by_gene_id")
+    public Long getIncludeMrnaIdsByGeneId() {
+        return includeMrnaIdsByGeneId;
     }
 
-    @JsonProperty("load_mrna_ids_by_gene_id")
-    public void setLoadMrnaIdsByGeneId(Long loadMrnaIdsByGeneId) {
-        this.loadMrnaIdsByGeneId = loadMrnaIdsByGeneId;
+    @JsonProperty("include_mrna_ids_by_gene_id")
+    public void setIncludeMrnaIdsByGeneId(Long includeMrnaIdsByGeneId) {
+        this.includeMrnaIdsByGeneId = includeMrnaIdsByGeneId;
     }
 
-    public GetCombinedDataParams withLoadMrnaIdsByGeneId(Long loadMrnaIdsByGeneId) {
-        this.loadMrnaIdsByGeneId = loadMrnaIdsByGeneId;
+    public GetCombinedDataParams withIncludeMrnaIdsByGeneId(Long includeMrnaIdsByGeneId) {
+        this.includeMrnaIdsByGeneId = includeMrnaIdsByGeneId;
         return this;
     }
 
-    @JsonProperty("load_cds_ids_by_gene_id")
-    public Long getLoadCdsIdsByGeneId() {
-        return loadCdsIdsByGeneId;
+    @JsonProperty("exclude_cds_ids_by_gene_id")
+    public Long getExcludeCdsIdsByGeneId() {
+        return excludeCdsIdsByGeneId;
     }
 
-    @JsonProperty("load_cds_ids_by_gene_id")
-    public void setLoadCdsIdsByGeneId(Long loadCdsIdsByGeneId) {
-        this.loadCdsIdsByGeneId = loadCdsIdsByGeneId;
+    @JsonProperty("exclude_cds_ids_by_gene_id")
+    public void setExcludeCdsIdsByGeneId(Long excludeCdsIdsByGeneId) {
+        this.excludeCdsIdsByGeneId = excludeCdsIdsByGeneId;
     }
 
-    public GetCombinedDataParams withLoadCdsIdsByGeneId(Long loadCdsIdsByGeneId) {
-        this.loadCdsIdsByGeneId = loadCdsIdsByGeneId;
+    public GetCombinedDataParams withExcludeCdsIdsByGeneId(Long excludeCdsIdsByGeneId) {
+        this.excludeCdsIdsByGeneId = excludeCdsIdsByGeneId;
         return this;
     }
 
-    @JsonProperty("load_cds_id_by_mrna_id")
-    public Long getLoadCdsIdByMrnaId() {
-        return loadCdsIdByMrnaId;
+    @JsonProperty("include_cds_id_by_mrna_id")
+    public Long getIncludeCdsIdByMrnaId() {
+        return includeCdsIdByMrnaId;
     }
 
-    @JsonProperty("load_cds_id_by_mrna_id")
-    public void setLoadCdsIdByMrnaId(Long loadCdsIdByMrnaId) {
-        this.loadCdsIdByMrnaId = loadCdsIdByMrnaId;
+    @JsonProperty("include_cds_id_by_mrna_id")
+    public void setIncludeCdsIdByMrnaId(Long includeCdsIdByMrnaId) {
+        this.includeCdsIdByMrnaId = includeCdsIdByMrnaId;
     }
 
-    public GetCombinedDataParams withLoadCdsIdByMrnaId(Long loadCdsIdByMrnaId) {
-        this.loadCdsIdByMrnaId = loadCdsIdByMrnaId;
+    public GetCombinedDataParams withIncludeCdsIdByMrnaId(Long includeCdsIdByMrnaId) {
+        this.includeCdsIdByMrnaId = includeCdsIdByMrnaId;
         return this;
     }
 
-    @JsonProperty("load_exons_by_mrna_id")
-    public Long getLoadExonsByMrnaId() {
-        return loadExonsByMrnaId;
+    @JsonProperty("include_exons_by_mrna_id")
+    public Long getIncludeExonsByMrnaId() {
+        return includeExonsByMrnaId;
     }
 
-    @JsonProperty("load_exons_by_mrna_id")
-    public void setLoadExonsByMrnaId(Long loadExonsByMrnaId) {
-        this.loadExonsByMrnaId = loadExonsByMrnaId;
+    @JsonProperty("include_exons_by_mrna_id")
+    public void setIncludeExonsByMrnaId(Long includeExonsByMrnaId) {
+        this.includeExonsByMrnaId = includeExonsByMrnaId;
     }
 
-    public GetCombinedDataParams withLoadExonsByMrnaId(Long loadExonsByMrnaId) {
-        this.loadExonsByMrnaId = loadExonsByMrnaId;
+    public GetCombinedDataParams withIncludeExonsByMrnaId(Long includeExonsByMrnaId) {
+        this.includeExonsByMrnaId = includeExonsByMrnaId;
         return this;
     }
 
-    @JsonProperty("load_utr_by_utr_type_by_mrna_id")
-    public Long getLoadUtrByUtrTypeByMrnaId() {
-        return loadUtrByUtrTypeByMrnaId;
+    @JsonProperty("include_utr_by_utr_type_by_mrna_id")
+    public Long getIncludeUtrByUtrTypeByMrnaId() {
+        return includeUtrByUtrTypeByMrnaId;
     }
 
-    @JsonProperty("load_utr_by_utr_type_by_mrna_id")
-    public void setLoadUtrByUtrTypeByMrnaId(Long loadUtrByUtrTypeByMrnaId) {
-        this.loadUtrByUtrTypeByMrnaId = loadUtrByUtrTypeByMrnaId;
+    @JsonProperty("include_utr_by_utr_type_by_mrna_id")
+    public void setIncludeUtrByUtrTypeByMrnaId(Long includeUtrByUtrTypeByMrnaId) {
+        this.includeUtrByUtrTypeByMrnaId = includeUtrByUtrTypeByMrnaId;
     }
 
-    public GetCombinedDataParams withLoadUtrByUtrTypeByMrnaId(Long loadUtrByUtrTypeByMrnaId) {
-        this.loadUtrByUtrTypeByMrnaId = loadUtrByUtrTypeByMrnaId;
+    public GetCombinedDataParams withIncludeUtrByUtrTypeByMrnaId(Long includeUtrByUtrTypeByMrnaId) {
+        this.includeUtrByUtrTypeByMrnaId = includeUtrByUtrTypeByMrnaId;
         return this;
     }
 
-    @JsonProperty("load_summary")
-    public Long getLoadSummary() {
-        return loadSummary;
+    @JsonProperty("exclude_summary")
+    public Long getExcludeSummary() {
+        return excludeSummary;
     }
 
-    @JsonProperty("load_summary")
-    public void setLoadSummary(Long loadSummary) {
-        this.loadSummary = loadSummary;
+    @JsonProperty("exclude_summary")
+    public void setExcludeSummary(Long excludeSummary) {
+        this.excludeSummary = excludeSummary;
     }
 
-    public GetCombinedDataParams withLoadSummary(Long loadSummary) {
-        this.loadSummary = loadSummary;
+    public GetCombinedDataParams withExcludeSummary(Long excludeSummary) {
+        this.excludeSummary = excludeSummary;
         return this;
     }
 
@@ -257,7 +256,7 @@ public class GetCombinedDataParams {
 
     @Override
     public java.lang.String toString() {
-        return ((((((((((((((((((((((((((("GetCombinedDataParams"+" [ref=")+ ref)+", loadGenes=")+ loadGenes)+", loadMrnas=")+ loadMrnas)+", loadCdss=")+ loadCdss)+", loadFeaturesByType=")+ loadFeaturesByType)+", loadProteinByCdsId=")+ loadProteinByCdsId)+", loadMrnaIdsByGeneId=")+ loadMrnaIdsByGeneId)+", loadCdsIdsByGeneId=")+ loadCdsIdsByGeneId)+", loadCdsIdByMrnaId=")+ loadCdsIdByMrnaId)+", loadExonsByMrnaId=")+ loadExonsByMrnaId)+", loadUtrByUtrTypeByMrnaId=")+ loadUtrByUtrTypeByMrnaId)+", loadSummary=")+ loadSummary)+", additionalProperties=")+ additionalProperties)+"]");
+        return ((((((((((((((((((((((((((("GetCombinedDataParams"+" [ref=")+ ref)+", excludeGenes=")+ excludeGenes)+", includeMrnas=")+ includeMrnas)+", excludeCdss=")+ excludeCdss)+", includeFeaturesByType=")+ includeFeaturesByType)+", excludeProteinByCdsId=")+ excludeProteinByCdsId)+", includeMrnaIdsByGeneId=")+ includeMrnaIdsByGeneId)+", excludeCdsIdsByGeneId=")+ excludeCdsIdsByGeneId)+", includeCdsIdByMrnaId=")+ includeCdsIdByMrnaId)+", includeExonsByMrnaId=")+ includeExonsByMrnaId)+", includeUtrByUtrTypeByMrnaId=")+ includeUtrByUtrTypeByMrnaId)+", excludeSummary=")+ excludeSummary)+", additionalProperties=")+ additionalProperties)+"]");
     }
 
 }

@@ -23,7 +23,7 @@ class GenomeAnnotationAPI:
     #########################################
     VERSION = "0.1.1"
     GIT_URL = "https://github.com/rsutormin/genome_annotation_api"
-    GIT_COMMIT_HASH = "a0afba2a514e26111bedfa27490fdd75fd0f19d0"
+    GIT_COMMIT_HASH = "a6235cd90a081ed51b430a76e213c67af0ad15e3"
     
     #BEGIN_CLASS_HEADER
     #END_CLASS_HEADER
@@ -796,29 +796,29 @@ class GenomeAnnotationAPI:
         """
         Retrieve any part of GenomeAnnotation.
         :param params: instance of type "GetCombinedDataParams" (* Retrieve
-           any part of GenomeAnnotation. * Any of load_genes, load_mrnas and
-           load_cdss flags are additional to load_features_by_type list of
-           types; * By default load_genes=1, load_cdss=1, load_proteins=1,
-           load_gene_id_to_cds_ids=1, load_summary=1.) -> structure:
-           parameter "ref" of type "ObjectReference", parameter "load_genes"
-           of type "boolean" (A boolean - 0 for false, 1 for true. @range (0,
-           1)), parameter "load_mrnas" of type "boolean" (A boolean - 0 for
-           false, 1 for true. @range (0, 1)), parameter "load_cdss" of type
-           "boolean" (A boolean - 0 for false, 1 for true. @range (0, 1)),
-           parameter "load_features_by_type" of list of String, parameter
-           "load_protein_by_cds_id" of type "boolean" (A boolean - 0 for
+           any part of GenomeAnnotation. * Any of exclude_genes,
+           include_mrnas and exclude_cdss flags override values listed in
+           include_features_by_type.) -> structure: parameter "ref" of type
+           "ObjectReference", parameter "exclude_genes" of type "boolean" (A
+           boolean - 0 for false, 1 for true. @range (0, 1)), parameter
+           "include_mrnas" of type "boolean" (A boolean - 0 for false, 1 for
+           true. @range (0, 1)), parameter "exclude_cdss" of type "boolean"
+           (A boolean - 0 for false, 1 for true. @range (0, 1)), parameter
+           "include_features_by_type" of list of String, parameter
+           "exclude_protein_by_cds_id" of type "boolean" (A boolean - 0 for
            false, 1 for true. @range (0, 1)), parameter
-           "load_mrna_ids_by_gene_id" of type "boolean" (A boolean - 0 for
+           "include_mrna_ids_by_gene_id" of type "boolean" (A boolean - 0 for
            false, 1 for true. @range (0, 1)), parameter
-           "load_cds_ids_by_gene_id" of type "boolean" (A boolean - 0 for
+           "exclude_cds_ids_by_gene_id" of type "boolean" (A boolean - 0 for
            false, 1 for true. @range (0, 1)), parameter
-           "load_cds_id_by_mrna_id" of type "boolean" (A boolean - 0 for
+           "include_cds_id_by_mrna_id" of type "boolean" (A boolean - 0 for
            false, 1 for true. @range (0, 1)), parameter
-           "load_exons_by_mrna_id" of type "boolean" (A boolean - 0 for
+           "include_exons_by_mrna_id" of type "boolean" (A boolean - 0 for
            false, 1 for true. @range (0, 1)), parameter
-           "load_utr_by_utr_type_by_mrna_id" of type "boolean" (A boolean - 0
-           for false, 1 for true. @range (0, 1)), parameter "load_summary" of
-           type "boolean" (A boolean - 0 for false, 1 for true. @range (0, 1))
+           "include_utr_by_utr_type_by_mrna_id" of type "boolean" (A boolean
+           - 0 for false, 1 for true. @range (0, 1)), parameter
+           "exclude_summary" of type "boolean" (A boolean - 0 for false, 1
+           for true. @range (0, 1))
         :returns: instance of type "GenomeAnnotation_data" (gene_id is a
            feature id of a gene feature. mrna_id is a feature id of a mrna
            feature. cds_id is a feature id of a cds feature.) -> structure:
