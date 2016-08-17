@@ -23,7 +23,7 @@ class GenomeAnnotationAPI:
     #########################################
     VERSION = "0.1.1"
     GIT_URL = "https://github.com/rsutormin/genome_annotation_api"
-    GIT_COMMIT_HASH = "c1d28d03b4c119b5c2d0437c961c50ff13fef55a"
+    GIT_COMMIT_HASH = "71e37b2b56471ca768261a32d431f4a6013673ec"
     
     #BEGIN_CLASS_HEADER
     #END_CLASS_HEADER
@@ -347,9 +347,9 @@ class GenomeAnnotationAPI:
         :returns: instance of mapping from String to type "Protein_data" ->
            structure: parameter "protein_id" of String, parameter
            "protein_amino_acid_sequence" of String, parameter
-           "protein_function" of String, parameter "protein_aliases" of list
-           of String, parameter "protein_md5" of String, parameter
-           "protein_domain_locations" of list of String
+           "protein_function" of String, parameter "protein_aliases" of
+           mapping from String to list of String, parameter "protein_md5" of
+           String, parameter "protein_domain_locations" of list of String
         """
         # ctx is the context object
         # return variables are: returnVal
@@ -843,19 +843,20 @@ class GenomeAnnotationAPI:
            type "Protein_data" -> structure: parameter "protein_id" of
            String, parameter "protein_amino_acid_sequence" of String,
            parameter "protein_function" of String, parameter
-           "protein_aliases" of list of String, parameter "protein_md5" of
-           String, parameter "protein_domain_locations" of list of String,
-           parameter "mrna_ids_by_gene_id" of mapping from String to list of
-           String, parameter "cds_ids_by_gene_id" of mapping from String to
-           list of String, parameter "cds_id_by_mrna_id" of mapping from
-           String to String, parameter "exons_by_mrna_id" of mapping from
-           String to list of type "Exon_data" -> structure: parameter
-           "exon_location" of type "Region" -> structure: parameter
-           "contig_id" of String, parameter "strand" of String, parameter
-           "start" of Long, parameter "length" of Long, parameter
-           "exon_dna_sequence" of String, parameter "exon_ordinal" of Long,
-           parameter "utr_by_utr_type_by_mrna_id" of mapping from String to
-           mapping from String to type "UTR_data" -> structure: parameter
+           "protein_aliases" of mapping from String to list of String,
+           parameter "protein_md5" of String, parameter
+           "protein_domain_locations" of list of String, parameter
+           "mrna_ids_by_gene_id" of mapping from String to list of String,
+           parameter "cds_ids_by_gene_id" of mapping from String to list of
+           String, parameter "cds_id_by_mrna_id" of mapping from String to
+           String, parameter "exons_by_mrna_id" of mapping from String to
+           list of type "Exon_data" -> structure: parameter "exon_location"
+           of type "Region" -> structure: parameter "contig_id" of String,
+           parameter "strand" of String, parameter "start" of Long, parameter
+           "length" of Long, parameter "exon_dna_sequence" of String,
+           parameter "exon_ordinal" of Long, parameter
+           "utr_by_utr_type_by_mrna_id" of mapping from String to mapping
+           from String to type "UTR_data" -> structure: parameter
            "utr_locations" of list of type "Region" -> structure: parameter
            "contig_id" of String, parameter "strand" of String, parameter
            "start" of Long, parameter "length" of Long, parameter

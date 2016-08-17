@@ -125,7 +125,7 @@ module GenomeAnnotationAPI {
         /** Function of protein */
         string protein_function;
         /** List of aliases for the protein */
-        list<string> protein_aliases;
+        mapping<string, list<string>> protein_aliases;
         /** MD5 hash of the protein translation (uppercase) */
         string protein_md5;
         list<string> protein_domain_locations;
