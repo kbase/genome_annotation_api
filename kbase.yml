@@ -11,7 +11,7 @@ module-version:
     0.1.1
 
 owners:
-    [scanon,mhenderson,msneddon]
+    [scanon,mhenderson,msneddon,rsutormin]
 
 service-config:
     dynamic-service: true

@@ -963,7 +963,7 @@ Protein_data is a reference to a hash where the following keys are defined:
 	protein_id has a value which is a string
 	protein_amino_acid_sequence has a value which is a string
 	protein_function has a value which is a string
-	protein_aliases has a value which is a reference to a list where each element is a string
+	protein_aliases has a value which is a reference to a hash where the key is a string and the value is a reference to a list where each element is a string
 	protein_md5 has a value which is a string
 	protein_domain_locations has a value which is a reference to a list where each element is a string
 
@@ -982,7 +982,7 @@ Protein_data is a reference to a hash where the following keys are defined:
 	protein_id has a value which is a string
 	protein_amino_acid_sequence has a value which is a string
 	protein_function has a value which is a string
-	protein_aliases has a value which is a reference to a list where each element is a string
+	protein_aliases has a value which is a reference to a hash where the key is a string and the value is a reference to a list where each element is a string
 	protein_md5 has a value which is a string
 	protein_domain_locations has a value which is a reference to a list where each element is a string
 
@@ -2577,7 +2577,7 @@ Protein_data is a reference to a hash where the following keys are defined:
 	protein_id has a value which is a string
 	protein_amino_acid_sequence has a value which is a string
 	protein_function has a value which is a string
-	protein_aliases has a value which is a reference to a list where each element is a string
+	protein_aliases has a value which is a reference to a hash where the key is a string and the value is a reference to a list where each element is a string
 	protein_md5 has a value which is a string
 	protein_domain_locations has a value which is a reference to a list where each element is a string
 Exon_data is a reference to a hash where the following keys are defined:
@@ -2666,7 +2666,7 @@ Protein_data is a reference to a hash where the following keys are defined:
 	protein_id has a value which is a string
 	protein_amino_acid_sequence has a value which is a string
 	protein_function has a value which is a string
-	protein_aliases has a value which is a reference to a list where each element is a string
+	protein_aliases has a value which is a reference to a hash where the key is a string and the value is a reference to a list where each element is a string
 	protein_md5 has a value which is a string
 	protein_domain_locations has a value which is a reference to a list where each element is a string
 Exon_data is a reference to a hash where the following keys are defined:
@@ -3090,7 +3090,7 @@ a reference to a hash where the following keys are defined:
 protein_id has a value which is a string
 protein_amino_acid_sequence has a value which is a string
 protein_function has a value which is a string
-protein_aliases has a value which is a reference to a list where each element is a string
+protein_aliases has a value which is a reference to a hash where the key is a string and the value is a reference to a list where each element is a string
 protein_md5 has a value which is a string
 protein_domain_locations has a value which is a reference to a list where each element is a string
 
@@ -3104,7 +3104,7 @@ a reference to a hash where the following keys are defined:
 protein_id has a value which is a string
 protein_amino_acid_sequence has a value which is a string
 protein_function has a value which is a string
-protein_aliases has a value which is a reference to a list where each element is a string
+protein_aliases has a value which is a reference to a hash where the key is a string and the value is a reference to a list where each element is a string
 protein_md5 has a value which is a string
 protein_domain_locations has a value which is a reference to a list where each element is a string
 
