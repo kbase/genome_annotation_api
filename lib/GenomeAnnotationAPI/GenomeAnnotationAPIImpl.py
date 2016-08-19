@@ -935,7 +935,10 @@ class GenomeAnnotationAPI:
         if load_protein_by_cds_id:
             genome_data['protein_by_cds_id'] = ga.get_proteins()
         if load_mrna_ids_by_gene_id:
-            genome_data['mrna_ids_by_gene_id'] = ga.get_mrna_by_gene(feature_ids_by_type[gene_type])
+            if is_legacy:
+                genome_data['mrna_ids_by_gene_id'] = {}
+            else:
+                genome_data['mrna_ids_by_gene_id'] = ga.get_mrna_by_gene(feature_ids_by_type[gene_type])
         if load_cds_ids_by_gene_id:
             if is_legacy:
                 genome_data['cds_ids_by_gene_id'] = {}
