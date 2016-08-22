@@ -3,6 +3,7 @@
 from doekbase.data_api.annotation.genome_annotation.api import GenomeAnnotationAPI as GenomeAnnotationAPI_local
 from doekbase.data_api import cache
 import logging
+from biokbase.workspace.client import Workspace
 #END_HEADER
 
 
@@ -26,6 +27,11 @@ class GenomeAnnotationAPI:
     GIT_COMMIT_HASH = "71e37b2b56471ca768261a32d431f4a6013673ec"
     
     #BEGIN_CLASS_HEADER
+    def _migrate_property_internal(self, from_dict, to_dict, prop_name, to_prop_name = None):
+        if not to_prop_name:
+            to_prop_name = prop_name
+        if to_prop_name not in to_dict and prop_name in from_dict:
+            to_dict[to_prop_name] = from_dict[prop_name]
     #END_CLASS_HEADER
 
     # config contains contents of config file in a hash or None if it couldn't
@@ -877,6 +883,10 @@ class GenomeAnnotationAPI:
         # ctx is the context object
         # return variables are: returnVal
         #BEGIN get_combined_data
+        ws = Workspace(self.services['workspace_service_url'], token=ctx['token'])
+        input_obj_info = ws.get_object_info_new({'objects': [{'ref': params['ref']}]})[0]
+        input_obj_type = input_obj_info[2].split('-')[0]
+        is_legacy = input_obj_type == "KBaseGenomes.Genome"
         exclude_genes = 'exclude_genes' in params and params['exclude_genes'] == 1
         include_mrnas = 'include_mrnas' in params and params['include_mrnas'] == 1
         exclude_cdss = 'exclude_cdss' in params and params['exclude_cdss'] == 1
@@ -925,17 +935,70 @@ class GenomeAnnotationAPI:
         if load_protein_by_cds_id:
             genome_data['protein_by_cds_id'] = ga.get_proteins()
         if load_mrna_ids_by_gene_id:
-            genome_data['mrna_ids_by_gene_id'] = ga.get_mrna_by_gene(feature_ids_by_type[gene_type])
+            if is_legacy:
+                genome_data['mrna_ids_by_gene_id'] = {}
+            else:
+                genome_data['mrna_ids_by_gene_id'] = ga.get_mrna_by_gene(feature_ids_by_type[gene_type])
         if load_cds_ids_by_gene_id:
-            genome_data['cds_ids_by_gene_id'] = ga.get_cds_by_gene(feature_ids_by_type[gene_type])
+            if is_legacy:
+                genome_data['cds_ids_by_gene_id'] = {}
+            else:
+                genome_data['cds_ids_by_gene_id'] = ga.get_cds_by_gene(feature_ids_by_type[gene_type])
         if load_cds_id_by_mrna_id:
-            genome_data['cds_id_by_mrna_id'] = ga.get_cds_by_mrna()
+            if is_legacy:
+                genome_data['cds_id_by_mrna_id'] = {}
+            else:
+                genome_data['cds_id_by_mrna_id'] = ga.get_cds_by_mrna()
         if load_exons_by_mrna_id:
             genome_data['exons_by_mrna_id'] = ga.get_mrna_exons()
         if load_utr_by_utr_type_by_mrna_id:
             genome_data['utr_by_utr_type_by_mrna_id'] = ga.get_mrna_utrs()
         if load_summary:
-            genome_data['summary'] = ga.get_summary()
+            if is_legacy:
+                genome = ws.get_objects2({'objects': [{'ref': params['ref'], 'included': [
+                    "/scientific_name", "/tax_id", "/contig_ids", "/dna_size", "/gc_content",
+                    "/genetic_code", "/num_contigs", "/source", "/source_id"]}]})['data'][0]['data']
+                summary = {}
+                self._migrate_property_internal(genome, summary, 'scientific_name')
+                self._migrate_property_internal(genome, summary, 'tax_id', 'taxonomy_id')
+                self._migrate_property_internal(genome, summary, 'contig_ids')
+                self._migrate_property_internal(genome, summary, 'dna_size')
+                self._migrate_property_internal(genome, summary, 'gc_content')
+                self._migrate_property_internal(genome, summary, 'genetic_code')
+                self._migrate_property_internal(genome, summary, 'num_contigs')
+                self._migrate_property_internal(genome, summary, 'source', 'assembly_source')
+                self._migrate_property_internal(genome, summary, 'source_id', 'assembly_source_id')
+                genome_data['summary'] = summary
+            else:
+                summary = ga.get_summary()
+                if 'taxonomy' in summary:
+                    taxonomy = summary['taxonomy']
+                    self._migrate_property_internal(taxonomy, summary, 'scientific_name')
+                    self._migrate_property_internal(taxonomy, summary, 'taxonomy_id')
+                    self._migrate_property_internal(taxonomy, summary, 'kingdom')
+                    self._migrate_property_internal(taxonomy, summary, 'scientific_lineage')
+                    self._migrate_property_internal(taxonomy, summary, 'genetic_code')
+                    self._migrate_property_internal(taxonomy, summary, 'organism_aliases')
+                    del summary['taxonomy']
+                if 'assembly' in summary:
+                    assembly = summary['assembly']
+                    self._migrate_property_internal(assembly, summary, 'assembly_source')
+                    self._migrate_property_internal(assembly, summary, 'assembly_source_id')
+                    self._migrate_property_internal(assembly, summary, 'assembly_source_date')
+                    self._migrate_property_internal(assembly, summary, 'gc_content')
+                    self._migrate_property_internal(assembly, summary, 'dna_size')
+                    self._migrate_property_internal(assembly, summary, 'num_contigs')
+                    self._migrate_property_internal(assembly, summary, 'contig_ids')
+                    del summary['assembly']
+                if 'annotation' in summary:
+                    annotation = summary['annotation']
+                    self._migrate_property_internal(annotation, summary, 'external_source')
+                    self._migrate_property_internal(annotation, summary, 'external_source_date')
+                    self._migrate_property_internal(annotation, summary, 'release')
+                    self._migrate_property_internal(annotation, summary, 'original_source_filename')
+                    self._migrate_property_internal(annotation, summary, 'feature_type_counts')
+                    del summary['annotation']
+                genome_data['summary'] = summary
         returnVal = genome_data
         #END get_combined_data
 
