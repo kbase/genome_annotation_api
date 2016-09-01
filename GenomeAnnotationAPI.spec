@@ -634,11 +634,10 @@ module GenomeAnnotationAPI {
 
     /*
 
-
     */
     typedef structure {
         string ref;
-        list <string> included;
+        list <int> included_feature_position_index;
         list <string> ref_path_to_genome;
     } LegacyGenomeSelector;
 
@@ -646,12 +645,17 @@ module GenomeAnnotationAPI {
 
     typedef structure {
         list <LegacyGenomeSelector> genomes;
+
+        list <string> included_fields;
+        list <string> included_feature_fields;
+
         boolean ignore_errors;
         boolean no_data;
+        boolean no_metadata;
     } GetLegacyGenomeParams;
 
 
-    /* todo: import Genome type and use it here */
+    /* */
     typedef structure {
         KBaseGenomes.Genome data;
 
@@ -666,17 +670,23 @@ module GenomeAnnotationAPI {
         Workspace.timestamp created;
         Workspace.epoch epoch;
 
+        list<string> refs;
+        mapping<Workspace.id_type, list<Workspace.extracted_id>> extracted_ids;
+
         string handle_error;
         string handle_stacktrace;
     } LegacyGenomeData;
+
 
     typedef structure {
         list<LegacyGenomeData> genomes;
     } LegacyGenomeDataSet;
 
-
+    /* A reasonably simple wrapper on get_objects2, but with Genome specific
+        filters instead of arbitrary get subdata included paths.
+    */
     funcdef get_legacy_genome(GetLegacyGenomeParams params)
-                returns (LegacyGenomeData data) authentication required;
+                returns (LegacyGenomeData data) authentication optional;
 
 
 
@@ -700,7 +710,7 @@ module GenomeAnnotationAPI {
     } SaveLegacyGenomeResult;
 
     funcdef save_one_legacy_genome(SaveLegacyGenomeParams params)
-                returns (SaveLegacyGenomeResult result) authentication required;
+                returns (SaveLegacyGenomeResult result) authentication optional;
 
 
 };

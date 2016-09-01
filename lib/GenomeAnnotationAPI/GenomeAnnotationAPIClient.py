@@ -502,11 +502,14 @@ class GenomeAnnotationAPI(object):
         """
         :param params: instance of type "GetLegacyGenomeParams" -> structure:
            parameter "genomes" of list of type "LegacyGenomeSelector" ->
-           structure: parameter "ref" of String, parameter "included" of list
-           of String, parameter "ref_path_to_genome" of list of String,
-           parameter "ignore_errors" of type "boolean" (A boolean - 0 for
-           false, 1 for true. @range (0, 1)), parameter "no_data" of type
-           "boolean" (A boolean - 0 for false, 1 for true. @range (0, 1))
+           structure: parameter "ref" of String, parameter
+           "included_feature_position_index" of list of Long, parameter
+           "ref_path_to_genome" of list of String, parameter
+           "included_fields" of list of String, parameter
+           "included_feature_fields" of list of String, parameter
+           "ignore_errors" of type "boolean" (A boolean - 0 for false, 1 for
+           true. @range (0, 1)), parameter "no_data" of type "boolean" (A
+           boolean - 0 for false, 1 for true. @range (0, 1))
         :returns: instance of type "LegacyGenomeData" (todo: import Genome
            type and use it here) -> structure: parameter "data" of type
            "Genome" (Genome object holds much of the data relevant for a
@@ -847,8 +850,11 @@ class GenomeAnnotationAPI(object):
            2012-12-17T23:24:06-0500 (EST time) 2013-04-03T08:56:32+0000 (UTC
            time) 2013-04-03T08:56:32Z (UTC time)), parameter "epoch" of type
            "epoch" (A Unix epoch (the time since 00:00:00 1/1/1970 UTC) in
-           milliseconds.), parameter "handle_error" of String, parameter
-           "handle_stacktrace" of String
+           milliseconds.), parameter "refs" of list of String, parameter
+           "extracted_ids" of mapping from type "id_type" (An id type (e.g.
+           from a typespec @id annotation: @id [idtype])) to list of type
+           "extracted_id" (An id extracted from an object.), parameter
+           "handle_error" of String, parameter "handle_stacktrace" of String
         """
         return self._client.call_method(
             'GenomeAnnotationAPI.get_legacy_genome',

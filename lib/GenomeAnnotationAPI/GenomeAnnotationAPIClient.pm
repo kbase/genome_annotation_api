@@ -88,14 +88,6 @@ sub new
 	    $self->{token} = $token->token;
 	    $self->{client}->{token} = $token->token;
 	}
-        else
-        {
-	    #
-	    # All methods in this module require authentication. In this case, if we
-	    # don't have a token, we can't continue.
-	    #
-	    die "Authentication failed: " . $token->error_message;
-	}
     }
 
     my $ua = $self->{client}->ua;	 
@@ -2771,11 +2763,13 @@ $params is a GenomeAnnotationAPI.GetLegacyGenomeParams
 $data is a GenomeAnnotationAPI.LegacyGenomeData
 GetLegacyGenomeParams is a reference to a hash where the following keys are defined:
 	genomes has a value which is a reference to a list where each element is a GenomeAnnotationAPI.LegacyGenomeSelector
+	included_fields has a value which is a reference to a list where each element is a string
+	included_feature_fields has a value which is a reference to a list where each element is a string
 	ignore_errors has a value which is a GenomeAnnotationAPI.boolean
 	no_data has a value which is a GenomeAnnotationAPI.boolean
 LegacyGenomeSelector is a reference to a hash where the following keys are defined:
 	ref has a value which is a string
-	included has a value which is a reference to a list where each element is a string
+	included_feature_position_index has a value which is a reference to a list where each element is an int
 	ref_path_to_genome has a value which is a reference to a list where each element is a string
 boolean is an int
 LegacyGenomeData is a reference to a hash where the following keys are defined:
@@ -2788,6 +2782,8 @@ LegacyGenomeData is a reference to a hash where the following keys are defined:
 	copy_source_inaccessible has a value which is a GenomeAnnotationAPI.boolean
 	created has a value which is a Workspace.timestamp
 	epoch has a value which is a Workspace.epoch
+	refs has a value which is a reference to a list where each element is a string
+	extracted_ids has a value which is a reference to a hash where the key is a Workspace.id_type and the value is a reference to a list where each element is a Workspace.extracted_id
 	handle_error has a value which is a string
 	handle_stacktrace has a value which is a string
 Genome is a reference to a hash where the following keys are defined:
@@ -3005,6 +3001,8 @@ SubAction is a reference to a hash where the following keys are defined:
 	code_url has a value which is a string
 	commit has a value which is a string
 	endpoint_url has a value which is a string
+id_type is a string
+extracted_id is a string
 
 </pre>
 
@@ -3016,11 +3014,13 @@ $params is a GenomeAnnotationAPI.GetLegacyGenomeParams
 $data is a GenomeAnnotationAPI.LegacyGenomeData
 GetLegacyGenomeParams is a reference to a hash where the following keys are defined:
 	genomes has a value which is a reference to a list where each element is a GenomeAnnotationAPI.LegacyGenomeSelector
+	included_fields has a value which is a reference to a list where each element is a string
+	included_feature_fields has a value which is a reference to a list where each element is a string
 	ignore_errors has a value which is a GenomeAnnotationAPI.boolean
 	no_data has a value which is a GenomeAnnotationAPI.boolean
 LegacyGenomeSelector is a reference to a hash where the following keys are defined:
 	ref has a value which is a string
-	included has a value which is a reference to a list where each element is a string
+	included_feature_position_index has a value which is a reference to a list where each element is an int
 	ref_path_to_genome has a value which is a reference to a list where each element is a string
 boolean is an int
 LegacyGenomeData is a reference to a hash where the following keys are defined:
@@ -3033,6 +3033,8 @@ LegacyGenomeData is a reference to a hash where the following keys are defined:
 	copy_source_inaccessible has a value which is a GenomeAnnotationAPI.boolean
 	created has a value which is a Workspace.timestamp
 	epoch has a value which is a Workspace.epoch
+	refs has a value which is a reference to a list where each element is a string
+	extracted_ids has a value which is a reference to a hash where the key is a Workspace.id_type and the value is a reference to a list where each element is a Workspace.extracted_id
 	handle_error has a value which is a string
 	handle_stacktrace has a value which is a string
 Genome is a reference to a hash where the following keys are defined:
@@ -3250,6 +3252,8 @@ SubAction is a reference to a hash where the following keys are defined:
 	code_url has a value which is a string
 	commit has a value which is a string
 	endpoint_url has a value which is a string
+id_type is a string
+extracted_id is a string
 
 
 =end text
@@ -3266,7 +3270,7 @@ SubAction is a reference to a hash where the following keys are defined:
 {
     my($self, @args) = @_;
 
-# Authentication: required
+# Authentication: optional
 
     if ((my $n = @args) != 1)
     {
@@ -3800,7 +3804,7 @@ usermeta is a reference to a hash where the key is a string and the value is a s
 {
     my($self, @args) = @_;
 
-# Authentication: required
+# Authentication: optional
 
     if ((my $n = @args) != 1)
     {
@@ -5374,7 +5378,7 @@ exclude_summary has a value which is a GenomeAnnotationAPI.boolean
 <pre>
 a reference to a hash where the following keys are defined:
 ref has a value which is a string
-included has a value which is a reference to a list where each element is a string
+included_feature_position_index has a value which is a reference to a list where each element is an int
 ref_path_to_genome has a value which is a reference to a list where each element is a string
 
 </pre>
@@ -5385,7 +5389,7 @@ ref_path_to_genome has a value which is a reference to a list where each element
 
 a reference to a hash where the following keys are defined:
 ref has a value which is a string
-included has a value which is a reference to a list where each element is a string
+included_feature_position_index has a value which is a reference to a list where each element is an int
 ref_path_to_genome has a value which is a reference to a list where each element is a string
 
 
@@ -5408,6 +5412,8 @@ ref_path_to_genome has a value which is a reference to a list where each element
 <pre>
 a reference to a hash where the following keys are defined:
 genomes has a value which is a reference to a list where each element is a GenomeAnnotationAPI.LegacyGenomeSelector
+included_fields has a value which is a reference to a list where each element is a string
+included_feature_fields has a value which is a reference to a list where each element is a string
 ignore_errors has a value which is a GenomeAnnotationAPI.boolean
 no_data has a value which is a GenomeAnnotationAPI.boolean
 
@@ -5419,6 +5425,8 @@ no_data has a value which is a GenomeAnnotationAPI.boolean
 
 a reference to a hash where the following keys are defined:
 genomes has a value which is a reference to a list where each element is a GenomeAnnotationAPI.LegacyGenomeSelector
+included_fields has a value which is a reference to a list where each element is a string
+included_feature_fields has a value which is a reference to a list where each element is a string
 ignore_errors has a value which is a GenomeAnnotationAPI.boolean
 no_data has a value which is a GenomeAnnotationAPI.boolean
 
@@ -5455,6 +5463,8 @@ copied has a value which is a string
 copy_source_inaccessible has a value which is a GenomeAnnotationAPI.boolean
 created has a value which is a Workspace.timestamp
 epoch has a value which is a Workspace.epoch
+refs has a value which is a reference to a list where each element is a string
+extracted_ids has a value which is a reference to a hash where the key is a Workspace.id_type and the value is a reference to a list where each element is a Workspace.extracted_id
 handle_error has a value which is a string
 handle_stacktrace has a value which is a string
 
@@ -5474,6 +5484,8 @@ copied has a value which is a string
 copy_source_inaccessible has a value which is a GenomeAnnotationAPI.boolean
 created has a value which is a Workspace.timestamp
 epoch has a value which is a Workspace.epoch
+refs has a value which is a reference to a list where each element is a string
+extracted_ids has a value which is a reference to a hash where the key is a Workspace.id_type and the value is a reference to a list where each element is a Workspace.extracted_id
 handle_error has a value which is a string
 handle_stacktrace has a value which is a string
 

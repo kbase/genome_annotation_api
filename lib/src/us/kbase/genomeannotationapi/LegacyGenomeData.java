@@ -34,6 +34,8 @@ import us.kbase.workspace.ProvenanceAction;
     "copy_source_inaccessible",
     "created",
     "epoch",
+    "refs",
+    "extracted_ids",
     "handle_error",
     "handle_stacktrace"
 })
@@ -83,6 +85,10 @@ public class LegacyGenomeData {
     private java.lang.String created;
     @JsonProperty("epoch")
     private java.lang.Long epoch;
+    @JsonProperty("refs")
+    private List<String> refs;
+    @JsonProperty("extracted_ids")
+    private Map<String, List<String>> extractedIds;
     @JsonProperty("handle_error")
     private java.lang.String handleError;
     @JsonProperty("handle_stacktrace")
@@ -276,6 +282,36 @@ public class LegacyGenomeData {
         return this;
     }
 
+    @JsonProperty("refs")
+    public List<String> getRefs() {
+        return refs;
+    }
+
+    @JsonProperty("refs")
+    public void setRefs(List<String> refs) {
+        this.refs = refs;
+    }
+
+    public LegacyGenomeData withRefs(List<String> refs) {
+        this.refs = refs;
+        return this;
+    }
+
+    @JsonProperty("extracted_ids")
+    public Map<String, List<String>> getExtractedIds() {
+        return extractedIds;
+    }
+
+    @JsonProperty("extracted_ids")
+    public void setExtractedIds(Map<String, List<String>> extractedIds) {
+        this.extractedIds = extractedIds;
+    }
+
+    public LegacyGenomeData withExtractedIds(Map<String, List<String>> extractedIds) {
+        this.extractedIds = extractedIds;
+        return this;
+    }
+
     @JsonProperty("handle_error")
     public java.lang.String getHandleError() {
         return handleError;
@@ -318,7 +354,7 @@ public class LegacyGenomeData {
 
     @Override
     public java.lang.String toString() {
-        return ((((((((((((((((((((((((("LegacyGenomeData"+" [data=")+ data)+", info=")+ info)+", provenance=")+ provenance)+", creator=")+ creator)+", origWsid=")+ origWsid)+", copied=")+ copied)+", copySourceInaccessible=")+ copySourceInaccessible)+", created=")+ created)+", epoch=")+ epoch)+", handleError=")+ handleError)+", handleStacktrace=")+ handleStacktrace)+", additionalProperties=")+ additionalProperties)+"]");
+        return ((((((((((((((((((((((((((((("LegacyGenomeData"+" [data=")+ data)+", info=")+ info)+", provenance=")+ provenance)+", creator=")+ creator)+", origWsid=")+ origWsid)+", copied=")+ copied)+", copySourceInaccessible=")+ copySourceInaccessible)+", created=")+ created)+", epoch=")+ epoch)+", refs=")+ refs)+", extractedIds=")+ extractedIds)+", handleError=")+ handleError)+", handleStacktrace=")+ handleStacktrace)+", additionalProperties=")+ additionalProperties)+"]");
     }
 
 }

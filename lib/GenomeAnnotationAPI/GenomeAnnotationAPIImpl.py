@@ -4,6 +4,9 @@ from doekbase.data_api.annotation.genome_annotation.api import GenomeAnnotationA
 from doekbase.data_api import cache
 import logging
 from biokbase.workspace.client import Workspace
+
+from GenomeAnnotationAPI.LegacyGenomeInterface import LegacyGenomeInterface
+
 #END_HEADER
 
 
@@ -24,7 +27,7 @@ class GenomeAnnotationAPI:
     #########################################
     VERSION = "0.1.1"
     GIT_URL = "git@github.com:kbase/genome_annotation_api"
-    GIT_COMMIT_HASH = "c2c17451723015693759391051cb9d1885c9d87d"
+    GIT_COMMIT_HASH = "f4e62ffe79e0a85d74f1e6770c6217a6ee73548e"
     
     #BEGIN_CLASS_HEADER
     def _migrate_property_internal(self, from_dict, to_dict, prop_name, to_prop_name = None):
@@ -1029,11 +1032,14 @@ class GenomeAnnotationAPI:
         """
         :param params: instance of type "GetLegacyGenomeParams" -> structure:
            parameter "genomes" of list of type "LegacyGenomeSelector" ->
-           structure: parameter "ref" of String, parameter "included" of list
-           of String, parameter "ref_path_to_genome" of list of String,
-           parameter "ignore_errors" of type "boolean" (A boolean - 0 for
-           false, 1 for true. @range (0, 1)), parameter "no_data" of type
-           "boolean" (A boolean - 0 for false, 1 for true. @range (0, 1))
+           structure: parameter "ref" of String, parameter
+           "included_feature_position_index" of list of Long, parameter
+           "ref_path_to_genome" of list of String, parameter
+           "included_fields" of list of String, parameter
+           "included_feature_fields" of list of String, parameter
+           "ignore_errors" of type "boolean" (A boolean - 0 for false, 1 for
+           true. @range (0, 1)), parameter "no_data" of type "boolean" (A
+           boolean - 0 for false, 1 for true. @range (0, 1))
         :returns: instance of type "LegacyGenomeData" (todo: import Genome
            type and use it here) -> structure: parameter "data" of type
            "Genome" (Genome object holds much of the data relevant for a
@@ -1374,12 +1380,18 @@ class GenomeAnnotationAPI:
            2012-12-17T23:24:06-0500 (EST time) 2013-04-03T08:56:32+0000 (UTC
            time) 2013-04-03T08:56:32Z (UTC time)), parameter "epoch" of type
            "epoch" (A Unix epoch (the time since 00:00:00 1/1/1970 UTC) in
-           milliseconds.), parameter "handle_error" of String, parameter
-           "handle_stacktrace" of String
+           milliseconds.), parameter "refs" of list of String, parameter
+           "extracted_ids" of mapping from type "id_type" (An id type (e.g.
+           from a typespec @id annotation: @id [idtype])) to list of type
+           "extracted_id" (An id extracted from an object.), parameter
+           "handle_error" of String, parameter "handle_stacktrace" of String
         """
         # ctx is the context object
         # return variables are: data
         #BEGIN get_legacy_genome
+        ws = Workspace(self.services['workspace_service_url'], token=ctx['token'])
+        legacy_genome_interface = LegacyGenomeInterface(ws)
+        data = legacy_genome_interface.get_legacy_genome(ctx, params)
         #END get_legacy_genome
 
         # At some point might do deeper type checking...
@@ -1731,6 +1743,10 @@ class GenomeAnnotationAPI:
         # ctx is the context object
         # return variables are: result
         #BEGIN save_one_legacy_genome
+        raise ValueError('Not yet supported')
+        ws = Workspace(self.services['workspace_service_url'], token=ctx['token'])
+        legacy_genome_interface = LegacyGenomeInterface(ws)
+        result = legacy_genome_interface.save_one_legacy_genome(ctx, params)
         #END save_one_legacy_genome
 
         # At some point might do deeper type checking...

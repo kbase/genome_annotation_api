@@ -21,15 +21,15 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @Generated("com.googlecode.jsonschema2pojo")
 @JsonPropertyOrder({
     "ref",
-    "included",
+    "included_feature_position_index",
     "ref_path_to_genome"
 })
 public class LegacyGenomeSelector {
 
     @JsonProperty("ref")
     private java.lang.String ref;
-    @JsonProperty("included")
-    private List<String> included;
+    @JsonProperty("included_feature_position_index")
+    private List<Long> includedFeaturePositionIndex;
     @JsonProperty("ref_path_to_genome")
     private List<String> refPathToGenome;
     private Map<java.lang.String, Object> additionalProperties = new HashMap<java.lang.String, Object>();
@@ -49,18 +49,18 @@ public class LegacyGenomeSelector {
         return this;
     }
 
-    @JsonProperty("included")
-    public List<String> getIncluded() {
-        return included;
+    @JsonProperty("included_feature_position_index")
+    public List<Long> getIncludedFeaturePositionIndex() {
+        return includedFeaturePositionIndex;
     }
 
-    @JsonProperty("included")
-    public void setIncluded(List<String> included) {
-        this.included = included;
+    @JsonProperty("included_feature_position_index")
+    public void setIncludedFeaturePositionIndex(List<Long> includedFeaturePositionIndex) {
+        this.includedFeaturePositionIndex = includedFeaturePositionIndex;
     }
 
-    public LegacyGenomeSelector withIncluded(List<String> included) {
-        this.included = included;
+    public LegacyGenomeSelector withIncludedFeaturePositionIndex(List<Long> includedFeaturePositionIndex) {
+        this.includedFeaturePositionIndex = includedFeaturePositionIndex;
         return this;
     }
 
@@ -91,7 +91,7 @@ public class LegacyGenomeSelector {
 
     @Override
     public java.lang.String toString() {
-        return ((((((((("LegacyGenomeSelector"+" [ref=")+ ref)+", included=")+ included)+", refPathToGenome=")+ refPathToGenome)+", additionalProperties=")+ additionalProperties)+"]");
+        return ((((((((("LegacyGenomeSelector"+" [ref=")+ ref)+", includedFeaturePositionIndex=")+ includedFeaturePositionIndex)+", refPathToGenome=")+ refPathToGenome)+", additionalProperties=")+ additionalProperties)+"]");
     }
 
 }

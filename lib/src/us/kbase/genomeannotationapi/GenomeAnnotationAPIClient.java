@@ -608,7 +608,7 @@ public class GenomeAnnotationAPIClient {
         List<Object> args = new ArrayList<Object>();
         args.add(params);
         TypeReference<List<LegacyGenomeData>> retType = new TypeReference<List<LegacyGenomeData>>() {};
-        List<LegacyGenomeData> res = caller.jsonrpcCall("GenomeAnnotationAPI.get_legacy_genome", args, retType, true, true, jsonRpcContext, this.serviceVersion);
+        List<LegacyGenomeData> res = caller.jsonrpcCall("GenomeAnnotationAPI.get_legacy_genome", args, retType, true, false, jsonRpcContext, this.serviceVersion);
         return res.get(0);
     }
 
@@ -625,7 +625,7 @@ public class GenomeAnnotationAPIClient {
         List<Object> args = new ArrayList<Object>();
         args.add(params);
         TypeReference<List<SaveLegacyGenomeResult>> retType = new TypeReference<List<SaveLegacyGenomeResult>>() {};
-        List<SaveLegacyGenomeResult> res = caller.jsonrpcCall("GenomeAnnotationAPI.save_one_legacy_genome", args, retType, true, true, jsonRpcContext, this.serviceVersion);
+        List<SaveLegacyGenomeResult> res = caller.jsonrpcCall("GenomeAnnotationAPI.save_one_legacy_genome", args, retType, true, false, jsonRpcContext, this.serviceVersion);
         return res.get(0);
     }
 

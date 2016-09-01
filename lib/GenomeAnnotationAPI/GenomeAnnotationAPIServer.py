@@ -432,11 +432,11 @@ class Application(object):
         self.rpc_service.add(impl_GenomeAnnotationAPI.get_legacy_genome,
                              name='GenomeAnnotationAPI.get_legacy_genome',
                              types=[dict])
-        self.method_authentication['GenomeAnnotationAPI.get_legacy_genome'] = 'required'
+        self.method_authentication['GenomeAnnotationAPI.get_legacy_genome'] = 'optional'
         self.rpc_service.add(impl_GenomeAnnotationAPI.save_one_legacy_genome,
                              name='GenomeAnnotationAPI.save_one_legacy_genome',
                              types=[dict])
-        self.method_authentication['GenomeAnnotationAPI.save_one_legacy_genome'] = 'required'
+        self.method_authentication['GenomeAnnotationAPI.save_one_legacy_genome'] = 'optional'
         self.rpc_service.add(impl_GenomeAnnotationAPI.status,
                              name='GenomeAnnotationAPI.status',
                              types=[dict])

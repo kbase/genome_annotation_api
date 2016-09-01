@@ -21,6 +21,8 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @Generated("com.googlecode.jsonschema2pojo")
 @JsonPropertyOrder({
     "genomes",
+    "included_fields",
+    "included_feature_fields",
     "ignore_errors",
     "no_data"
 })
@@ -28,11 +30,15 @@ public class GetLegacyGenomeParams {
 
     @JsonProperty("genomes")
     private List<LegacyGenomeSelector> genomes;
+    @JsonProperty("included_fields")
+    private List<String> includedFields;
+    @JsonProperty("included_feature_fields")
+    private List<String> includedFeatureFields;
     @JsonProperty("ignore_errors")
     private Long ignoreErrors;
     @JsonProperty("no_data")
     private Long noData;
-    private Map<String, Object> additionalProperties = new HashMap<String, Object>();
+    private Map<java.lang.String, Object> additionalProperties = new HashMap<java.lang.String, Object>();
 
     @JsonProperty("genomes")
     public List<LegacyGenomeSelector> getGenomes() {
@@ -46,6 +52,36 @@ public class GetLegacyGenomeParams {
 
     public GetLegacyGenomeParams withGenomes(List<LegacyGenomeSelector> genomes) {
         this.genomes = genomes;
+        return this;
+    }
+
+    @JsonProperty("included_fields")
+    public List<String> getIncludedFields() {
+        return includedFields;
+    }
+
+    @JsonProperty("included_fields")
+    public void setIncludedFields(List<String> includedFields) {
+        this.includedFields = includedFields;
+    }
+
+    public GetLegacyGenomeParams withIncludedFields(List<String> includedFields) {
+        this.includedFields = includedFields;
+        return this;
+    }
+
+    @JsonProperty("included_feature_fields")
+    public List<String> getIncludedFeatureFields() {
+        return includedFeatureFields;
+    }
+
+    @JsonProperty("included_feature_fields")
+    public void setIncludedFeatureFields(List<String> includedFeatureFields) {
+        this.includedFeatureFields = includedFeatureFields;
+    }
+
+    public GetLegacyGenomeParams withIncludedFeatureFields(List<String> includedFeatureFields) {
+        this.includedFeatureFields = includedFeatureFields;
         return this;
     }
 
@@ -80,18 +116,18 @@ public class GetLegacyGenomeParams {
     }
 
     @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
+    public Map<java.lang.String, Object> getAdditionalProperties() {
         return this.additionalProperties;
     }
 
     @JsonAnySetter
-    public void setAdditionalProperties(String name, Object value) {
+    public void setAdditionalProperties(java.lang.String name, Object value) {
         this.additionalProperties.put(name, value);
     }
 
     @Override
-    public String toString() {
-        return ((((((((("GetLegacyGenomeParams"+" [genomes=")+ genomes)+", ignoreErrors=")+ ignoreErrors)+", noData=")+ noData)+", additionalProperties=")+ additionalProperties)+"]");
+    public java.lang.String toString() {
+        return ((((((((((((("GetLegacyGenomeParams"+" [genomes=")+ genomes)+", includedFields=")+ includedFields)+", includedFeatureFields=")+ includedFeatureFields)+", ignoreErrors=")+ ignoreErrors)+", noData=")+ noData)+", additionalProperties=")+ additionalProperties)+"]");
     }
 
 }
