@@ -426,7 +426,13 @@ class GenomeAnnotationAPITests(unittest.TestCase):
         self.assertGreater(len(ret[0]['feature_types']), 0, "ERROR: No feature types returned for {}".format(self.ga_ref))
         self.assertGreater(len(ret[0]['feature_by_id_by_type']), 0, "ERROR: No features returned for {}".format(self.ga_ref))
         self.assertGreater(len(ret[0]['feature_by_id_by_type']['gene']), 0, "ERROR: No genes returned for {}".format(self.ga_ref))
-        self.assertGreater(len(ret[0]['feature_by_id_by_type']['CDS']), 0, "ERROR: No CDSs returned for {}".format(self.ga_ref))
+        cds_map = ret[0]['feature_by_id_by_type']['CDS']
+        self.assertGreater(len(cds_map), 0, "ERROR: No CDSs returned for {}".format(self.ga_ref))
+        for key in cds_map:
+            cds = cds_map[key]
+            if 'feature_quality_score' in cds and cds['feature_quality_score'] is not None:
+                self.assertTrue(isinstance(cds['feature_quality_score'], list), "ERROR: feature " + key + 
+                                " has wrong feature_quality_score value type")
         self.assertGreater(len(ret[0]['protein_by_cds_id']), 0, "ERROR: No proteins returned for {}".format(self.ga_ref))
         self.assertEqual(len(ret[0]['cds_ids_by_gene_id']), 0, "ERROR: No gene-CDS links expected for {}".format(self.ga_ref))
         self.assertTrue('summary' in ret[0] and ret[0]['summary'] is not None, "ERROR: No summary returned for {}".format(self.ga_ref))
