@@ -929,7 +929,15 @@ class GenomeAnnotationAPI:
         for feature_type in feature_types_to_load:
             id_to_feature = {}
             for feature_id in feature_ids_by_type[feature_type]:
-                id_to_feature[feature_id] = feature_map[feature_id]
+                feature_data = feature_map[feature_id]
+                if 'feature_quality_score' in feature_data:
+                    fq_score = feature_data['feature_quality_score']
+                    if fq_score is not None and not isinstance(fq_score, list):
+                        if isinstance(fq_score, basestring):
+                            feature_data['feature_quality_score'] = [fq_score]
+                        else:
+                            feature_data['feature_quality_score'] = [str(fq_score)]
+                id_to_feature[feature_id] = feature_data
             feature_by_id_by_type[feature_type] = id_to_feature
         genome_data['feature_by_id_by_type'] = feature_by_id_by_type
         if load_protein_by_cds_id:
@@ -957,7 +965,8 @@ class GenomeAnnotationAPI:
             if is_legacy:
                 genome = ws.get_objects2({'objects': [{'ref': params['ref'], 'included': [
                     "/scientific_name", "/tax_id", "/contig_ids", "/dna_size", "/gc_content",
-                    "/genetic_code", "/num_contigs", "/source", "/source_id"]}]})['data'][0]['data']
+                    "/genetic_code", "/num_contigs", "/source", "/source_id", "/domain",
+                    "/taxonomy"]}]})['data'][0]['data']
                 summary = {}
                 self._migrate_property_internal(genome, summary, 'scientific_name')
                 self._migrate_property_internal(genome, summary, 'tax_id', 'taxonomy_id')
@@ -968,6 +977,13 @@ class GenomeAnnotationAPI:
                 self._migrate_property_internal(genome, summary, 'num_contigs')
                 self._migrate_property_internal(genome, summary, 'source', 'assembly_source')
                 self._migrate_property_internal(genome, summary, 'source_id', 'assembly_source_id')
+                self._migrate_property_internal(genome, summary, 'domain', 'kingdom')
+                feature_type_counts = {}
+                for feature_type in feature_ids_by_type:
+                    feature_type_counts[feature_type] = len(feature_ids_by_type[feature_type])
+                summary['feature_type_counts'] = feature_type_counts
+                if 'taxonomy' in genome and genome['taxonomy'] is not None:
+                    summary['scientific_lineage'] = [x.strip() for x in genome["taxonomy"].split(";")]
                 genome_data['summary'] = summary
             else:
                 summary = ga.get_summary()
