@@ -2,6 +2,10 @@
 A KBase module: GenomeAnnotationAPI
 */
 
+#include <workspace.spec>
+#include <KBaseGenomes.spec>
+
+
 module GenomeAnnotationAPI {
     typedef string ObjectReference;
 
@@ -625,4 +629,78 @@ module GenomeAnnotationAPI {
      * of large eukaryotic datasets. It may lead to out-of-memory errors.
      */
     funcdef get_combined_data(GetCombinedDataParams params) returns (GenomeAnnotation_data) authentication required;
+
+
+
+    /*
+
+
+    */
+    typedef structure {
+        string ref;
+        list <string> included;
+        list <string> ref_path_to_genome;
+    } LegacyGenomeSelector;
+
+
+
+    typedef structure {
+        list <LegacyGenomeSelector> genomes;
+        boolean ignore_errors;
+        boolean no_data;
+    } GetLegacyGenomeParams;
+
+
+    /* todo: import Genome type and use it here */
+    typedef structure {
+        KBaseGenomes.Genome data;
+
+        Workspace.object_info info;
+        list<Workspace.ProvenanceAction> provenance;
+
+        string creator;
+        string orig_wsid;
+        string copied;
+        boolean copy_source_inaccessible;
+
+        Workspace.timestamp created;
+        Workspace.epoch epoch;
+
+        string handle_error;
+        string handle_stacktrace;
+    } LegacyGenomeData;
+
+    typedef structure {
+        list<LegacyGenomeData> genomes;
+    } LegacyGenomeDataSet;
+
+
+    funcdef get_legacy_genome(GetLegacyGenomeParams params)
+                returns (LegacyGenomeData data) authentication required;
+
+
+
+    typedef structure {
+
+        KBaseGenomes.Genome data;
+
+        boolean hidden;
+        list<Workspace.ProvenanceAction> provenance;
+
+    } LegacyGenomeSaveData;
+
+    typedef structure {
+        string workspace;
+        string name;
+        list <LegacyGenomeSaveData> genomes;
+    } SaveLegacyGenomeParams;
+
+    typedef structure {
+        list <Workspace.object_info> info;
+    } SaveLegacyGenomeResult;
+
+    funcdef save_one_legacy_genome(SaveLegacyGenomeParams params)
+                returns (SaveLegacyGenomeResult result) authentication required;
+
+
 };

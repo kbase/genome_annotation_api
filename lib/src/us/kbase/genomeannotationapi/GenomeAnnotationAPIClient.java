@@ -17,7 +17,6 @@ import us.kbase.common.service.UnauthorizedException;
 /**
  * <p>Original spec-file module name: GenomeAnnotationAPI</p>
  * <pre>
- * A KBase module: GenomeAnnotationAPI
  * </pre>
  */
 public class GenomeAnnotationAPIClient {
@@ -593,6 +592,40 @@ public class GenomeAnnotationAPIClient {
         args.add(params);
         TypeReference<List<GenomeAnnotationData>> retType = new TypeReference<List<GenomeAnnotationData>>() {};
         List<GenomeAnnotationData> res = caller.jsonrpcCall("GenomeAnnotationAPI.get_combined_data", args, retType, true, true, jsonRpcContext, this.serviceVersion);
+        return res.get(0);
+    }
+
+    /**
+     * <p>Original spec-file function name: get_legacy_genome</p>
+     * <pre>
+     * </pre>
+     * @param   params   instance of type {@link us.kbase.genomeannotationapi.GetLegacyGenomeParams GetLegacyGenomeParams}
+     * @return   parameter "data" of type {@link us.kbase.genomeannotationapi.LegacyGenomeData LegacyGenomeData}
+     * @throws IOException if an IO exception occurs
+     * @throws JsonClientException if a JSON RPC exception occurs
+     */
+    public LegacyGenomeData getLegacyGenome(GetLegacyGenomeParams params, RpcContext... jsonRpcContext) throws IOException, JsonClientException {
+        List<Object> args = new ArrayList<Object>();
+        args.add(params);
+        TypeReference<List<LegacyGenomeData>> retType = new TypeReference<List<LegacyGenomeData>>() {};
+        List<LegacyGenomeData> res = caller.jsonrpcCall("GenomeAnnotationAPI.get_legacy_genome", args, retType, true, true, jsonRpcContext, this.serviceVersion);
+        return res.get(0);
+    }
+
+    /**
+     * <p>Original spec-file function name: save_one_legacy_genome</p>
+     * <pre>
+     * </pre>
+     * @param   params   instance of type {@link us.kbase.genomeannotationapi.SaveLegacyGenomeParams SaveLegacyGenomeParams}
+     * @return   parameter "result" of type {@link us.kbase.genomeannotationapi.SaveLegacyGenomeResult SaveLegacyGenomeResult}
+     * @throws IOException if an IO exception occurs
+     * @throws JsonClientException if a JSON RPC exception occurs
+     */
+    public SaveLegacyGenomeResult saveOneLegacyGenome(SaveLegacyGenomeParams params, RpcContext... jsonRpcContext) throws IOException, JsonClientException {
+        List<Object> args = new ArrayList<Object>();
+        args.add(params);
+        TypeReference<List<SaveLegacyGenomeResult>> retType = new TypeReference<List<SaveLegacyGenomeResult>>() {};
+        List<SaveLegacyGenomeResult> res = caller.jsonrpcCall("GenomeAnnotationAPI.save_one_legacy_genome", args, retType, true, true, jsonRpcContext, this.serviceVersion);
         return res.get(0);
     }
 

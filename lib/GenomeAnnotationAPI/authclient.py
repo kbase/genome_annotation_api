@@ -8,7 +8,6 @@ A very basic KBase auth client for the Python server.
 import time as _time
 import requests as _requests
 import threading as _threading
-import hashlib
 
 
 class TokenCache(object):
@@ -24,7 +23,6 @@ class TokenCache(object):
         self._halfmax = maxsize / 2  # int division to round down
 
     def get_user(self, token):
-        token = hashlib.sha256(token).hexdigest();
         with self._lock:
             usertime = self._cache.get(token)
         if not usertime:
@@ -37,10 +35,9 @@ class TokenCache(object):
 
     def add_valid_token(self, token, user):
         if not token:
-            raise ValueError('Must supply token')
+            raise ValueError('token cannot be None')
         if not user:
-            raise ValueError('Must supply user')
-        token = hashlib.sha256(token).hexdigest();
+            raise ValueError('user cannot be None')
         with self._lock:
             self._cache[token] = [user, _time.time()]
             if len(self._cache) > self._maxsize:
@@ -70,7 +67,7 @@ class KBaseAuth(object):
 
     def get_user(self, token):
         if not token:
-            raise ValueError('Must supply token')
+            raise ValueError('token cannot be None')
         user = self._cache.get_user(token)
         if user:
             return user
