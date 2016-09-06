@@ -5,30 +5,32 @@ from biokbase.workspace.client import Workspace
 
 from pprint import pprint
 
-class LegacyGenomeInterface:
+class GenomeInterfaceV1:
 
 
     def __init__(self, workspace_client):
         self.ws = workspace_client;
 
 
-    # INPUT STRUCTURES:
+    # Input params:
     # typedef structure {
     #     string ref;
     #     list <int> included_feature_position_index;
     #     list <string> ref_path_to_genome;
-    # } LegacyGenomeSelector;
-
+    # } GenomeSelectorV1;
+    #
     # typedef structure {
-    #     list <LegacyGenomeSelector> genomes;
+    #     list <GenomeSelectorV1> genomes;
+
     #     list <string> included_fields;
     #     list <string> included_feature_fields;
+
     #     boolean ignore_errors;
     #     boolean no_data;
     #     boolean no_metadata;
-    # } GetLegacyGenomeParams;
-
-    def get_legacy_genome(self, ctx, params):
+    # } GetGenomeParamsV1;
+    #
+    def get_genome(self, ctx, params):
 
         object_specifications = self.build_object_specifications(params)
 
@@ -151,7 +153,7 @@ class LegacyGenomeInterface:
 
 
 
-    def save_one_legacy_genome(self, ctx, params):
+    def save_one_genome(self, ctx, params):
 
 
 

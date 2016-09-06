@@ -639,12 +639,12 @@ module GenomeAnnotationAPI {
         string ref;
         list <int> included_feature_position_index;
         list <string> ref_path_to_genome;
-    } LegacyGenomeSelector;
+    } GenomeSelectorV1;
 
 
 
     typedef structure {
-        list <LegacyGenomeSelector> genomes;
+        list <GenomeSelectorV1> genomes;
 
         list <string> included_fields;
         list <string> included_feature_fields;
@@ -652,7 +652,7 @@ module GenomeAnnotationAPI {
         boolean ignore_errors;
         boolean no_data;
         boolean no_metadata;
-    } GetLegacyGenomeParams;
+    } GetGenomeParamsV1;
 
 
     /* */
@@ -675,42 +675,39 @@ module GenomeAnnotationAPI {
 
         string handle_error;
         string handle_stacktrace;
-    } LegacyGenomeData;
+    } GenomeDataV1;
 
 
     typedef structure {
-        list<LegacyGenomeData> genomes;
-    } LegacyGenomeDataSet;
+        list<GenomeDataV1> genomes;
+    } GenomeDataSetV1;
 
     /* A reasonably simple wrapper on get_objects2, but with Genome specific
         filters instead of arbitrary get subdata included paths.
     */
-    funcdef get_legacy_genome(GetLegacyGenomeParams params)
-                returns (LegacyGenomeData data) authentication optional;
+    funcdef get_genome_v1(GetGenomeParamsV1 params)
+                returns (GenomeDataSetV1 data) authentication optional;
 
 
 
     typedef structure {
-
         KBaseGenomes.Genome data;
-
         boolean hidden;
         list<Workspace.ProvenanceAction> provenance;
-
-    } LegacyGenomeSaveData;
+    } GenomeSaveDataV1;
 
     typedef structure {
         string workspace;
         string name;
-        list <LegacyGenomeSaveData> genomes;
-    } SaveLegacyGenomeParams;
+        list <GenomeSaveDataV1> genomes;
+    } SaveOneGenomeParamsV1;
 
     typedef structure {
         list <Workspace.object_info> info;
-    } SaveLegacyGenomeResult;
+    } SaveGenomeResultV1;
 
-    funcdef save_one_legacy_genome(SaveLegacyGenomeParams params)
-                returns (SaveLegacyGenomeResult result) authentication optional;
+    funcdef save_one_genome_v1(SaveOneGenomeParamsV1 params)
+                returns (SaveGenomeResultV1 result) authentication optional;
 
 
 };

@@ -113,7 +113,7 @@ class GenomeAnnotationAPITests(unittest.TestCase):
 
     @log
     def test_get_all(self):
-        ret = self.impl.get_legacy_genome(self.ctx, 
+        ret = self.impl.get_genome_v1(self.ctx, 
             {
                 'genomes': [ {
                     'ref' : self.getRhodobacterRef()
@@ -126,7 +126,7 @@ class GenomeAnnotationAPITests(unittest.TestCase):
 
     @log
     def test_get_feature_id_subdata(self):
-        ret = self.impl.get_legacy_genome(self.ctx, 
+        ret = self.impl.get_genome_v1(self.ctx, 
             {
                 'genomes': [ {
                     'ref' : self.getRhodobacterRef()
@@ -142,7 +142,7 @@ class GenomeAnnotationAPITests(unittest.TestCase):
 
     @log
     def test_get_feature_id_subdata(self):
-        ret = self.impl.get_legacy_genome(self.ctx, 
+        ret = self.impl.get_genome_v1(self.ctx, 
             {
                 'genomes': [ {
                     'ref' : self.getRhodobacterRef(),
@@ -158,7 +158,7 @@ class GenomeAnnotationAPITests(unittest.TestCase):
 
     @log
     def test_get_feature_id_subdata_with_some_fields(self):
-        ret = self.impl.get_legacy_genome(self.ctx, 
+        ret = self.impl.get_genome_v1(self.ctx, 
             {
                 'genomes': [ {
                     'ref' : self.getRhodobacterRef(),
@@ -176,7 +176,7 @@ class GenomeAnnotationAPITests(unittest.TestCase):
 
     @log
     def test_get_with_no_meta(self):
-        ret = self.impl.get_legacy_genome(self.ctx, 
+        ret = self.impl.get_genome_v1(self.ctx, 
             {
                 'genomes': [ {
                     'ref' : self.getRhodobacterRef(),
@@ -194,7 +194,7 @@ class GenomeAnnotationAPITests(unittest.TestCase):
 
     @log
     def test_get_feature_id_subdata_everything(self):
-        ret = self.impl.get_legacy_genome(self.ctx, 
+        ret = self.impl.get_genome_v1(self.ctx, 
             {
                 'genomes': [ {
                     'ref' : self.getRhodobacterRef(),

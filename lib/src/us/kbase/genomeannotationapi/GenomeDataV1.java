@@ -16,7 +16,7 @@ import us.kbase.workspace.ProvenanceAction;
 
 
 /**
- * <p>Original spec-file type: LegacyGenomeData</p>
+ * <p>Original spec-file type: GenomeDataV1</p>
  * 
  * 
  */
@@ -37,7 +37,7 @@ import us.kbase.workspace.ProvenanceAction;
     "handle_error",
     "handle_stacktrace"
 })
-public class LegacyGenomeData {
+public class GenomeDataV1 {
 
     /**
      * <p>Original spec-file type: Genome</p>
@@ -155,7 +155,7 @@ public class LegacyGenomeData {
         this.data = data;
     }
 
-    public LegacyGenomeData withData(Genome data) {
+    public GenomeDataV1 withData(Genome data) {
         this.data = data;
         return this;
     }
@@ -170,7 +170,7 @@ public class LegacyGenomeData {
         this.info = info;
     }
 
-    public LegacyGenomeData withInfo(Tuple11 <Long, String, String, String, Long, String, Long, String, String, Long, Map<String, String>> info) {
+    public GenomeDataV1 withInfo(Tuple11 <Long, String, String, String, Long, String, Long, String, String, Long, Map<String, String>> info) {
         this.info = info;
         return this;
     }
@@ -185,7 +185,7 @@ public class LegacyGenomeData {
         this.provenance = provenance;
     }
 
-    public LegacyGenomeData withProvenance(List<ProvenanceAction> provenance) {
+    public GenomeDataV1 withProvenance(List<ProvenanceAction> provenance) {
         this.provenance = provenance;
         return this;
     }
@@ -200,7 +200,7 @@ public class LegacyGenomeData {
         this.creator = creator;
     }
 
-    public LegacyGenomeData withCreator(java.lang.String creator) {
+    public GenomeDataV1 withCreator(java.lang.String creator) {
         this.creator = creator;
         return this;
     }
@@ -215,7 +215,7 @@ public class LegacyGenomeData {
         this.origWsid = origWsid;
     }
 
-    public LegacyGenomeData withOrigWsid(java.lang.String origWsid) {
+    public GenomeDataV1 withOrigWsid(java.lang.String origWsid) {
         this.origWsid = origWsid;
         return this;
     }
@@ -230,7 +230,7 @@ public class LegacyGenomeData {
         this.copied = copied;
     }
 
-    public LegacyGenomeData withCopied(java.lang.String copied) {
+    public GenomeDataV1 withCopied(java.lang.String copied) {
         this.copied = copied;
         return this;
     }
@@ -245,7 +245,7 @@ public class LegacyGenomeData {
         this.copySourceInaccessible = copySourceInaccessible;
     }
 
-    public LegacyGenomeData withCopySourceInaccessible(java.lang.Long copySourceInaccessible) {
+    public GenomeDataV1 withCopySourceInaccessible(java.lang.Long copySourceInaccessible) {
         this.copySourceInaccessible = copySourceInaccessible;
         return this;
     }
@@ -260,7 +260,7 @@ public class LegacyGenomeData {
         this.created = created;
     }
 
-    public LegacyGenomeData withCreated(java.lang.String created) {
+    public GenomeDataV1 withCreated(java.lang.String created) {
         this.created = created;
         return this;
     }
@@ -275,7 +275,7 @@ public class LegacyGenomeData {
         this.epoch = epoch;
     }
 
-    public LegacyGenomeData withEpoch(java.lang.Long epoch) {
+    public GenomeDataV1 withEpoch(java.lang.Long epoch) {
         this.epoch = epoch;
         return this;
     }
@@ -290,7 +290,7 @@ public class LegacyGenomeData {
         this.refs = refs;
     }
 
-    public LegacyGenomeData withRefs(List<String> refs) {
+    public GenomeDataV1 withRefs(List<String> refs) {
         this.refs = refs;
         return this;
     }
@@ -305,7 +305,7 @@ public class LegacyGenomeData {
         this.extractedIds = extractedIds;
     }
 
-    public LegacyGenomeData withExtractedIds(Map<String, List<String>> extractedIds) {
+    public GenomeDataV1 withExtractedIds(Map<String, List<String>> extractedIds) {
         this.extractedIds = extractedIds;
         return this;
     }
@@ -320,7 +320,7 @@ public class LegacyGenomeData {
         this.handleError = handleError;
     }
 
-    public LegacyGenomeData withHandleError(java.lang.String handleError) {
+    public GenomeDataV1 withHandleError(java.lang.String handleError) {
         this.handleError = handleError;
         return this;
     }
@@ -335,7 +335,7 @@ public class LegacyGenomeData {
         this.handleStacktrace = handleStacktrace;
     }
 
-    public LegacyGenomeData withHandleStacktrace(java.lang.String handleStacktrace) {
+    public GenomeDataV1 withHandleStacktrace(java.lang.String handleStacktrace) {
         this.handleStacktrace = handleStacktrace;
         return this;
     }
@@ -352,7 +352,7 @@ public class LegacyGenomeData {
 
     @Override
     public java.lang.String toString() {
-        return ((((((((((((((((((((((((((((("LegacyGenomeData"+" [data=")+ data)+", info=")+ info)+", provenance=")+ provenance)+", creator=")+ creator)+", origWsid=")+ origWsid)+", copied=")+ copied)+", copySourceInaccessible=")+ copySourceInaccessible)+", created=")+ created)+", epoch=")+ epoch)+", refs=")+ refs)+", extractedIds=")+ extractedIds)+", handleError=")+ handleError)+", handleStacktrace=")+ handleStacktrace)+", additionalProperties=")+ additionalProperties)+"]");
+        return ((((((((((((((((((((((((((((("GenomeDataV1"+" [data=")+ data)+", info=")+ info)+", provenance=")+ provenance)+", creator=")+ creator)+", origWsid=")+ origWsid)+", copied=")+ copied)+", copySourceInaccessible=")+ copySourceInaccessible)+", created=")+ created)+", epoch=")+ epoch)+", refs=")+ refs)+", extractedIds=")+ extractedIds)+", handleError=")+ handleError)+", handleStacktrace=")+ handleStacktrace)+", additionalProperties=")+ additionalProperties)+"]");
     }
 
 }

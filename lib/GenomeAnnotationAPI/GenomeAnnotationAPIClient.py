@@ -498,10 +498,12 @@ class GenomeAnnotationAPI(object):
             'GenomeAnnotationAPI.get_combined_data',
             [params], self._service_ver, context)
 
-    def get_legacy_genome(self, params, context=None):
+    def get_genome_v1(self, params, context=None):
         """
-        :param params: instance of type "GetLegacyGenomeParams" -> structure:
-           parameter "genomes" of list of type "LegacyGenomeSelector" ->
+        A reasonably simple wrapper on get_objects2, but with Genome specific
+        filters instead of arbitrary get subdata included paths.
+        :param params: instance of type "GetGenomeParamsV1" -> structure:
+           parameter "genomes" of list of type "GenomeSelectorV1" ->
            structure: parameter "ref" of String, parameter
            "included_feature_position_index" of list of Long, parameter
            "ref_path_to_genome" of list of String, parameter
@@ -509,69 +511,72 @@ class GenomeAnnotationAPI(object):
            "included_feature_fields" of list of String, parameter
            "ignore_errors" of type "boolean" (A boolean - 0 for false, 1 for
            true. @range (0, 1)), parameter "no_data" of type "boolean" (A
-           boolean - 0 for false, 1 for true. @range (0, 1))
-        :returns: instance of type "LegacyGenomeData" (todo: import Genome
-           type and use it here) -> structure: parameter "data" of type
-           "Genome" (Genome object holds much of the data relevant for a
-           genome in KBase Genome publications should be papers about the
-           genome, not papers about certain features of the genome (which go
-           into the Feature object) Should the Genome object have a list of
-           feature ids? (in addition to having a list of feature_refs) Should
-           the Genome object contain a list of contig_ids too? @optional
-           assembly_ref quality close_genomes analysis_events features
-           source_id source contigs contig_ids publications md5 taxonomy
-           gc_content complete dna_size num_contigs contig_lengths
-           contigset_ref @metadata ws gc_content as GC content @metadata ws
-           taxonomy as Taxonomy @metadata ws md5 as MD5 @metadata ws dna_size
-           as Size @metadata ws genetic_code as Genetic code @metadata ws
-           domain as Domain @metadata ws source_id as Source ID @metadata ws
-           source as Source @metadata ws scientific_name as Name @metadata ws
-           length(close_genomes) as Close genomes @metadata ws
-           length(features) as Number features @metadata ws num_contigs as
-           Number contigs) -> structure: parameter "id" of type "Genome_id"
-           (KBase genome ID @id kb), parameter "scientific_name" of String,
-           parameter "domain" of String, parameter "genetic_code" of Long,
-           parameter "dna_size" of Long, parameter "num_contigs" of Long,
-           parameter "contigs" of list of type "Contig" (Type spec for a
-           "Contig" subobject in the "ContigSet" object Contig_id id - ID of
-           contig in contigset string md5 - unique hash of contig sequence
-           string sequence - sequence of the contig string description -
-           Description of the contig (e.g. everything after the ID in a FASTA
-           file) @optional length md5 genetic_code cell_compartment
-           replicon_geometry replicon_type name description complete) ->
-           structure: parameter "id" of type "Contig_id" (ContigSet contig ID
-           @id external), parameter "length" of Long, parameter "md5" of
-           String, parameter "sequence" of String, parameter "genetic_code"
-           of Long, parameter "cell_compartment" of String, parameter
-           "replicon_type" of String, parameter "replicon_geometry" of
-           String, parameter "name" of String, parameter "description" of
-           String, parameter "complete" of type "Bool", parameter
-           "contig_lengths" of list of Long, parameter "contig_ids" of list
-           of type "Contig_id" (ContigSet contig ID @id external), parameter
-           "source" of String, parameter "source_id" of type "source_id"
-           (Reference to a source_id @id external), parameter "md5" of
-           String, parameter "taxonomy" of String, parameter "gc_content" of
-           Double, parameter "complete" of Long, parameter "publications" of
-           list of type "publication" (Structure for a publication (from ER
-           API) also want to capture authors, journal name (not in ER)) ->
-           tuple of size 7: parameter "id" of Long, parameter "source_db" of
-           String, parameter "article_title" of String, parameter "link" of
-           String, parameter "pubdate" of String, parameter "authors" of
-           String, parameter "journal_name" of String, parameter "features"
-           of list of type "Feature" (Structure for a single feature of a
-           genome Should genome_id contain the genome_id in the Genome
-           object, the workspace id of the Genome object, a genomeref,
-           something else? Should sequence be in separate objects too? We may
-           want to add additional fields for other CDM functions (e.g.,
-           atomic regulons, coexpressed fids, co_occurring fids,...)
-           @optional orthologs quality feature_creation_event md5 location
-           function ontology_terms protein_translation protein_families
-           subsystems publications subsystem_data aliases annotations
-           regulon_data atomic_regulons coexpressed_fids co_occurring_fids
-           dna_sequence protein_translation_length dna_sequence_length) ->
-           structure: parameter "id" of type "Feature_id" (KBase Feature ID
-           @id external), parameter "location" of list of tuple of size 4:
-           type "Contig_id" (ContigSet contig ID @id external), Long, String,
+           boolean - 0 for false, 1 for true. @range (0, 1)), parameter
+           "no_metadata" of type "boolean" (A boolean - 0 for false, 1 for
+           true. @range (0, 1))
+        :returns: instance of type "GenomeDataSetV1" -> structure: parameter
+           "genomes" of list of type "GenomeDataV1" -> structure: parameter
+           "data" of type "Genome" (Genome object holds much of the data
+           relevant for a genome in KBase Genome publications should be
+           papers about the genome, not papers about certain features of the
+           genome (which go into the Feature object) Should the Genome object
+           have a list of feature ids? (in addition to having a list of
+           feature_refs) Should the Genome object contain a list of
+           contig_ids too? @optional assembly_ref quality close_genomes
+           analysis_events features source_id source contigs contig_ids
+           publications md5 taxonomy gc_content complete dna_size num_contigs
+           contig_lengths contigset_ref @metadata ws gc_content as GC content
+           @metadata ws taxonomy as Taxonomy @metadata ws md5 as MD5
+           @metadata ws dna_size as Size @metadata ws genetic_code as Genetic
+           code @metadata ws domain as Domain @metadata ws source_id as
+           Source ID @metadata ws source as Source @metadata ws
+           scientific_name as Name @metadata ws length(close_genomes) as
+           Close genomes @metadata ws length(features) as Number features
+           @metadata ws num_contigs as Number contigs) -> structure:
+           parameter "id" of type "Genome_id" (KBase genome ID @id kb),
+           parameter "scientific_name" of String, parameter "domain" of
+           String, parameter "genetic_code" of Long, parameter "dna_size" of
+           Long, parameter "num_contigs" of Long, parameter "contigs" of list
+           of type "Contig" (Type spec for a "Contig" subobject in the
+           "ContigSet" object Contig_id id - ID of contig in contigset string
+           md5 - unique hash of contig sequence string sequence - sequence of
+           the contig string description - Description of the contig (e.g.
+           everything after the ID in a FASTA file) @optional length md5
+           genetic_code cell_compartment replicon_geometry replicon_type name
+           description complete) -> structure: parameter "id" of type
+           "Contig_id" (ContigSet contig ID @id external), parameter "length"
+           of Long, parameter "md5" of String, parameter "sequence" of
+           String, parameter "genetic_code" of Long, parameter
+           "cell_compartment" of String, parameter "replicon_type" of String,
+           parameter "replicon_geometry" of String, parameter "name" of
+           String, parameter "description" of String, parameter "complete" of
+           type "Bool", parameter "contig_lengths" of list of Long, parameter
+           "contig_ids" of list of type "Contig_id" (ContigSet contig ID @id
+           external), parameter "source" of String, parameter "source_id" of
+           type "source_id" (Reference to a source_id @id external),
+           parameter "md5" of String, parameter "taxonomy" of String,
+           parameter "gc_content" of Double, parameter "complete" of Long,
+           parameter "publications" of list of type "publication" (Structure
+           for a publication (from ER API) also want to capture authors,
+           journal name (not in ER)) -> tuple of size 7: parameter "id" of
+           Long, parameter "source_db" of String, parameter "article_title"
+           of String, parameter "link" of String, parameter "pubdate" of
+           String, parameter "authors" of String, parameter "journal_name" of
+           String, parameter "features" of list of type "Feature" (Structure
+           for a single feature of a genome Should genome_id contain the
+           genome_id in the Genome object, the workspace id of the Genome
+           object, a genomeref, something else? Should sequence be in
+           separate objects too? We may want to add additional fields for
+           other CDM functions (e.g., atomic regulons, coexpressed fids,
+           co_occurring fids,...) @optional orthologs quality
+           feature_creation_event md5 location function ontology_terms
+           protein_translation protein_families subsystems publications
+           subsystem_data aliases annotations regulon_data atomic_regulons
+           coexpressed_fids co_occurring_fids dna_sequence
+           protein_translation_length dna_sequence_length) -> structure:
+           parameter "id" of type "Feature_id" (KBase Feature ID @id
+           external), parameter "location" of list of tuple of size 4: type
+           "Contig_id" (ContigSet contig ID @id external), Long, String,
            Long, parameter "type" of String, parameter "function" of String,
            parameter "ontology_terms" of mapping from String to mapping from
            String to type "OntologyData" -> structure: parameter "id" of
@@ -857,16 +862,16 @@ class GenomeAnnotationAPI(object):
            "handle_error" of String, parameter "handle_stacktrace" of String
         """
         return self._client.call_method(
-            'GenomeAnnotationAPI.get_legacy_genome',
+            'GenomeAnnotationAPI.get_genome_v1',
             [params], self._service_ver, context)
 
-    def save_one_legacy_genome(self, params, context=None):
+    def save_one_genome_v1(self, params, context=None):
         """
-        :param params: instance of type "SaveLegacyGenomeParams" ->
-           structure: parameter "workspace" of String, parameter "name" of
-           String, parameter "genomes" of list of type "LegacyGenomeSaveData"
-           -> structure: parameter "data" of type "Genome" (Genome object
-           holds much of the data relevant for a genome in KBase Genome
+        :param params: instance of type "SaveOneGenomeParamsV1" -> structure:
+           parameter "workspace" of String, parameter "name" of String,
+           parameter "genomes" of list of type "GenomeSaveDataV1" ->
+           structure: parameter "data" of type "Genome" (Genome object holds
+           much of the data relevant for a genome in KBase Genome
            publications should be papers about the genome, not papers about
            certain features of the genome (which go into the Feature object)
            Should the Genome object have a list of feature ids? (in addition
@@ -1153,7 +1158,7 @@ class GenomeAnnotationAPI(object):
            String, parameter "commit" of String, parameter "endpoint_url" of
            String, parameter "custom" of mapping from String to String,
            parameter "description" of String
-        :returns: instance of type "SaveLegacyGenomeResult" -> structure:
+        :returns: instance of type "SaveGenomeResultV1" -> structure:
            parameter "info" of list of type "object_info" (Information about
            an object, including user provided metadata. obj_id objid - the
            numerical id of the object. obj_name name - the name of the
@@ -1200,7 +1205,7 @@ class GenomeAnnotationAPI(object):
            the user.) -> mapping from String to String
         """
         return self._client.call_method(
-            'GenomeAnnotationAPI.save_one_legacy_genome',
+            'GenomeAnnotationAPI.save_one_genome_v1',
             [params], self._service_ver, context)
 
     def status(self, context=None):
