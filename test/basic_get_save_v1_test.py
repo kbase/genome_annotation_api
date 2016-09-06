@@ -43,10 +43,13 @@ def log(func):
     return wrapper
 
 
+
+
 class GenomeAnnotationAPITests(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
+        print('Setting up class')
         token = os.environ.get('KB_AUTH_TOKEN', None)
         # WARNING: don't call any logging methods on the context object,
         # it'll result in a NoneType error
@@ -65,6 +68,30 @@ class GenomeAnnotationAPITests(unittest.TestCase):
         cls.cfg = {n[0]: n[1] for n in config.items('GenomeAnnotationAPI')}
         cls.ws = Workspace(cls.cfg['workspace-url'], token=token)
         cls.impl = GenomeAnnotationAPI(cls.cfg)
+
+        # create one WS for all tests
+        suffix = int(time.time() * 1000)
+        wsName = "test_GenomeAnnotationAPI_" + str(suffix)
+        ret = cls.ws.create_workspace({'workspace': wsName})
+        cls.wsName = wsName
+
+        # preload with reference data
+        with open ('data/rhodobacter.json', 'r') as file:
+            data_str=file.read()
+        data = json.loads(data_str)
+        # save to ws
+        result = cls.ws.save_objects({
+                'workspace':wsName,
+                'objects': [{
+                    'type':'KBaseGenomes.Genome',
+                    'data':data,
+                    'name':'rhodobacter'
+                }]
+            })
+        info = result[0]
+        cls.rhodobacter_ref = str(info[6]) +'/' + str(info[0]) + '/' + str(info[4])
+        print('created rhodobacter test genome: ' + cls.rhodobacter_ref)
+
 
 
     @classmethod

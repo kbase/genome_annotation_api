@@ -55,10 +55,10 @@ build-test-script:
 	echo 'export KB_AUTH_TOKEN=`cat /kb/module/work/token`' >> $(TEST_DIR)/$(TEST_SCRIPT_NAME)
 	echo 'export PYTHONPATH=$$script_dir/../$(LIB_DIR):$$PATH:$$PYTHONPATH' >> $(TEST_DIR)/$(TEST_SCRIPT_NAME)
 	echo 'cd $$script_dir/../$(TEST_DIR)' >> $(TEST_DIR)/$(TEST_SCRIPT_NAME)
-	echo 'cp /kb/module/work/.coveragerc .' >> $(TEST_DIR)/$(TEST_SCRIPT_NAME)
+	#echo 'cp /kb/module/work/.coveragerc .' >> $(TEST_DIR)/$(TEST_SCRIPT_NAME)
 	echo 'coverage run -m unittest discover -c -p "*_test.py"' >> $(TEST_DIR)/$(TEST_SCRIPT_NAME)
-	echo 'coverage report --skip-covered' >> $(TEST_DIR)/$(TEST_SCRIPT_NAME)
-	echo 'cp .coverage /kb/module/work/.coverage' >> $(TEST_DIR)/$(TEST_SCRIPT_NAME)
+	#echo 'coverage report --skip-covered' >> $(TEST_DIR)/$(TEST_SCRIPT_NAME)
+	#echo 'cp .coverage /kb/module/work/.coverage' >> $(TEST_DIR)/$(TEST_SCRIPT_NAME)
 	chmod +x $(TEST_DIR)/$(TEST_SCRIPT_NAME)
 
 test:

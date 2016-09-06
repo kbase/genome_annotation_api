@@ -43,6 +43,8 @@ class GenomeInterfaceV1:
                 getObjParams['ignoreErrors']=1
             else:
                 raise ValueError('ignoreErrors input field must be set to 0 or 1')
+        else:
+            getObjParams['ignoreErrors']=0
 
         if 'no_data' in params:
             if params['no_data']==0:
@@ -51,7 +53,10 @@ class GenomeInterfaceV1:
                 getObjParams['no_data']=1
             else:
                 raise ValueError('no_data input field must be set to 0 or 1')
+        else:
+            getObjParams['no_data']=0
 
+        self.validate_proper_ws_type(object_specifications, getObjParams['ignoreErrors'], 'KBaseGenomes.Genome')
         data = self.ws.get_objects2(getObjParams)['data']
 
         if 'no_metadata' in params:
@@ -130,9 +135,18 @@ class GenomeInterfaceV1:
             included = [base]
         return included
       
-    # Possible todo: make sure everything is the right type
-    #def check_type_is_genome(genomes):
-    #    pass
+    
+    def validate_proper_ws_type(self, object_specifications, ignore_errors, type_name):
+        info = self.ws.get_object_info_new({
+                                'objects': object_specifications,
+                                'ignoreErrors': ignore_errors,
+                                'includeMetadata': 0
+                            })
+        # Make sure type name matches, no check for version yet!
+        for i in info:
+            if i is not None:
+                if i[2].split('-')[0] != type_name:
+                    raise ValueError('An input object reference is not a '+type_name+'. It was: '+i[2])
 
 
 
