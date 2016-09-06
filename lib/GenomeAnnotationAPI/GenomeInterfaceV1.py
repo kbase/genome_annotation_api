@@ -168,13 +168,68 @@ class GenomeInterfaceV1:
 
 
     def save_one_genome(self, ctx, params):
+        """
+        typedef structure {
+            string workspace;
+            string name;
+            KBaseGenomes.Genome data;
+            list<Workspace.ProvenanceAction> provenance;
+            boolean hidden;
+        } SaveOneGenomeParamsV1;
+
+        typedef structure {
+            Workspace.object_info info;
+        } SaveGenomeResultV1;
+        """
+
+        if 'workspace' not in params:
+            raise ValueError('workspace parameter (giving WS name or ID) is required')
+        if 'name' not in params:
+            raise ValueError('name parameter (giving new genome object name) is required')
+        if 'data' not in params:
+            raise ValueError('data parameter (giving new genome object data) is required')
+
+        workspace = params['workspace']
+        name = params['name']
+        data = params['data']
+
+        provenance = None
+        if 'provenance' in params:
+            provenance = params['provenance']
+        elif 'provenance' in ctx:
+            provenance = ctx['provenance']
+
+        hidden = 0
+        if 'hidden' in params:
+            if params['hidden']==0:
+                hidden=0
+            elif params['hidden']==1:
+                hidden=1
+            else:
+                raise ValueError('hidden parameter must be set to 0 or 1; it was: '+str(hidden))
+
+        save_params = {
+            'objects': [{
+                'name': name,
+                'data': data,
+                'type': 'KBaseGenomes.Genome',
+                'provenance': provenance,
+                'hidden': hidden
+            }]
+        }
+
+        if str(workspace).isdigit():
+            save_params['id'] = int(workspace)
+        else:
+            save_params['workspace'] = workspace
 
 
+        results = self.ws.save_objects(save_params)
 
+        if len(results) != 1:
+            raise ValueError('Error saving data.  Workspace did not return proper object info list')
 
-
-        
-        return {}
+        return { 'info':results[0] }
 
 
 

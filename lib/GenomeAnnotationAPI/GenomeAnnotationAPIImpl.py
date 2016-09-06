@@ -1748,7 +1748,6 @@ class GenomeAnnotationAPI:
         # ctx is the context object
         # return variables are: result
         #BEGIN save_one_genome_v1
-        raise ValueError('Not yet supported')
         ws = Workspace(self.services['workspace_service_url'], token=ctx['token'])
         genome_interface_v1 = GenomeInterfaceV1(ws)
         result = genome_interface_v1.save_one_genome(ctx, params)

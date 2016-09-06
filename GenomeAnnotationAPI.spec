@@ -689,25 +689,20 @@ module GenomeAnnotationAPI {
                 returns (GenomeDataSetV1 data) authentication optional;
 
 
-
-    typedef structure {
-        KBaseGenomes.Genome data;
-        boolean hidden;
-        list<Workspace.ProvenanceAction> provenance;
-    } GenomeSaveDataV1;
-
     typedef structure {
         string workspace;
         string name;
-        list <GenomeSaveDataV1> genomes;
+        KBaseGenomes.Genome data;
+        list<Workspace.ProvenanceAction> provenance;
+        boolean hidden;
     } SaveOneGenomeParamsV1;
 
     typedef structure {
-        list <Workspace.object_info> info;
+        Workspace.object_info info;
     } SaveGenomeResultV1;
 
     funcdef save_one_genome_v1(SaveOneGenomeParamsV1 params)
-                returns (SaveGenomeResultV1 result) authentication optional;
+                returns (SaveGenomeResultV1 result) authentication required;
 
 
 };

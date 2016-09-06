@@ -237,5 +237,22 @@ class GenomeAnnotationAPITests(unittest.TestCase):
         self.assertEqual(data[0]['data']['features'][0]['function'],'FIG01142552: hypothetical protein')
         self.assertEqual(data[0]['data']['features'][0]['id'],'kb|g.220339.CDS.4')
 
+    @log
+    def test_save_genome(self):
+        wsName = self.generatePesudoRandomWorkspaceName()
+        # read in the test Rhodobacter genome
+        with open ('data/rhodobacter.json', 'r') as file:
+            data_str=file.read()
+        data = json.loads(data_str)
+        obj_name = 'test_save_new_genome'
+        ret = self.impl.save_one_genome_v1(self.ctx, 
+            {
+                'workspace':wsName,
+                'name':'test_save_new_genome',
+                'data':data,
+            })[0]
+        self.assertEqual(ret['info'][1], obj_name)
+
+
 
     
