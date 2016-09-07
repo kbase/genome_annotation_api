@@ -2748,9 +2748,9 @@ of large eukaryotic datasets. It may lead to out-of-memory errors.
  
 
 
-=head2 get_legacy_genome
+=head2 get_genome_v1
 
-  $data = $obj->get_legacy_genome($params)
+  $data = $obj->get_genome_v1($params)
 
 =over 4
 
@@ -2759,20 +2759,23 @@ of large eukaryotic datasets. It may lead to out-of-memory errors.
 =begin html
 
 <pre>
-$params is a GenomeAnnotationAPI.GetLegacyGenomeParams
-$data is a GenomeAnnotationAPI.LegacyGenomeData
-GetLegacyGenomeParams is a reference to a hash where the following keys are defined:
-	genomes has a value which is a reference to a list where each element is a GenomeAnnotationAPI.LegacyGenomeSelector
+$params is a GenomeAnnotationAPI.GetGenomeParamsV1
+$data is a GenomeAnnotationAPI.GenomeDataSetV1
+GetGenomeParamsV1 is a reference to a hash where the following keys are defined:
+	genomes has a value which is a reference to a list where each element is a GenomeAnnotationAPI.GenomeSelectorV1
 	included_fields has a value which is a reference to a list where each element is a string
 	included_feature_fields has a value which is a reference to a list where each element is a string
 	ignore_errors has a value which is a GenomeAnnotationAPI.boolean
 	no_data has a value which is a GenomeAnnotationAPI.boolean
-LegacyGenomeSelector is a reference to a hash where the following keys are defined:
+	no_metadata has a value which is a GenomeAnnotationAPI.boolean
+GenomeSelectorV1 is a reference to a hash where the following keys are defined:
 	ref has a value which is a string
 	included_feature_position_index has a value which is a reference to a list where each element is an int
 	ref_path_to_genome has a value which is a reference to a list where each element is a string
 boolean is an int
-LegacyGenomeData is a reference to a hash where the following keys are defined:
+GenomeDataSetV1 is a reference to a hash where the following keys are defined:
+	genomes has a value which is a reference to a list where each element is a GenomeAnnotationAPI.GenomeDataV1
+GenomeDataV1 is a reference to a hash where the following keys are defined:
 	data has a value which is a KBaseGenomes.Genome
 	info has a value which is a Workspace.object_info
 	provenance has a value which is a reference to a list where each element is a Workspace.ProvenanceAction
@@ -3010,20 +3013,23 @@ extracted_id is a string
 
 =begin text
 
-$params is a GenomeAnnotationAPI.GetLegacyGenomeParams
-$data is a GenomeAnnotationAPI.LegacyGenomeData
-GetLegacyGenomeParams is a reference to a hash where the following keys are defined:
-	genomes has a value which is a reference to a list where each element is a GenomeAnnotationAPI.LegacyGenomeSelector
+$params is a GenomeAnnotationAPI.GetGenomeParamsV1
+$data is a GenomeAnnotationAPI.GenomeDataSetV1
+GetGenomeParamsV1 is a reference to a hash where the following keys are defined:
+	genomes has a value which is a reference to a list where each element is a GenomeAnnotationAPI.GenomeSelectorV1
 	included_fields has a value which is a reference to a list where each element is a string
 	included_feature_fields has a value which is a reference to a list where each element is a string
 	ignore_errors has a value which is a GenomeAnnotationAPI.boolean
 	no_data has a value which is a GenomeAnnotationAPI.boolean
-LegacyGenomeSelector is a reference to a hash where the following keys are defined:
+	no_metadata has a value which is a GenomeAnnotationAPI.boolean
+GenomeSelectorV1 is a reference to a hash where the following keys are defined:
 	ref has a value which is a string
 	included_feature_position_index has a value which is a reference to a list where each element is an int
 	ref_path_to_genome has a value which is a reference to a list where each element is a string
 boolean is an int
-LegacyGenomeData is a reference to a hash where the following keys are defined:
+GenomeDataSetV1 is a reference to a hash where the following keys are defined:
+	genomes has a value which is a reference to a list where each element is a GenomeAnnotationAPI.GenomeDataV1
+GenomeDataV1 is a reference to a hash where the following keys are defined:
 	data has a value which is a KBaseGenomes.Genome
 	info has a value which is a Workspace.object_info
 	provenance has a value which is a reference to a list where each element is a Workspace.ProvenanceAction
@@ -3260,13 +3266,14 @@ extracted_id is a string
 
 =item Description
 
-
+A reasonably simple wrapper on get_objects2, but with Genome specific
+filters instead of arbitrary get subdata included paths.
 
 =back
 
 =cut
 
- sub get_legacy_genome
+ sub get_genome_v1
 {
     my($self, @args) = @_;
 
@@ -3275,7 +3282,7 @@ extracted_id is a string
     if ((my $n = @args) != 1)
     {
 	Bio::KBase::Exceptions::ArgumentValidationError->throw(error =>
-							       "Invalid argument count for function get_legacy_genome (received $n, expecting 1)");
+							       "Invalid argument count for function get_genome_v1 (received $n, expecting 1)");
     }
     {
 	my($params) = @args;
@@ -3283,40 +3290,40 @@ extracted_id is a string
 	my @_bad_arguments;
         (ref($params) eq 'HASH') or push(@_bad_arguments, "Invalid type for argument 1 \"params\" (value was \"$params\")");
         if (@_bad_arguments) {
-	    my $msg = "Invalid arguments passed to get_legacy_genome:\n" . join("", map { "\t$_\n" } @_bad_arguments);
+	    my $msg = "Invalid arguments passed to get_genome_v1:\n" . join("", map { "\t$_\n" } @_bad_arguments);
 	    Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
-								   method_name => 'get_legacy_genome');
+								   method_name => 'get_genome_v1');
 	}
     }
 
     my $url = $self->{url};
     my $result = $self->{client}->call($url, $self->{headers}, {
-	    method => "GenomeAnnotationAPI.get_legacy_genome",
+	    method => "GenomeAnnotationAPI.get_genome_v1",
 	    params => \@args,
     });
     if ($result) {
 	if ($result->is_error) {
 	    Bio::KBase::Exceptions::JSONRPC->throw(error => $result->error_message,
 					       code => $result->content->{error}->{code},
-					       method_name => 'get_legacy_genome',
+					       method_name => 'get_genome_v1',
 					       data => $result->content->{error}->{error} # JSON::RPC::ReturnObject only supports JSONRPC 1.1 or 1.O
 					      );
 	} else {
 	    return wantarray ? @{$result->result} : $result->result->[0];
 	}
     } else {
-        Bio::KBase::Exceptions::HTTP->throw(error => "Error invoking method get_legacy_genome",
+        Bio::KBase::Exceptions::HTTP->throw(error => "Error invoking method get_genome_v1",
 					    status_line => $self->{client}->status_line,
-					    method_name => 'get_legacy_genome',
+					    method_name => 'get_genome_v1',
 				       );
     }
 }
  
 
 
-=head2 save_one_legacy_genome
+=head2 save_one_genome_v1
 
-  $result = $obj->save_one_legacy_genome($params)
+  $result = $obj->save_one_genome_v1($params)
 
 =over 4
 
@@ -3325,13 +3332,13 @@ extracted_id is a string
 =begin html
 
 <pre>
-$params is a GenomeAnnotationAPI.SaveLegacyGenomeParams
-$result is a GenomeAnnotationAPI.SaveLegacyGenomeResult
-SaveLegacyGenomeParams is a reference to a hash where the following keys are defined:
+$params is a GenomeAnnotationAPI.SaveOneGenomeParamsV1
+$result is a GenomeAnnotationAPI.SaveGenomeResultV1
+SaveOneGenomeParamsV1 is a reference to a hash where the following keys are defined:
 	workspace has a value which is a string
 	name has a value which is a string
-	genomes has a value which is a reference to a list where each element is a GenomeAnnotationAPI.LegacyGenomeSaveData
-LegacyGenomeSaveData is a reference to a hash where the following keys are defined:
+	genomes has a value which is a reference to a list where each element is a GenomeAnnotationAPI.GenomeSaveDataV1
+GenomeSaveDataV1 is a reference to a hash where the following keys are defined:
 	data has a value which is a KBaseGenomes.Genome
 	hidden has a value which is a GenomeAnnotationAPI.boolean
 	provenance has a value which is a reference to a list where each element is a Workspace.ProvenanceAction
@@ -3532,7 +3539,7 @@ SubAction is a reference to a hash where the following keys are defined:
 	code_url has a value which is a string
 	commit has a value which is a string
 	endpoint_url has a value which is a string
-SaveLegacyGenomeResult is a reference to a hash where the following keys are defined:
+SaveGenomeResultV1 is a reference to a hash where the following keys are defined:
 	info has a value which is a reference to a list where each element is a Workspace.object_info
 object_info is a reference to a list containing 11 items:
 	0: (objid) a Workspace.obj_id
@@ -3560,13 +3567,13 @@ usermeta is a reference to a hash where the key is a string and the value is a s
 
 =begin text
 
-$params is a GenomeAnnotationAPI.SaveLegacyGenomeParams
-$result is a GenomeAnnotationAPI.SaveLegacyGenomeResult
-SaveLegacyGenomeParams is a reference to a hash where the following keys are defined:
+$params is a GenomeAnnotationAPI.SaveOneGenomeParamsV1
+$result is a GenomeAnnotationAPI.SaveGenomeResultV1
+SaveOneGenomeParamsV1 is a reference to a hash where the following keys are defined:
 	workspace has a value which is a string
 	name has a value which is a string
-	genomes has a value which is a reference to a list where each element is a GenomeAnnotationAPI.LegacyGenomeSaveData
-LegacyGenomeSaveData is a reference to a hash where the following keys are defined:
+	genomes has a value which is a reference to a list where each element is a GenomeAnnotationAPI.GenomeSaveDataV1
+GenomeSaveDataV1 is a reference to a hash where the following keys are defined:
 	data has a value which is a KBaseGenomes.Genome
 	hidden has a value which is a GenomeAnnotationAPI.boolean
 	provenance has a value which is a reference to a list where each element is a Workspace.ProvenanceAction
@@ -3767,7 +3774,7 @@ SubAction is a reference to a hash where the following keys are defined:
 	code_url has a value which is a string
 	commit has a value which is a string
 	endpoint_url has a value which is a string
-SaveLegacyGenomeResult is a reference to a hash where the following keys are defined:
+SaveGenomeResultV1 is a reference to a hash where the following keys are defined:
 	info has a value which is a reference to a list where each element is a Workspace.object_info
 object_info is a reference to a list containing 11 items:
 	0: (objid) a Workspace.obj_id
@@ -3800,7 +3807,7 @@ usermeta is a reference to a hash where the key is a string and the value is a s
 
 =cut
 
- sub save_one_legacy_genome
+ sub save_one_genome_v1
 {
     my($self, @args) = @_;
 
@@ -3809,7 +3816,7 @@ usermeta is a reference to a hash where the key is a string and the value is a s
     if ((my $n = @args) != 1)
     {
 	Bio::KBase::Exceptions::ArgumentValidationError->throw(error =>
-							       "Invalid argument count for function save_one_legacy_genome (received $n, expecting 1)");
+							       "Invalid argument count for function save_one_genome_v1 (received $n, expecting 1)");
     }
     {
 	my($params) = @args;
@@ -3817,31 +3824,31 @@ usermeta is a reference to a hash where the key is a string and the value is a s
 	my @_bad_arguments;
         (ref($params) eq 'HASH') or push(@_bad_arguments, "Invalid type for argument 1 \"params\" (value was \"$params\")");
         if (@_bad_arguments) {
-	    my $msg = "Invalid arguments passed to save_one_legacy_genome:\n" . join("", map { "\t$_\n" } @_bad_arguments);
+	    my $msg = "Invalid arguments passed to save_one_genome_v1:\n" . join("", map { "\t$_\n" } @_bad_arguments);
 	    Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
-								   method_name => 'save_one_legacy_genome');
+								   method_name => 'save_one_genome_v1');
 	}
     }
 
     my $url = $self->{url};
     my $result = $self->{client}->call($url, $self->{headers}, {
-	    method => "GenomeAnnotationAPI.save_one_legacy_genome",
+	    method => "GenomeAnnotationAPI.save_one_genome_v1",
 	    params => \@args,
     });
     if ($result) {
 	if ($result->is_error) {
 	    Bio::KBase::Exceptions::JSONRPC->throw(error => $result->error_message,
 					       code => $result->content->{error}->{code},
-					       method_name => 'save_one_legacy_genome',
+					       method_name => 'save_one_genome_v1',
 					       data => $result->content->{error}->{error} # JSON::RPC::ReturnObject only supports JSONRPC 1.1 or 1.O
 					      );
 	} else {
 	    return wantarray ? @{$result->result} : $result->result->[0];
 	}
     } else {
-        Bio::KBase::Exceptions::HTTP->throw(error => "Error invoking method save_one_legacy_genome",
+        Bio::KBase::Exceptions::HTTP->throw(error => "Error invoking method save_one_genome_v1",
 					    status_line => $self->{client}->status_line,
-					    method_name => 'save_one_legacy_genome',
+					    method_name => 'save_one_genome_v1',
 				       );
     }
 }
@@ -3889,16 +3896,16 @@ sub version {
             Bio::KBase::Exceptions::JSONRPC->throw(
                 error => $result->error_message,
                 code => $result->content->{code},
-                method_name => 'save_one_legacy_genome',
+                method_name => 'save_one_genome_v1',
             );
         } else {
             return wantarray ? @{$result->result} : $result->result->[0];
         }
     } else {
         Bio::KBase::Exceptions::HTTP->throw(
-            error => "Error invoking method save_one_legacy_genome",
+            error => "Error invoking method save_one_genome_v1",
             status_line => $self->{client}->status_line,
-            method_name => 'save_one_legacy_genome',
+            method_name => 'save_one_genome_v1',
         );
     }
 }
@@ -5365,7 +5372,7 @@ exclude_summary has a value which is a GenomeAnnotationAPI.boolean
 
 
 
-=head2 LegacyGenomeSelector
+=head2 GenomeSelectorV1
 
 =over 4
 
@@ -5399,7 +5406,7 @@ ref_path_to_genome has a value which is a reference to a list where each element
 
 
 
-=head2 GetLegacyGenomeParams
+=head2 GetGenomeParamsV1
 
 =over 4
 
@@ -5411,11 +5418,12 @@ ref_path_to_genome has a value which is a reference to a list where each element
 
 <pre>
 a reference to a hash where the following keys are defined:
-genomes has a value which is a reference to a list where each element is a GenomeAnnotationAPI.LegacyGenomeSelector
+genomes has a value which is a reference to a list where each element is a GenomeAnnotationAPI.GenomeSelectorV1
 included_fields has a value which is a reference to a list where each element is a string
 included_feature_fields has a value which is a reference to a list where each element is a string
 ignore_errors has a value which is a GenomeAnnotationAPI.boolean
 no_data has a value which is a GenomeAnnotationAPI.boolean
+no_metadata has a value which is a GenomeAnnotationAPI.boolean
 
 </pre>
 
@@ -5424,11 +5432,12 @@ no_data has a value which is a GenomeAnnotationAPI.boolean
 =begin text
 
 a reference to a hash where the following keys are defined:
-genomes has a value which is a reference to a list where each element is a GenomeAnnotationAPI.LegacyGenomeSelector
+genomes has a value which is a reference to a list where each element is a GenomeAnnotationAPI.GenomeSelectorV1
 included_fields has a value which is a reference to a list where each element is a string
 included_feature_fields has a value which is a reference to a list where each element is a string
 ignore_errors has a value which is a GenomeAnnotationAPI.boolean
 no_data has a value which is a GenomeAnnotationAPI.boolean
+no_metadata has a value which is a GenomeAnnotationAPI.boolean
 
 
 =end text
@@ -5437,15 +5446,10 @@ no_data has a value which is a GenomeAnnotationAPI.boolean
 
 
 
-=head2 LegacyGenomeData
+=head2 GenomeDataV1
 
 =over 4
 
-
-
-=item Description
-
-todo: import Genome type and use it here
 
 
 =item Definition
@@ -5496,7 +5500,7 @@ handle_stacktrace has a value which is a string
 
 
 
-=head2 LegacyGenomeDataSet
+=head2 GenomeDataSetV1
 
 =over 4
 
@@ -5508,7 +5512,7 @@ handle_stacktrace has a value which is a string
 
 <pre>
 a reference to a hash where the following keys are defined:
-genomes has a value which is a reference to a list where each element is a GenomeAnnotationAPI.LegacyGenomeData
+genomes has a value which is a reference to a list where each element is a GenomeAnnotationAPI.GenomeDataV1
 
 </pre>
 
@@ -5517,7 +5521,7 @@ genomes has a value which is a reference to a list where each element is a Genom
 =begin text
 
 a reference to a hash where the following keys are defined:
-genomes has a value which is a reference to a list where each element is a GenomeAnnotationAPI.LegacyGenomeData
+genomes has a value which is a reference to a list where each element is a GenomeAnnotationAPI.GenomeDataV1
 
 
 =end text
@@ -5526,7 +5530,7 @@ genomes has a value which is a reference to a list where each element is a Genom
 
 
 
-=head2 LegacyGenomeSaveData
+=head2 GenomeSaveDataV1
 
 =over 4
 
@@ -5560,7 +5564,7 @@ provenance has a value which is a reference to a list where each element is a Wo
 
 
 
-=head2 SaveLegacyGenomeParams
+=head2 SaveOneGenomeParamsV1
 
 =over 4
 
@@ -5574,7 +5578,7 @@ provenance has a value which is a reference to a list where each element is a Wo
 a reference to a hash where the following keys are defined:
 workspace has a value which is a string
 name has a value which is a string
-genomes has a value which is a reference to a list where each element is a GenomeAnnotationAPI.LegacyGenomeSaveData
+genomes has a value which is a reference to a list where each element is a GenomeAnnotationAPI.GenomeSaveDataV1
 
 </pre>
 
@@ -5585,7 +5589,7 @@ genomes has a value which is a reference to a list where each element is a Genom
 a reference to a hash where the following keys are defined:
 workspace has a value which is a string
 name has a value which is a string
-genomes has a value which is a reference to a list where each element is a GenomeAnnotationAPI.LegacyGenomeSaveData
+genomes has a value which is a reference to a list where each element is a GenomeAnnotationAPI.GenomeSaveDataV1
 
 
 =end text
@@ -5594,7 +5598,7 @@ genomes has a value which is a reference to a list where each element is a Genom
 
 
 
-=head2 SaveLegacyGenomeResult
+=head2 SaveGenomeResultV1
 
 =over 4
 

@@ -13,7 +13,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 
 /**
- * <p>Original spec-file type: GetLegacyGenomeParams</p>
+ * <p>Original spec-file type: GetGenomeParamsV1</p>
  * 
  * 
  */
@@ -27,10 +27,10 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
     "no_data",
     "no_metadata"
 })
-public class GetLegacyGenomeParams {
+public class GetGenomeParamsV1 {
 
     @JsonProperty("genomes")
-    private List<LegacyGenomeSelector> genomes;
+    private List<GenomeSelectorV1> genomes;
     @JsonProperty("included_fields")
     private List<String> includedFields;
     @JsonProperty("included_feature_fields")
@@ -44,16 +44,16 @@ public class GetLegacyGenomeParams {
     private Map<java.lang.String, Object> additionalProperties = new HashMap<java.lang.String, Object>();
 
     @JsonProperty("genomes")
-    public List<LegacyGenomeSelector> getGenomes() {
+    public List<GenomeSelectorV1> getGenomes() {
         return genomes;
     }
 
     @JsonProperty("genomes")
-    public void setGenomes(List<LegacyGenomeSelector> genomes) {
+    public void setGenomes(List<GenomeSelectorV1> genomes) {
         this.genomes = genomes;
     }
 
-    public GetLegacyGenomeParams withGenomes(List<LegacyGenomeSelector> genomes) {
+    public GetGenomeParamsV1 withGenomes(List<GenomeSelectorV1> genomes) {
         this.genomes = genomes;
         return this;
     }
@@ -68,7 +68,7 @@ public class GetLegacyGenomeParams {
         this.includedFields = includedFields;
     }
 
-    public GetLegacyGenomeParams withIncludedFields(List<String> includedFields) {
+    public GetGenomeParamsV1 withIncludedFields(List<String> includedFields) {
         this.includedFields = includedFields;
         return this;
     }
@@ -83,7 +83,7 @@ public class GetLegacyGenomeParams {
         this.includedFeatureFields = includedFeatureFields;
     }
 
-    public GetLegacyGenomeParams withIncludedFeatureFields(List<String> includedFeatureFields) {
+    public GetGenomeParamsV1 withIncludedFeatureFields(List<String> includedFeatureFields) {
         this.includedFeatureFields = includedFeatureFields;
         return this;
     }
@@ -98,7 +98,7 @@ public class GetLegacyGenomeParams {
         this.ignoreErrors = ignoreErrors;
     }
 
-    public GetLegacyGenomeParams withIgnoreErrors(Long ignoreErrors) {
+    public GetGenomeParamsV1 withIgnoreErrors(Long ignoreErrors) {
         this.ignoreErrors = ignoreErrors;
         return this;
     }
@@ -113,7 +113,7 @@ public class GetLegacyGenomeParams {
         this.noData = noData;
     }
 
-    public GetLegacyGenomeParams withNoData(Long noData) {
+    public GetGenomeParamsV1 withNoData(Long noData) {
         this.noData = noData;
         return this;
     }
@@ -128,7 +128,7 @@ public class GetLegacyGenomeParams {
         this.noMetadata = noMetadata;
     }
 
-    public GetLegacyGenomeParams withNoMetadata(Long noMetadata) {
+    public GetGenomeParamsV1 withNoMetadata(Long noMetadata) {
         this.noMetadata = noMetadata;
         return this;
     }
@@ -145,7 +145,7 @@ public class GetLegacyGenomeParams {
 
     @Override
     public java.lang.String toString() {
-        return ((((((((((((((("GetLegacyGenomeParams"+" [genomes=")+ genomes)+", includedFields=")+ includedFields)+", includedFeatureFields=")+ includedFeatureFields)+", ignoreErrors=")+ ignoreErrors)+", noData=")+ noData)+", noMetadata=")+ noMetadata)+", additionalProperties=")+ additionalProperties)+"]");
+        return ((((((((((((((("GetGenomeParamsV1"+" [genomes=")+ genomes)+", includedFields=")+ includedFields)+", includedFeatureFields=")+ includedFeatureFields)+", ignoreErrors=")+ ignoreErrors)+", noData=")+ noData)+", noMetadata=")+ noMetadata)+", additionalProperties=")+ additionalProperties)+"]");
     }
 
 }

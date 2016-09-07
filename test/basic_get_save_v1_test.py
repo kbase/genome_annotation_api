@@ -43,10 +43,13 @@ def log(func):
     return wrapper
 
 
+
+
 class GenomeAnnotationAPITests(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
+        print('Setting up class')
         token = os.environ.get('KB_AUTH_TOKEN', None)
         # WARNING: don't call any logging methods on the context object,
         # it'll result in a NoneType error
@@ -65,6 +68,30 @@ class GenomeAnnotationAPITests(unittest.TestCase):
         cls.cfg = {n[0]: n[1] for n in config.items('GenomeAnnotationAPI')}
         cls.ws = Workspace(cls.cfg['workspace-url'], token=token)
         cls.impl = GenomeAnnotationAPI(cls.cfg)
+
+        # create one WS for all tests
+        suffix = int(time.time() * 1000)
+        wsName = "test_GenomeAnnotationAPI_" + str(suffix)
+        ret = cls.ws.create_workspace({'workspace': wsName})
+        cls.wsName = wsName
+
+        # preload with reference data
+        with open ('data/rhodobacter.json', 'r') as file:
+            data_str=file.read()
+        data = json.loads(data_str)
+        # save to ws
+        result = cls.ws.save_objects({
+                'workspace':wsName,
+                'objects': [{
+                    'type':'KBaseGenomes.Genome',
+                    'data':data,
+                    'name':'rhodobacter'
+                }]
+            })
+        info = result[0]
+        cls.rhodobacter_ref = str(info[6]) +'/' + str(info[0]) + '/' + str(info[4])
+        print('created rhodobacter test genome: ' + cls.rhodobacter_ref)
+
 
 
     @classmethod
@@ -113,7 +140,7 @@ class GenomeAnnotationAPITests(unittest.TestCase):
 
     @log
     def test_get_all(self):
-        ret = self.impl.get_legacy_genome(self.ctx, 
+        ret = self.impl.get_genome_v1(self.ctx, 
             {
                 'genomes': [ {
                     'ref' : self.getRhodobacterRef()
@@ -126,7 +153,7 @@ class GenomeAnnotationAPITests(unittest.TestCase):
 
     @log
     def test_get_feature_id_subdata(self):
-        ret = self.impl.get_legacy_genome(self.ctx, 
+        ret = self.impl.get_genome_v1(self.ctx, 
             {
                 'genomes': [ {
                     'ref' : self.getRhodobacterRef()
@@ -142,7 +169,7 @@ class GenomeAnnotationAPITests(unittest.TestCase):
 
     @log
     def test_get_feature_id_subdata(self):
-        ret = self.impl.get_legacy_genome(self.ctx, 
+        ret = self.impl.get_genome_v1(self.ctx, 
             {
                 'genomes': [ {
                     'ref' : self.getRhodobacterRef(),
@@ -158,7 +185,7 @@ class GenomeAnnotationAPITests(unittest.TestCase):
 
     @log
     def test_get_feature_id_subdata_with_some_fields(self):
-        ret = self.impl.get_legacy_genome(self.ctx, 
+        ret = self.impl.get_genome_v1(self.ctx, 
             {
                 'genomes': [ {
                     'ref' : self.getRhodobacterRef(),
@@ -176,7 +203,7 @@ class GenomeAnnotationAPITests(unittest.TestCase):
 
     @log
     def test_get_with_no_meta(self):
-        ret = self.impl.get_legacy_genome(self.ctx, 
+        ret = self.impl.get_genome_v1(self.ctx, 
             {
                 'genomes': [ {
                     'ref' : self.getRhodobacterRef(),
@@ -194,7 +221,7 @@ class GenomeAnnotationAPITests(unittest.TestCase):
 
     @log
     def test_get_feature_id_subdata_everything(self):
-        ret = self.impl.get_legacy_genome(self.ctx, 
+        ret = self.impl.get_genome_v1(self.ctx, 
             {
                 'genomes': [ {
                     'ref' : self.getRhodobacterRef(),
@@ -209,6 +236,23 @@ class GenomeAnnotationAPITests(unittest.TestCase):
         self.assertEqual(data[0]['data']['domain'],'Bacteria')
         self.assertEqual(data[0]['data']['features'][0]['function'],'FIG01142552: hypothetical protein')
         self.assertEqual(data[0]['data']['features'][0]['id'],'kb|g.220339.CDS.4')
+
+    @log
+    def test_save_genome(self):
+        wsName = self.generatePesudoRandomWorkspaceName()
+        # read in the test Rhodobacter genome
+        with open ('data/rhodobacter.json', 'r') as file:
+            data_str=file.read()
+        data = json.loads(data_str)
+        obj_name = 'test_save_new_genome'
+        ret = self.impl.save_one_genome_v1(self.ctx, 
+            {
+                'workspace':wsName,
+                'name':'test_save_new_genome',
+                'data':data,
+            })[0]
+        self.assertEqual(ret['info'][1], obj_name)
+
 
 
     
