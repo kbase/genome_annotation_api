@@ -2,6 +2,10 @@
 A KBase module: GenomeAnnotationAPI
 */
 
+#include <workspace.spec>
+#include <KBaseGenomes.spec>
+
+
 module GenomeAnnotationAPI {
     typedef string ObjectReference;
 
@@ -625,4 +629,80 @@ module GenomeAnnotationAPI {
      * of large eukaryotic datasets. It may lead to out-of-memory errors.
      */
     funcdef get_combined_data(GetCombinedDataParams params) returns (GenomeAnnotation_data) authentication required;
+
+
+
+    /*
+
+    */
+    typedef structure {
+        string ref;
+        list <int> included_feature_position_index;
+        list <string> ref_path_to_genome;
+    } GenomeSelectorV1;
+
+
+
+    typedef structure {
+        list <GenomeSelectorV1> genomes;
+
+        list <string> included_fields;
+        list <string> included_feature_fields;
+
+        boolean ignore_errors;
+        boolean no_data;
+        boolean no_metadata;
+    } GetGenomeParamsV1;
+
+
+    /* */
+    typedef structure {
+        KBaseGenomes.Genome data;
+
+        Workspace.object_info info;
+        list<Workspace.ProvenanceAction> provenance;
+
+        string creator;
+        string orig_wsid;
+        string copied;
+        boolean copy_source_inaccessible;
+
+        Workspace.timestamp created;
+        Workspace.epoch epoch;
+
+        list<string> refs;
+        mapping<Workspace.id_type, list<Workspace.extracted_id>> extracted_ids;
+
+        string handle_error;
+        string handle_stacktrace;
+    } GenomeDataV1;
+
+
+    typedef structure {
+        list<GenomeDataV1> genomes;
+    } GenomeDataSetV1;
+
+    /* A reasonably simple wrapper on get_objects2, but with Genome specific
+        filters instead of arbitrary get subdata included paths.
+    */
+    funcdef get_genome_v1(GetGenomeParamsV1 params)
+                returns (GenomeDataSetV1 data) authentication optional;
+
+
+    typedef structure {
+        string workspace;
+        string name;
+        KBaseGenomes.Genome data;
+        list<Workspace.ProvenanceAction> provenance;
+        boolean hidden;
+    } SaveOneGenomeParamsV1;
+
+    typedef structure {
+        Workspace.object_info info;
+    } SaveGenomeResultV1;
+
+    funcdef save_one_genome_v1(SaveOneGenomeParamsV1 params)
+                returns (SaveGenomeResultV1 result) authentication required;
+
+
 };

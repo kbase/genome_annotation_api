@@ -26,7 +26,7 @@ GenomeAnnotationAPI::GenomeAnnotationAPIClient
 =head1 DESCRIPTION
 
 
-A KBase module: GenomeAnnotationAPI
+
 
 
 =cut
@@ -87,14 +87,6 @@ sub new
 	{
 	    $self->{token} = $token->token;
 	    $self->{client}->{token} = $token->token;
-	}
-        else
-        {
-	    #
-	    # All methods in this module require authentication. In this case, if we
-	    # don't have a token, we can't continue.
-	    #
-	    die "Authentication failed: " . $token->error_message;
 	}
     }
 
@@ -2754,6 +2746,1113 @@ of large eukaryotic datasets. It may lead to out-of-memory errors.
     }
 }
  
+
+
+=head2 get_genome_v1
+
+  $data = $obj->get_genome_v1($params)
+
+=over 4
+
+=item Parameter and return types
+
+=begin html
+
+<pre>
+$params is a GenomeAnnotationAPI.GetGenomeParamsV1
+$data is a GenomeAnnotationAPI.GenomeDataSetV1
+GetGenomeParamsV1 is a reference to a hash where the following keys are defined:
+	genomes has a value which is a reference to a list where each element is a GenomeAnnotationAPI.GenomeSelectorV1
+	included_fields has a value which is a reference to a list where each element is a string
+	included_feature_fields has a value which is a reference to a list where each element is a string
+	ignore_errors has a value which is a GenomeAnnotationAPI.boolean
+	no_data has a value which is a GenomeAnnotationAPI.boolean
+	no_metadata has a value which is a GenomeAnnotationAPI.boolean
+GenomeSelectorV1 is a reference to a hash where the following keys are defined:
+	ref has a value which is a string
+	included_feature_position_index has a value which is a reference to a list where each element is an int
+	ref_path_to_genome has a value which is a reference to a list where each element is a string
+boolean is an int
+GenomeDataSetV1 is a reference to a hash where the following keys are defined:
+	genomes has a value which is a reference to a list where each element is a GenomeAnnotationAPI.GenomeDataV1
+GenomeDataV1 is a reference to a hash where the following keys are defined:
+	data has a value which is a KBaseGenomes.Genome
+	info has a value which is a Workspace.object_info
+	provenance has a value which is a reference to a list where each element is a Workspace.ProvenanceAction
+	creator has a value which is a string
+	orig_wsid has a value which is a string
+	copied has a value which is a string
+	copy_source_inaccessible has a value which is a GenomeAnnotationAPI.boolean
+	created has a value which is a Workspace.timestamp
+	epoch has a value which is a Workspace.epoch
+	refs has a value which is a reference to a list where each element is a string
+	extracted_ids has a value which is a reference to a hash where the key is a Workspace.id_type and the value is a reference to a list where each element is a Workspace.extracted_id
+	handle_error has a value which is a string
+	handle_stacktrace has a value which is a string
+Genome is a reference to a hash where the following keys are defined:
+	id has a value which is a KBaseGenomes.Genome_id
+	scientific_name has a value which is a string
+	domain has a value which is a string
+	genetic_code has a value which is an int
+	dna_size has a value which is an int
+	num_contigs has a value which is an int
+	contigs has a value which is a reference to a list where each element is a KBaseGenomes.Contig
+	contig_lengths has a value which is a reference to a list where each element is an int
+	contig_ids has a value which is a reference to a list where each element is a KBaseGenomes.Contig_id
+	source has a value which is a string
+	source_id has a value which is a KBaseGenomes.source_id
+	md5 has a value which is a string
+	taxonomy has a value which is a string
+	gc_content has a value which is a float
+	complete has a value which is an int
+	publications has a value which is a reference to a list where each element is a KBaseGenomes.publication
+	features has a value which is a reference to a list where each element is a KBaseGenomes.Feature
+	contigset_ref has a value which is a KBaseGenomes.ContigSet_ref
+	assembly_ref has a value which is a KBaseGenomes.Assembly_ref
+	quality has a value which is a KBaseGenomes.Genome_quality_measure
+	close_genomes has a value which is a reference to a list where each element is a KBaseGenomes.Close_genome
+	analysis_events has a value which is a reference to a list where each element is a KBaseGenomes.Analysis_event
+Genome_id is a string
+Contig is a reference to a hash where the following keys are defined:
+	id has a value which is a KBaseGenomes.Contig_id
+	length has a value which is an int
+	md5 has a value which is a string
+	sequence has a value which is a string
+	genetic_code has a value which is an int
+	cell_compartment has a value which is a string
+	replicon_type has a value which is a string
+	replicon_geometry has a value which is a string
+	name has a value which is a string
+	description has a value which is a string
+	complete has a value which is a KBaseGenomes.Bool
+Contig_id is a string
+Bool is an int
+source_id is a string
+publication is a reference to a list containing 7 items:
+	0: (id) an int
+	1: (source_db) a string
+	2: (article_title) a string
+	3: (link) a string
+	4: (pubdate) a string
+	5: (authors) a string
+	6: (journal_name) a string
+Feature is a reference to a hash where the following keys are defined:
+	id has a value which is a KBaseGenomes.Feature_id
+	location has a value which is a reference to a list where each element is a reference to a list containing 4 items:
+		0: a KBaseGenomes.Contig_id
+		1: an int
+		2: a string
+		3: an int
+
+	type has a value which is a string
+	function has a value which is a string
+	ontology_terms has a value which is a reference to a hash where the key is a string and the value is a reference to a hash where the key is a string and the value is a KBaseGenomes.OntologyData
+	md5 has a value which is a string
+	protein_translation has a value which is a string
+	dna_sequence has a value which is a string
+	protein_translation_length has a value which is an int
+	dna_sequence_length has a value which is an int
+	publications has a value which is a reference to a list where each element is a KBaseGenomes.publication
+	subsystems has a value which is a reference to a list where each element is a string
+	protein_families has a value which is a reference to a list where each element is a KBaseGenomes.ProteinFamily
+	aliases has a value which is a reference to a list where each element is a string
+	orthologs has a value which is a reference to a list where each element is a reference to a list containing 2 items:
+		0: a string
+		1: a float
+
+	annotations has a value which is a reference to a list where each element is a KBaseGenomes.annotation
+	subsystem_data has a value which is a reference to a list where each element is a KBaseGenomes.subsystem_data
+	regulon_data has a value which is a reference to a list where each element is a KBaseGenomes.regulon_data
+	atomic_regulons has a value which is a reference to a list where each element is a KBaseGenomes.atomic_regulon
+	coexpressed_fids has a value which is a reference to a list where each element is a KBaseGenomes.coexpressed_fid
+	co_occurring_fids has a value which is a reference to a list where each element is a KBaseGenomes.co_occurring_fid
+	quality has a value which is a KBaseGenomes.Feature_quality_measure
+	feature_creation_event has a value which is a KBaseGenomes.Analysis_event
+Feature_id is a string
+OntologyData is a reference to a hash where the following keys are defined:
+	id has a value which is a string
+	ontology_ref has a value which is a string
+	term_lineage has a value which is a reference to a list where each element is a string
+	term_name has a value which is a string
+	evidence has a value which is a reference to a list where each element is a KBaseGenomes.OntologyEvidence
+OntologyEvidence is a reference to a hash where the following keys are defined:
+	method has a value which is a string
+	method_version has a value which is a string
+	timestamp has a value which is a string
+	translation_provenance has a value which is a reference to a list containing 3 items:
+		0: (ontologytranslation_ref) a string
+		1: (namespace) a string
+		2: (source_term) a string
+
+	alignment_evidence has a value which is a reference to a list where each element is a reference to a list containing 4 items:
+		0: (start) an int
+		1: (stop) an int
+		2: (align_length) an int
+		3: (identify) a float
+
+ProteinFamily is a reference to a hash where the following keys are defined:
+	id has a value which is a string
+	subject_db has a value which is a string
+	release_version has a value which is a string
+	subject_description has a value which is a string
+	query_begin has a value which is an int
+	query_end has a value which is an int
+	subject_begin has a value which is an int
+	subject_end has a value which is an int
+	score has a value which is a float
+	evalue has a value which is a float
+annotation is a reference to a list containing 3 items:
+	0: (comment) a string
+	1: (annotator) a string
+	2: (annotation_time) a float
+subsystem_data is a reference to a list containing 3 items:
+	0: (subsystem) a string
+	1: (variant) a string
+	2: (role) a string
+regulon_data is a reference to a list containing 3 items:
+	0: (regulon_id) a string
+	1: (regulon_set) a reference to a list where each element is a KBaseGenomes.Feature_id
+	2: (tfs) a reference to a list where each element is a KBaseGenomes.Feature_id
+atomic_regulon is a reference to a list containing 2 items:
+	0: (atomic_regulon_id) a string
+	1: (atomic_regulon_size) an int
+coexpressed_fid is a reference to a list containing 2 items:
+	0: (scored_fid) a KBaseGenomes.Feature_id
+	1: (score) a float
+co_occurring_fid is a reference to a list containing 2 items:
+	0: (scored_fid) a KBaseGenomes.Feature_id
+	1: (score) a float
+Feature_quality_measure is a reference to a hash where the following keys are defined:
+	truncated_begin has a value which is a KBaseGenomes.Bool
+	truncated_end has a value which is a KBaseGenomes.Bool
+	existence_confidence has a value which is a float
+	frameshifted has a value which is a KBaseGenomes.Bool
+	selenoprotein has a value which is a KBaseGenomes.Bool
+	pyrrolysylprotein has a value which is a KBaseGenomes.Bool
+	overlap_rules has a value which is a reference to a list where each element is a string
+	existence_priority has a value which is a float
+	hit_count has a value which is a float
+	weighted_hit_count has a value which is a float
+Analysis_event is a reference to a hash where the following keys are defined:
+	id has a value which is a KBaseGenomes.Analysis_event_id
+	tool_name has a value which is a string
+	execution_time has a value which is a float
+	parameters has a value which is a reference to a list where each element is a string
+	hostname has a value which is a string
+Analysis_event_id is a string
+ContigSet_ref is a string
+Assembly_ref is a string
+Genome_quality_measure is a reference to a hash where the following keys are defined:
+	frameshift_error_rate has a value which is a float
+	sequence_error_rate has a value which is a float
+Close_genome is a reference to a hash where the following keys are defined:
+	genome has a value which is a KBaseGenomes.Genome_id
+	closeness_measure has a value which is a float
+object_info is a reference to a list containing 11 items:
+	0: (objid) a Workspace.obj_id
+	1: (name) a Workspace.obj_name
+	2: (type) a Workspace.type_string
+	3: (save_date) a Workspace.timestamp
+	4: (version) an int
+	5: (saved_by) a Workspace.username
+	6: (wsid) a Workspace.ws_id
+	7: (workspace) a Workspace.ws_name
+	8: (chsum) a string
+	9: (size) an int
+	10: (meta) a Workspace.usermeta
+obj_id is an int
+obj_name is a string
+type_string is a string
+timestamp is a string
+username is a string
+ws_id is an int
+ws_name is a string
+usermeta is a reference to a hash where the key is a string and the value is a string
+ProvenanceAction is a reference to a hash where the following keys are defined:
+	time has a value which is a Workspace.timestamp
+	epoch has a value which is a Workspace.epoch
+	caller has a value which is a string
+	service has a value which is a string
+	service_ver has a value which is a string
+	method has a value which is a string
+	method_params has a value which is a reference to a list where each element is an UnspecifiedObject, which can hold any non-null object
+	script has a value which is a string
+	script_ver has a value which is a string
+	script_command_line has a value which is a string
+	input_ws_objects has a value which is a reference to a list where each element is a Workspace.obj_ref
+	resolved_ws_objects has a value which is a reference to a list where each element is a Workspace.obj_ref
+	intermediate_incoming has a value which is a reference to a list where each element is a string
+	intermediate_outgoing has a value which is a reference to a list where each element is a string
+	external_data has a value which is a reference to a list where each element is a Workspace.ExternalDataUnit
+	subactions has a value which is a reference to a list where each element is a Workspace.SubAction
+	custom has a value which is a reference to a hash where the key is a string and the value is a string
+	description has a value which is a string
+epoch is an int
+obj_ref is a string
+ExternalDataUnit is a reference to a hash where the following keys are defined:
+	resource_name has a value which is a string
+	resource_url has a value which is a string
+	resource_version has a value which is a string
+	resource_release_date has a value which is a Workspace.timestamp
+	resource_release_epoch has a value which is a Workspace.epoch
+	data_url has a value which is a string
+	data_id has a value which is a string
+	description has a value which is a string
+SubAction is a reference to a hash where the following keys are defined:
+	name has a value which is a string
+	ver has a value which is a string
+	code_url has a value which is a string
+	commit has a value which is a string
+	endpoint_url has a value which is a string
+id_type is a string
+extracted_id is a string
+
+</pre>
+
+=end html
+
+=begin text
+
+$params is a GenomeAnnotationAPI.GetGenomeParamsV1
+$data is a GenomeAnnotationAPI.GenomeDataSetV1
+GetGenomeParamsV1 is a reference to a hash where the following keys are defined:
+	genomes has a value which is a reference to a list where each element is a GenomeAnnotationAPI.GenomeSelectorV1
+	included_fields has a value which is a reference to a list where each element is a string
+	included_feature_fields has a value which is a reference to a list where each element is a string
+	ignore_errors has a value which is a GenomeAnnotationAPI.boolean
+	no_data has a value which is a GenomeAnnotationAPI.boolean
+	no_metadata has a value which is a GenomeAnnotationAPI.boolean
+GenomeSelectorV1 is a reference to a hash where the following keys are defined:
+	ref has a value which is a string
+	included_feature_position_index has a value which is a reference to a list where each element is an int
+	ref_path_to_genome has a value which is a reference to a list where each element is a string
+boolean is an int
+GenomeDataSetV1 is a reference to a hash where the following keys are defined:
+	genomes has a value which is a reference to a list where each element is a GenomeAnnotationAPI.GenomeDataV1
+GenomeDataV1 is a reference to a hash where the following keys are defined:
+	data has a value which is a KBaseGenomes.Genome
+	info has a value which is a Workspace.object_info
+	provenance has a value which is a reference to a list where each element is a Workspace.ProvenanceAction
+	creator has a value which is a string
+	orig_wsid has a value which is a string
+	copied has a value which is a string
+	copy_source_inaccessible has a value which is a GenomeAnnotationAPI.boolean
+	created has a value which is a Workspace.timestamp
+	epoch has a value which is a Workspace.epoch
+	refs has a value which is a reference to a list where each element is a string
+	extracted_ids has a value which is a reference to a hash where the key is a Workspace.id_type and the value is a reference to a list where each element is a Workspace.extracted_id
+	handle_error has a value which is a string
+	handle_stacktrace has a value which is a string
+Genome is a reference to a hash where the following keys are defined:
+	id has a value which is a KBaseGenomes.Genome_id
+	scientific_name has a value which is a string
+	domain has a value which is a string
+	genetic_code has a value which is an int
+	dna_size has a value which is an int
+	num_contigs has a value which is an int
+	contigs has a value which is a reference to a list where each element is a KBaseGenomes.Contig
+	contig_lengths has a value which is a reference to a list where each element is an int
+	contig_ids has a value which is a reference to a list where each element is a KBaseGenomes.Contig_id
+	source has a value which is a string
+	source_id has a value which is a KBaseGenomes.source_id
+	md5 has a value which is a string
+	taxonomy has a value which is a string
+	gc_content has a value which is a float
+	complete has a value which is an int
+	publications has a value which is a reference to a list where each element is a KBaseGenomes.publication
+	features has a value which is a reference to a list where each element is a KBaseGenomes.Feature
+	contigset_ref has a value which is a KBaseGenomes.ContigSet_ref
+	assembly_ref has a value which is a KBaseGenomes.Assembly_ref
+	quality has a value which is a KBaseGenomes.Genome_quality_measure
+	close_genomes has a value which is a reference to a list where each element is a KBaseGenomes.Close_genome
+	analysis_events has a value which is a reference to a list where each element is a KBaseGenomes.Analysis_event
+Genome_id is a string
+Contig is a reference to a hash where the following keys are defined:
+	id has a value which is a KBaseGenomes.Contig_id
+	length has a value which is an int
+	md5 has a value which is a string
+	sequence has a value which is a string
+	genetic_code has a value which is an int
+	cell_compartment has a value which is a string
+	replicon_type has a value which is a string
+	replicon_geometry has a value which is a string
+	name has a value which is a string
+	description has a value which is a string
+	complete has a value which is a KBaseGenomes.Bool
+Contig_id is a string
+Bool is an int
+source_id is a string
+publication is a reference to a list containing 7 items:
+	0: (id) an int
+	1: (source_db) a string
+	2: (article_title) a string
+	3: (link) a string
+	4: (pubdate) a string
+	5: (authors) a string
+	6: (journal_name) a string
+Feature is a reference to a hash where the following keys are defined:
+	id has a value which is a KBaseGenomes.Feature_id
+	location has a value which is a reference to a list where each element is a reference to a list containing 4 items:
+		0: a KBaseGenomes.Contig_id
+		1: an int
+		2: a string
+		3: an int
+
+	type has a value which is a string
+	function has a value which is a string
+	ontology_terms has a value which is a reference to a hash where the key is a string and the value is a reference to a hash where the key is a string and the value is a KBaseGenomes.OntologyData
+	md5 has a value which is a string
+	protein_translation has a value which is a string
+	dna_sequence has a value which is a string
+	protein_translation_length has a value which is an int
+	dna_sequence_length has a value which is an int
+	publications has a value which is a reference to a list where each element is a KBaseGenomes.publication
+	subsystems has a value which is a reference to a list where each element is a string
+	protein_families has a value which is a reference to a list where each element is a KBaseGenomes.ProteinFamily
+	aliases has a value which is a reference to a list where each element is a string
+	orthologs has a value which is a reference to a list where each element is a reference to a list containing 2 items:
+		0: a string
+		1: a float
+
+	annotations has a value which is a reference to a list where each element is a KBaseGenomes.annotation
+	subsystem_data has a value which is a reference to a list where each element is a KBaseGenomes.subsystem_data
+	regulon_data has a value which is a reference to a list where each element is a KBaseGenomes.regulon_data
+	atomic_regulons has a value which is a reference to a list where each element is a KBaseGenomes.atomic_regulon
+	coexpressed_fids has a value which is a reference to a list where each element is a KBaseGenomes.coexpressed_fid
+	co_occurring_fids has a value which is a reference to a list where each element is a KBaseGenomes.co_occurring_fid
+	quality has a value which is a KBaseGenomes.Feature_quality_measure
+	feature_creation_event has a value which is a KBaseGenomes.Analysis_event
+Feature_id is a string
+OntologyData is a reference to a hash where the following keys are defined:
+	id has a value which is a string
+	ontology_ref has a value which is a string
+	term_lineage has a value which is a reference to a list where each element is a string
+	term_name has a value which is a string
+	evidence has a value which is a reference to a list where each element is a KBaseGenomes.OntologyEvidence
+OntologyEvidence is a reference to a hash where the following keys are defined:
+	method has a value which is a string
+	method_version has a value which is a string
+	timestamp has a value which is a string
+	translation_provenance has a value which is a reference to a list containing 3 items:
+		0: (ontologytranslation_ref) a string
+		1: (namespace) a string
+		2: (source_term) a string
+
+	alignment_evidence has a value which is a reference to a list where each element is a reference to a list containing 4 items:
+		0: (start) an int
+		1: (stop) an int
+		2: (align_length) an int
+		3: (identify) a float
+
+ProteinFamily is a reference to a hash where the following keys are defined:
+	id has a value which is a string
+	subject_db has a value which is a string
+	release_version has a value which is a string
+	subject_description has a value which is a string
+	query_begin has a value which is an int
+	query_end has a value which is an int
+	subject_begin has a value which is an int
+	subject_end has a value which is an int
+	score has a value which is a float
+	evalue has a value which is a float
+annotation is a reference to a list containing 3 items:
+	0: (comment) a string
+	1: (annotator) a string
+	2: (annotation_time) a float
+subsystem_data is a reference to a list containing 3 items:
+	0: (subsystem) a string
+	1: (variant) a string
+	2: (role) a string
+regulon_data is a reference to a list containing 3 items:
+	0: (regulon_id) a string
+	1: (regulon_set) a reference to a list where each element is a KBaseGenomes.Feature_id
+	2: (tfs) a reference to a list where each element is a KBaseGenomes.Feature_id
+atomic_regulon is a reference to a list containing 2 items:
+	0: (atomic_regulon_id) a string
+	1: (atomic_regulon_size) an int
+coexpressed_fid is a reference to a list containing 2 items:
+	0: (scored_fid) a KBaseGenomes.Feature_id
+	1: (score) a float
+co_occurring_fid is a reference to a list containing 2 items:
+	0: (scored_fid) a KBaseGenomes.Feature_id
+	1: (score) a float
+Feature_quality_measure is a reference to a hash where the following keys are defined:
+	truncated_begin has a value which is a KBaseGenomes.Bool
+	truncated_end has a value which is a KBaseGenomes.Bool
+	existence_confidence has a value which is a float
+	frameshifted has a value which is a KBaseGenomes.Bool
+	selenoprotein has a value which is a KBaseGenomes.Bool
+	pyrrolysylprotein has a value which is a KBaseGenomes.Bool
+	overlap_rules has a value which is a reference to a list where each element is a string
+	existence_priority has a value which is a float
+	hit_count has a value which is a float
+	weighted_hit_count has a value which is a float
+Analysis_event is a reference to a hash where the following keys are defined:
+	id has a value which is a KBaseGenomes.Analysis_event_id
+	tool_name has a value which is a string
+	execution_time has a value which is a float
+	parameters has a value which is a reference to a list where each element is a string
+	hostname has a value which is a string
+Analysis_event_id is a string
+ContigSet_ref is a string
+Assembly_ref is a string
+Genome_quality_measure is a reference to a hash where the following keys are defined:
+	frameshift_error_rate has a value which is a float
+	sequence_error_rate has a value which is a float
+Close_genome is a reference to a hash where the following keys are defined:
+	genome has a value which is a KBaseGenomes.Genome_id
+	closeness_measure has a value which is a float
+object_info is a reference to a list containing 11 items:
+	0: (objid) a Workspace.obj_id
+	1: (name) a Workspace.obj_name
+	2: (type) a Workspace.type_string
+	3: (save_date) a Workspace.timestamp
+	4: (version) an int
+	5: (saved_by) a Workspace.username
+	6: (wsid) a Workspace.ws_id
+	7: (workspace) a Workspace.ws_name
+	8: (chsum) a string
+	9: (size) an int
+	10: (meta) a Workspace.usermeta
+obj_id is an int
+obj_name is a string
+type_string is a string
+timestamp is a string
+username is a string
+ws_id is an int
+ws_name is a string
+usermeta is a reference to a hash where the key is a string and the value is a string
+ProvenanceAction is a reference to a hash where the following keys are defined:
+	time has a value which is a Workspace.timestamp
+	epoch has a value which is a Workspace.epoch
+	caller has a value which is a string
+	service has a value which is a string
+	service_ver has a value which is a string
+	method has a value which is a string
+	method_params has a value which is a reference to a list where each element is an UnspecifiedObject, which can hold any non-null object
+	script has a value which is a string
+	script_ver has a value which is a string
+	script_command_line has a value which is a string
+	input_ws_objects has a value which is a reference to a list where each element is a Workspace.obj_ref
+	resolved_ws_objects has a value which is a reference to a list where each element is a Workspace.obj_ref
+	intermediate_incoming has a value which is a reference to a list where each element is a string
+	intermediate_outgoing has a value which is a reference to a list where each element is a string
+	external_data has a value which is a reference to a list where each element is a Workspace.ExternalDataUnit
+	subactions has a value which is a reference to a list where each element is a Workspace.SubAction
+	custom has a value which is a reference to a hash where the key is a string and the value is a string
+	description has a value which is a string
+epoch is an int
+obj_ref is a string
+ExternalDataUnit is a reference to a hash where the following keys are defined:
+	resource_name has a value which is a string
+	resource_url has a value which is a string
+	resource_version has a value which is a string
+	resource_release_date has a value which is a Workspace.timestamp
+	resource_release_epoch has a value which is a Workspace.epoch
+	data_url has a value which is a string
+	data_id has a value which is a string
+	description has a value which is a string
+SubAction is a reference to a hash where the following keys are defined:
+	name has a value which is a string
+	ver has a value which is a string
+	code_url has a value which is a string
+	commit has a value which is a string
+	endpoint_url has a value which is a string
+id_type is a string
+extracted_id is a string
+
+
+=end text
+
+=item Description
+
+A reasonably simple wrapper on get_objects2, but with Genome specific
+filters instead of arbitrary get subdata included paths.
+
+=back
+
+=cut
+
+ sub get_genome_v1
+{
+    my($self, @args) = @_;
+
+# Authentication: optional
+
+    if ((my $n = @args) != 1)
+    {
+	Bio::KBase::Exceptions::ArgumentValidationError->throw(error =>
+							       "Invalid argument count for function get_genome_v1 (received $n, expecting 1)");
+    }
+    {
+	my($params) = @args;
+
+	my @_bad_arguments;
+        (ref($params) eq 'HASH') or push(@_bad_arguments, "Invalid type for argument 1 \"params\" (value was \"$params\")");
+        if (@_bad_arguments) {
+	    my $msg = "Invalid arguments passed to get_genome_v1:\n" . join("", map { "\t$_\n" } @_bad_arguments);
+	    Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
+								   method_name => 'get_genome_v1');
+	}
+    }
+
+    my $url = $self->{url};
+    my $result = $self->{client}->call($url, $self->{headers}, {
+	    method => "GenomeAnnotationAPI.get_genome_v1",
+	    params => \@args,
+    });
+    if ($result) {
+	if ($result->is_error) {
+	    Bio::KBase::Exceptions::JSONRPC->throw(error => $result->error_message,
+					       code => $result->content->{error}->{code},
+					       method_name => 'get_genome_v1',
+					       data => $result->content->{error}->{error} # JSON::RPC::ReturnObject only supports JSONRPC 1.1 or 1.O
+					      );
+	} else {
+	    return wantarray ? @{$result->result} : $result->result->[0];
+	}
+    } else {
+        Bio::KBase::Exceptions::HTTP->throw(error => "Error invoking method get_genome_v1",
+					    status_line => $self->{client}->status_line,
+					    method_name => 'get_genome_v1',
+				       );
+    }
+}
+ 
+
+
+=head2 save_one_genome_v1
+
+  $result = $obj->save_one_genome_v1($params)
+
+=over 4
+
+=item Parameter and return types
+
+=begin html
+
+<pre>
+$params is a GenomeAnnotationAPI.SaveOneGenomeParamsV1
+$result is a GenomeAnnotationAPI.SaveGenomeResultV1
+SaveOneGenomeParamsV1 is a reference to a hash where the following keys are defined:
+	workspace has a value which is a string
+	name has a value which is a string
+	genomes has a value which is a reference to a list where each element is a GenomeAnnotationAPI.GenomeSaveDataV1
+GenomeSaveDataV1 is a reference to a hash where the following keys are defined:
+	data has a value which is a KBaseGenomes.Genome
+	hidden has a value which is a GenomeAnnotationAPI.boolean
+	provenance has a value which is a reference to a list where each element is a Workspace.ProvenanceAction
+Genome is a reference to a hash where the following keys are defined:
+	id has a value which is a KBaseGenomes.Genome_id
+	scientific_name has a value which is a string
+	domain has a value which is a string
+	genetic_code has a value which is an int
+	dna_size has a value which is an int
+	num_contigs has a value which is an int
+	contigs has a value which is a reference to a list where each element is a KBaseGenomes.Contig
+	contig_lengths has a value which is a reference to a list where each element is an int
+	contig_ids has a value which is a reference to a list where each element is a KBaseGenomes.Contig_id
+	source has a value which is a string
+	source_id has a value which is a KBaseGenomes.source_id
+	md5 has a value which is a string
+	taxonomy has a value which is a string
+	gc_content has a value which is a float
+	complete has a value which is an int
+	publications has a value which is a reference to a list where each element is a KBaseGenomes.publication
+	features has a value which is a reference to a list where each element is a KBaseGenomes.Feature
+	contigset_ref has a value which is a KBaseGenomes.ContigSet_ref
+	assembly_ref has a value which is a KBaseGenomes.Assembly_ref
+	quality has a value which is a KBaseGenomes.Genome_quality_measure
+	close_genomes has a value which is a reference to a list where each element is a KBaseGenomes.Close_genome
+	analysis_events has a value which is a reference to a list where each element is a KBaseGenomes.Analysis_event
+Genome_id is a string
+Contig is a reference to a hash where the following keys are defined:
+	id has a value which is a KBaseGenomes.Contig_id
+	length has a value which is an int
+	md5 has a value which is a string
+	sequence has a value which is a string
+	genetic_code has a value which is an int
+	cell_compartment has a value which is a string
+	replicon_type has a value which is a string
+	replicon_geometry has a value which is a string
+	name has a value which is a string
+	description has a value which is a string
+	complete has a value which is a KBaseGenomes.Bool
+Contig_id is a string
+Bool is an int
+source_id is a string
+publication is a reference to a list containing 7 items:
+	0: (id) an int
+	1: (source_db) a string
+	2: (article_title) a string
+	3: (link) a string
+	4: (pubdate) a string
+	5: (authors) a string
+	6: (journal_name) a string
+Feature is a reference to a hash where the following keys are defined:
+	id has a value which is a KBaseGenomes.Feature_id
+	location has a value which is a reference to a list where each element is a reference to a list containing 4 items:
+		0: a KBaseGenomes.Contig_id
+		1: an int
+		2: a string
+		3: an int
+
+	type has a value which is a string
+	function has a value which is a string
+	ontology_terms has a value which is a reference to a hash where the key is a string and the value is a reference to a hash where the key is a string and the value is a KBaseGenomes.OntologyData
+	md5 has a value which is a string
+	protein_translation has a value which is a string
+	dna_sequence has a value which is a string
+	protein_translation_length has a value which is an int
+	dna_sequence_length has a value which is an int
+	publications has a value which is a reference to a list where each element is a KBaseGenomes.publication
+	subsystems has a value which is a reference to a list where each element is a string
+	protein_families has a value which is a reference to a list where each element is a KBaseGenomes.ProteinFamily
+	aliases has a value which is a reference to a list where each element is a string
+	orthologs has a value which is a reference to a list where each element is a reference to a list containing 2 items:
+		0: a string
+		1: a float
+
+	annotations has a value which is a reference to a list where each element is a KBaseGenomes.annotation
+	subsystem_data has a value which is a reference to a list where each element is a KBaseGenomes.subsystem_data
+	regulon_data has a value which is a reference to a list where each element is a KBaseGenomes.regulon_data
+	atomic_regulons has a value which is a reference to a list where each element is a KBaseGenomes.atomic_regulon
+	coexpressed_fids has a value which is a reference to a list where each element is a KBaseGenomes.coexpressed_fid
+	co_occurring_fids has a value which is a reference to a list where each element is a KBaseGenomes.co_occurring_fid
+	quality has a value which is a KBaseGenomes.Feature_quality_measure
+	feature_creation_event has a value which is a KBaseGenomes.Analysis_event
+Feature_id is a string
+OntologyData is a reference to a hash where the following keys are defined:
+	id has a value which is a string
+	ontology_ref has a value which is a string
+	term_lineage has a value which is a reference to a list where each element is a string
+	term_name has a value which is a string
+	evidence has a value which is a reference to a list where each element is a KBaseGenomes.OntologyEvidence
+OntologyEvidence is a reference to a hash where the following keys are defined:
+	method has a value which is a string
+	method_version has a value which is a string
+	timestamp has a value which is a string
+	translation_provenance has a value which is a reference to a list containing 3 items:
+		0: (ontologytranslation_ref) a string
+		1: (namespace) a string
+		2: (source_term) a string
+
+	alignment_evidence has a value which is a reference to a list where each element is a reference to a list containing 4 items:
+		0: (start) an int
+		1: (stop) an int
+		2: (align_length) an int
+		3: (identify) a float
+
+ProteinFamily is a reference to a hash where the following keys are defined:
+	id has a value which is a string
+	subject_db has a value which is a string
+	release_version has a value which is a string
+	subject_description has a value which is a string
+	query_begin has a value which is an int
+	query_end has a value which is an int
+	subject_begin has a value which is an int
+	subject_end has a value which is an int
+	score has a value which is a float
+	evalue has a value which is a float
+annotation is a reference to a list containing 3 items:
+	0: (comment) a string
+	1: (annotator) a string
+	2: (annotation_time) a float
+subsystem_data is a reference to a list containing 3 items:
+	0: (subsystem) a string
+	1: (variant) a string
+	2: (role) a string
+regulon_data is a reference to a list containing 3 items:
+	0: (regulon_id) a string
+	1: (regulon_set) a reference to a list where each element is a KBaseGenomes.Feature_id
+	2: (tfs) a reference to a list where each element is a KBaseGenomes.Feature_id
+atomic_regulon is a reference to a list containing 2 items:
+	0: (atomic_regulon_id) a string
+	1: (atomic_regulon_size) an int
+coexpressed_fid is a reference to a list containing 2 items:
+	0: (scored_fid) a KBaseGenomes.Feature_id
+	1: (score) a float
+co_occurring_fid is a reference to a list containing 2 items:
+	0: (scored_fid) a KBaseGenomes.Feature_id
+	1: (score) a float
+Feature_quality_measure is a reference to a hash where the following keys are defined:
+	truncated_begin has a value which is a KBaseGenomes.Bool
+	truncated_end has a value which is a KBaseGenomes.Bool
+	existence_confidence has a value which is a float
+	frameshifted has a value which is a KBaseGenomes.Bool
+	selenoprotein has a value which is a KBaseGenomes.Bool
+	pyrrolysylprotein has a value which is a KBaseGenomes.Bool
+	overlap_rules has a value which is a reference to a list where each element is a string
+	existence_priority has a value which is a float
+	hit_count has a value which is a float
+	weighted_hit_count has a value which is a float
+Analysis_event is a reference to a hash where the following keys are defined:
+	id has a value which is a KBaseGenomes.Analysis_event_id
+	tool_name has a value which is a string
+	execution_time has a value which is a float
+	parameters has a value which is a reference to a list where each element is a string
+	hostname has a value which is a string
+Analysis_event_id is a string
+ContigSet_ref is a string
+Assembly_ref is a string
+Genome_quality_measure is a reference to a hash where the following keys are defined:
+	frameshift_error_rate has a value which is a float
+	sequence_error_rate has a value which is a float
+Close_genome is a reference to a hash where the following keys are defined:
+	genome has a value which is a KBaseGenomes.Genome_id
+	closeness_measure has a value which is a float
+boolean is an int
+ProvenanceAction is a reference to a hash where the following keys are defined:
+	time has a value which is a Workspace.timestamp
+	epoch has a value which is a Workspace.epoch
+	caller has a value which is a string
+	service has a value which is a string
+	service_ver has a value which is a string
+	method has a value which is a string
+	method_params has a value which is a reference to a list where each element is an UnspecifiedObject, which can hold any non-null object
+	script has a value which is a string
+	script_ver has a value which is a string
+	script_command_line has a value which is a string
+	input_ws_objects has a value which is a reference to a list where each element is a Workspace.obj_ref
+	resolved_ws_objects has a value which is a reference to a list where each element is a Workspace.obj_ref
+	intermediate_incoming has a value which is a reference to a list where each element is a string
+	intermediate_outgoing has a value which is a reference to a list where each element is a string
+	external_data has a value which is a reference to a list where each element is a Workspace.ExternalDataUnit
+	subactions has a value which is a reference to a list where each element is a Workspace.SubAction
+	custom has a value which is a reference to a hash where the key is a string and the value is a string
+	description has a value which is a string
+timestamp is a string
+epoch is an int
+obj_ref is a string
+ExternalDataUnit is a reference to a hash where the following keys are defined:
+	resource_name has a value which is a string
+	resource_url has a value which is a string
+	resource_version has a value which is a string
+	resource_release_date has a value which is a Workspace.timestamp
+	resource_release_epoch has a value which is a Workspace.epoch
+	data_url has a value which is a string
+	data_id has a value which is a string
+	description has a value which is a string
+SubAction is a reference to a hash where the following keys are defined:
+	name has a value which is a string
+	ver has a value which is a string
+	code_url has a value which is a string
+	commit has a value which is a string
+	endpoint_url has a value which is a string
+SaveGenomeResultV1 is a reference to a hash where the following keys are defined:
+	info has a value which is a reference to a list where each element is a Workspace.object_info
+object_info is a reference to a list containing 11 items:
+	0: (objid) a Workspace.obj_id
+	1: (name) a Workspace.obj_name
+	2: (type) a Workspace.type_string
+	3: (save_date) a Workspace.timestamp
+	4: (version) an int
+	5: (saved_by) a Workspace.username
+	6: (wsid) a Workspace.ws_id
+	7: (workspace) a Workspace.ws_name
+	8: (chsum) a string
+	9: (size) an int
+	10: (meta) a Workspace.usermeta
+obj_id is an int
+obj_name is a string
+type_string is a string
+username is a string
+ws_id is an int
+ws_name is a string
+usermeta is a reference to a hash where the key is a string and the value is a string
+
+</pre>
+
+=end html
+
+=begin text
+
+$params is a GenomeAnnotationAPI.SaveOneGenomeParamsV1
+$result is a GenomeAnnotationAPI.SaveGenomeResultV1
+SaveOneGenomeParamsV1 is a reference to a hash where the following keys are defined:
+	workspace has a value which is a string
+	name has a value which is a string
+	genomes has a value which is a reference to a list where each element is a GenomeAnnotationAPI.GenomeSaveDataV1
+GenomeSaveDataV1 is a reference to a hash where the following keys are defined:
+	data has a value which is a KBaseGenomes.Genome
+	hidden has a value which is a GenomeAnnotationAPI.boolean
+	provenance has a value which is a reference to a list where each element is a Workspace.ProvenanceAction
+Genome is a reference to a hash where the following keys are defined:
+	id has a value which is a KBaseGenomes.Genome_id
+	scientific_name has a value which is a string
+	domain has a value which is a string
+	genetic_code has a value which is an int
+	dna_size has a value which is an int
+	num_contigs has a value which is an int
+	contigs has a value which is a reference to a list where each element is a KBaseGenomes.Contig
+	contig_lengths has a value which is a reference to a list where each element is an int
+	contig_ids has a value which is a reference to a list where each element is a KBaseGenomes.Contig_id
+	source has a value which is a string
+	source_id has a value which is a KBaseGenomes.source_id
+	md5 has a value which is a string
+	taxonomy has a value which is a string
+	gc_content has a value which is a float
+	complete has a value which is an int
+	publications has a value which is a reference to a list where each element is a KBaseGenomes.publication
+	features has a value which is a reference to a list where each element is a KBaseGenomes.Feature
+	contigset_ref has a value which is a KBaseGenomes.ContigSet_ref
+	assembly_ref has a value which is a KBaseGenomes.Assembly_ref
+	quality has a value which is a KBaseGenomes.Genome_quality_measure
+	close_genomes has a value which is a reference to a list where each element is a KBaseGenomes.Close_genome
+	analysis_events has a value which is a reference to a list where each element is a KBaseGenomes.Analysis_event
+Genome_id is a string
+Contig is a reference to a hash where the following keys are defined:
+	id has a value which is a KBaseGenomes.Contig_id
+	length has a value which is an int
+	md5 has a value which is a string
+	sequence has a value which is a string
+	genetic_code has a value which is an int
+	cell_compartment has a value which is a string
+	replicon_type has a value which is a string
+	replicon_geometry has a value which is a string
+	name has a value which is a string
+	description has a value which is a string
+	complete has a value which is a KBaseGenomes.Bool
+Contig_id is a string
+Bool is an int
+source_id is a string
+publication is a reference to a list containing 7 items:
+	0: (id) an int
+	1: (source_db) a string
+	2: (article_title) a string
+	3: (link) a string
+	4: (pubdate) a string
+	5: (authors) a string
+	6: (journal_name) a string
+Feature is a reference to a hash where the following keys are defined:
+	id has a value which is a KBaseGenomes.Feature_id
+	location has a value which is a reference to a list where each element is a reference to a list containing 4 items:
+		0: a KBaseGenomes.Contig_id
+		1: an int
+		2: a string
+		3: an int
+
+	type has a value which is a string
+	function has a value which is a string
+	ontology_terms has a value which is a reference to a hash where the key is a string and the value is a reference to a hash where the key is a string and the value is a KBaseGenomes.OntologyData
+	md5 has a value which is a string
+	protein_translation has a value which is a string
+	dna_sequence has a value which is a string
+	protein_translation_length has a value which is an int
+	dna_sequence_length has a value which is an int
+	publications has a value which is a reference to a list where each element is a KBaseGenomes.publication
+	subsystems has a value which is a reference to a list where each element is a string
+	protein_families has a value which is a reference to a list where each element is a KBaseGenomes.ProteinFamily
+	aliases has a value which is a reference to a list where each element is a string
+	orthologs has a value which is a reference to a list where each element is a reference to a list containing 2 items:
+		0: a string
+		1: a float
+
+	annotations has a value which is a reference to a list where each element is a KBaseGenomes.annotation
+	subsystem_data has a value which is a reference to a list where each element is a KBaseGenomes.subsystem_data
+	regulon_data has a value which is a reference to a list where each element is a KBaseGenomes.regulon_data
+	atomic_regulons has a value which is a reference to a list where each element is a KBaseGenomes.atomic_regulon
+	coexpressed_fids has a value which is a reference to a list where each element is a KBaseGenomes.coexpressed_fid
+	co_occurring_fids has a value which is a reference to a list where each element is a KBaseGenomes.co_occurring_fid
+	quality has a value which is a KBaseGenomes.Feature_quality_measure
+	feature_creation_event has a value which is a KBaseGenomes.Analysis_event
+Feature_id is a string
+OntologyData is a reference to a hash where the following keys are defined:
+	id has a value which is a string
+	ontology_ref has a value which is a string
+	term_lineage has a value which is a reference to a list where each element is a string
+	term_name has a value which is a string
+	evidence has a value which is a reference to a list where each element is a KBaseGenomes.OntologyEvidence
+OntologyEvidence is a reference to a hash where the following keys are defined:
+	method has a value which is a string
+	method_version has a value which is a string
+	timestamp has a value which is a string
+	translation_provenance has a value which is a reference to a list containing 3 items:
+		0: (ontologytranslation_ref) a string
+		1: (namespace) a string
+		2: (source_term) a string
+
+	alignment_evidence has a value which is a reference to a list where each element is a reference to a list containing 4 items:
+		0: (start) an int
+		1: (stop) an int
+		2: (align_length) an int
+		3: (identify) a float
+
+ProteinFamily is a reference to a hash where the following keys are defined:
+	id has a value which is a string
+	subject_db has a value which is a string
+	release_version has a value which is a string
+	subject_description has a value which is a string
+	query_begin has a value which is an int
+	query_end has a value which is an int
+	subject_begin has a value which is an int
+	subject_end has a value which is an int
+	score has a value which is a float
+	evalue has a value which is a float
+annotation is a reference to a list containing 3 items:
+	0: (comment) a string
+	1: (annotator) a string
+	2: (annotation_time) a float
+subsystem_data is a reference to a list containing 3 items:
+	0: (subsystem) a string
+	1: (variant) a string
+	2: (role) a string
+regulon_data is a reference to a list containing 3 items:
+	0: (regulon_id) a string
+	1: (regulon_set) a reference to a list where each element is a KBaseGenomes.Feature_id
+	2: (tfs) a reference to a list where each element is a KBaseGenomes.Feature_id
+atomic_regulon is a reference to a list containing 2 items:
+	0: (atomic_regulon_id) a string
+	1: (atomic_regulon_size) an int
+coexpressed_fid is a reference to a list containing 2 items:
+	0: (scored_fid) a KBaseGenomes.Feature_id
+	1: (score) a float
+co_occurring_fid is a reference to a list containing 2 items:
+	0: (scored_fid) a KBaseGenomes.Feature_id
+	1: (score) a float
+Feature_quality_measure is a reference to a hash where the following keys are defined:
+	truncated_begin has a value which is a KBaseGenomes.Bool
+	truncated_end has a value which is a KBaseGenomes.Bool
+	existence_confidence has a value which is a float
+	frameshifted has a value which is a KBaseGenomes.Bool
+	selenoprotein has a value which is a KBaseGenomes.Bool
+	pyrrolysylprotein has a value which is a KBaseGenomes.Bool
+	overlap_rules has a value which is a reference to a list where each element is a string
+	existence_priority has a value which is a float
+	hit_count has a value which is a float
+	weighted_hit_count has a value which is a float
+Analysis_event is a reference to a hash where the following keys are defined:
+	id has a value which is a KBaseGenomes.Analysis_event_id
+	tool_name has a value which is a string
+	execution_time has a value which is a float
+	parameters has a value which is a reference to a list where each element is a string
+	hostname has a value which is a string
+Analysis_event_id is a string
+ContigSet_ref is a string
+Assembly_ref is a string
+Genome_quality_measure is a reference to a hash where the following keys are defined:
+	frameshift_error_rate has a value which is a float
+	sequence_error_rate has a value which is a float
+Close_genome is a reference to a hash where the following keys are defined:
+	genome has a value which is a KBaseGenomes.Genome_id
+	closeness_measure has a value which is a float
+boolean is an int
+ProvenanceAction is a reference to a hash where the following keys are defined:
+	time has a value which is a Workspace.timestamp
+	epoch has a value which is a Workspace.epoch
+	caller has a value which is a string
+	service has a value which is a string
+	service_ver has a value which is a string
+	method has a value which is a string
+	method_params has a value which is a reference to a list where each element is an UnspecifiedObject, which can hold any non-null object
+	script has a value which is a string
+	script_ver has a value which is a string
+	script_command_line has a value which is a string
+	input_ws_objects has a value which is a reference to a list where each element is a Workspace.obj_ref
+	resolved_ws_objects has a value which is a reference to a list where each element is a Workspace.obj_ref
+	intermediate_incoming has a value which is a reference to a list where each element is a string
+	intermediate_outgoing has a value which is a reference to a list where each element is a string
+	external_data has a value which is a reference to a list where each element is a Workspace.ExternalDataUnit
+	subactions has a value which is a reference to a list where each element is a Workspace.SubAction
+	custom has a value which is a reference to a hash where the key is a string and the value is a string
+	description has a value which is a string
+timestamp is a string
+epoch is an int
+obj_ref is a string
+ExternalDataUnit is a reference to a hash where the following keys are defined:
+	resource_name has a value which is a string
+	resource_url has a value which is a string
+	resource_version has a value which is a string
+	resource_release_date has a value which is a Workspace.timestamp
+	resource_release_epoch has a value which is a Workspace.epoch
+	data_url has a value which is a string
+	data_id has a value which is a string
+	description has a value which is a string
+SubAction is a reference to a hash where the following keys are defined:
+	name has a value which is a string
+	ver has a value which is a string
+	code_url has a value which is a string
+	commit has a value which is a string
+	endpoint_url has a value which is a string
+SaveGenomeResultV1 is a reference to a hash where the following keys are defined:
+	info has a value which is a reference to a list where each element is a Workspace.object_info
+object_info is a reference to a list containing 11 items:
+	0: (objid) a Workspace.obj_id
+	1: (name) a Workspace.obj_name
+	2: (type) a Workspace.type_string
+	3: (save_date) a Workspace.timestamp
+	4: (version) an int
+	5: (saved_by) a Workspace.username
+	6: (wsid) a Workspace.ws_id
+	7: (workspace) a Workspace.ws_name
+	8: (chsum) a string
+	9: (size) an int
+	10: (meta) a Workspace.usermeta
+obj_id is an int
+obj_name is a string
+type_string is a string
+username is a string
+ws_id is an int
+ws_name is a string
+usermeta is a reference to a hash where the key is a string and the value is a string
+
+
+=end text
+
+=item Description
+
+
+
+=back
+
+=cut
+
+ sub save_one_genome_v1
+{
+    my($self, @args) = @_;
+
+# Authentication: optional
+
+    if ((my $n = @args) != 1)
+    {
+	Bio::KBase::Exceptions::ArgumentValidationError->throw(error =>
+							       "Invalid argument count for function save_one_genome_v1 (received $n, expecting 1)");
+    }
+    {
+	my($params) = @args;
+
+	my @_bad_arguments;
+        (ref($params) eq 'HASH') or push(@_bad_arguments, "Invalid type for argument 1 \"params\" (value was \"$params\")");
+        if (@_bad_arguments) {
+	    my $msg = "Invalid arguments passed to save_one_genome_v1:\n" . join("", map { "\t$_\n" } @_bad_arguments);
+	    Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
+								   method_name => 'save_one_genome_v1');
+	}
+    }
+
+    my $url = $self->{url};
+    my $result = $self->{client}->call($url, $self->{headers}, {
+	    method => "GenomeAnnotationAPI.save_one_genome_v1",
+	    params => \@args,
+    });
+    if ($result) {
+	if ($result->is_error) {
+	    Bio::KBase::Exceptions::JSONRPC->throw(error => $result->error_message,
+					       code => $result->content->{error}->{code},
+					       method_name => 'save_one_genome_v1',
+					       data => $result->content->{error}->{error} # JSON::RPC::ReturnObject only supports JSONRPC 1.1 or 1.O
+					      );
+	} else {
+	    return wantarray ? @{$result->result} : $result->result->[0];
+	}
+    } else {
+        Bio::KBase::Exceptions::HTTP->throw(error => "Error invoking method save_one_genome_v1",
+					    status_line => $self->{client}->status_line,
+					    method_name => 'save_one_genome_v1',
+				       );
+    }
+}
+ 
   
 sub status
 {
@@ -2797,16 +3896,16 @@ sub version {
             Bio::KBase::Exceptions::JSONRPC->throw(
                 error => $result->error_message,
                 code => $result->content->{code},
-                method_name => 'get_combined_data',
+                method_name => 'save_one_genome_v1',
             );
         } else {
             return wantarray ? @{$result->result} : $result->result->[0];
         }
     } else {
         Bio::KBase::Exceptions::HTTP->throw(
-            error => "Error invoking method get_combined_data",
+            error => "Error invoking method save_one_genome_v1",
             status_line => $self->{client}->status_line,
-            method_name => 'get_combined_data',
+            method_name => 'save_one_genome_v1',
         );
     }
 }
@@ -4265,6 +5364,262 @@ include_cds_id_by_mrna_id has a value which is a GenomeAnnotationAPI.boolean
 include_exons_by_mrna_id has a value which is a GenomeAnnotationAPI.boolean
 include_utr_by_utr_type_by_mrna_id has a value which is a GenomeAnnotationAPI.boolean
 exclude_summary has a value which is a GenomeAnnotationAPI.boolean
+
+
+=end text
+
+=back
+
+
+
+=head2 GenomeSelectorV1
+
+=over 4
+
+
+
+=item Definition
+
+=begin html
+
+<pre>
+a reference to a hash where the following keys are defined:
+ref has a value which is a string
+included_feature_position_index has a value which is a reference to a list where each element is an int
+ref_path_to_genome has a value which is a reference to a list where each element is a string
+
+</pre>
+
+=end html
+
+=begin text
+
+a reference to a hash where the following keys are defined:
+ref has a value which is a string
+included_feature_position_index has a value which is a reference to a list where each element is an int
+ref_path_to_genome has a value which is a reference to a list where each element is a string
+
+
+=end text
+
+=back
+
+
+
+=head2 GetGenomeParamsV1
+
+=over 4
+
+
+
+=item Definition
+
+=begin html
+
+<pre>
+a reference to a hash where the following keys are defined:
+genomes has a value which is a reference to a list where each element is a GenomeAnnotationAPI.GenomeSelectorV1
+included_fields has a value which is a reference to a list where each element is a string
+included_feature_fields has a value which is a reference to a list where each element is a string
+ignore_errors has a value which is a GenomeAnnotationAPI.boolean
+no_data has a value which is a GenomeAnnotationAPI.boolean
+no_metadata has a value which is a GenomeAnnotationAPI.boolean
+
+</pre>
+
+=end html
+
+=begin text
+
+a reference to a hash where the following keys are defined:
+genomes has a value which is a reference to a list where each element is a GenomeAnnotationAPI.GenomeSelectorV1
+included_fields has a value which is a reference to a list where each element is a string
+included_feature_fields has a value which is a reference to a list where each element is a string
+ignore_errors has a value which is a GenomeAnnotationAPI.boolean
+no_data has a value which is a GenomeAnnotationAPI.boolean
+no_metadata has a value which is a GenomeAnnotationAPI.boolean
+
+
+=end text
+
+=back
+
+
+
+=head2 GenomeDataV1
+
+=over 4
+
+
+
+=item Definition
+
+=begin html
+
+<pre>
+a reference to a hash where the following keys are defined:
+data has a value which is a KBaseGenomes.Genome
+info has a value which is a Workspace.object_info
+provenance has a value which is a reference to a list where each element is a Workspace.ProvenanceAction
+creator has a value which is a string
+orig_wsid has a value which is a string
+copied has a value which is a string
+copy_source_inaccessible has a value which is a GenomeAnnotationAPI.boolean
+created has a value which is a Workspace.timestamp
+epoch has a value which is a Workspace.epoch
+refs has a value which is a reference to a list where each element is a string
+extracted_ids has a value which is a reference to a hash where the key is a Workspace.id_type and the value is a reference to a list where each element is a Workspace.extracted_id
+handle_error has a value which is a string
+handle_stacktrace has a value which is a string
+
+</pre>
+
+=end html
+
+=begin text
+
+a reference to a hash where the following keys are defined:
+data has a value which is a KBaseGenomes.Genome
+info has a value which is a Workspace.object_info
+provenance has a value which is a reference to a list where each element is a Workspace.ProvenanceAction
+creator has a value which is a string
+orig_wsid has a value which is a string
+copied has a value which is a string
+copy_source_inaccessible has a value which is a GenomeAnnotationAPI.boolean
+created has a value which is a Workspace.timestamp
+epoch has a value which is a Workspace.epoch
+refs has a value which is a reference to a list where each element is a string
+extracted_ids has a value which is a reference to a hash where the key is a Workspace.id_type and the value is a reference to a list where each element is a Workspace.extracted_id
+handle_error has a value which is a string
+handle_stacktrace has a value which is a string
+
+
+=end text
+
+=back
+
+
+
+=head2 GenomeDataSetV1
+
+=over 4
+
+
+
+=item Definition
+
+=begin html
+
+<pre>
+a reference to a hash where the following keys are defined:
+genomes has a value which is a reference to a list where each element is a GenomeAnnotationAPI.GenomeDataV1
+
+</pre>
+
+=end html
+
+=begin text
+
+a reference to a hash where the following keys are defined:
+genomes has a value which is a reference to a list where each element is a GenomeAnnotationAPI.GenomeDataV1
+
+
+=end text
+
+=back
+
+
+
+=head2 GenomeSaveDataV1
+
+=over 4
+
+
+
+=item Definition
+
+=begin html
+
+<pre>
+a reference to a hash where the following keys are defined:
+data has a value which is a KBaseGenomes.Genome
+hidden has a value which is a GenomeAnnotationAPI.boolean
+provenance has a value which is a reference to a list where each element is a Workspace.ProvenanceAction
+
+</pre>
+
+=end html
+
+=begin text
+
+a reference to a hash where the following keys are defined:
+data has a value which is a KBaseGenomes.Genome
+hidden has a value which is a GenomeAnnotationAPI.boolean
+provenance has a value which is a reference to a list where each element is a Workspace.ProvenanceAction
+
+
+=end text
+
+=back
+
+
+
+=head2 SaveOneGenomeParamsV1
+
+=over 4
+
+
+
+=item Definition
+
+=begin html
+
+<pre>
+a reference to a hash where the following keys are defined:
+workspace has a value which is a string
+name has a value which is a string
+genomes has a value which is a reference to a list where each element is a GenomeAnnotationAPI.GenomeSaveDataV1
+
+</pre>
+
+=end html
+
+=begin text
+
+a reference to a hash where the following keys are defined:
+workspace has a value which is a string
+name has a value which is a string
+genomes has a value which is a reference to a list where each element is a GenomeAnnotationAPI.GenomeSaveDataV1
+
+
+=end text
+
+=back
+
+
+
+=head2 SaveGenomeResultV1
+
+=over 4
+
+
+
+=item Definition
+
+=begin html
+
+<pre>
+a reference to a hash where the following keys are defined:
+info has a value which is a reference to a list where each element is a Workspace.object_info
+
+</pre>
+
+=end html
+
+=begin text
+
+a reference to a hash where the following keys are defined:
+info has a value which is a reference to a list where each element is a Workspace.object_info
 
 
 =end text

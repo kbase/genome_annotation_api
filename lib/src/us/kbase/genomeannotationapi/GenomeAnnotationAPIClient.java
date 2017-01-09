@@ -17,7 +17,6 @@ import us.kbase.common.service.UnauthorizedException;
 /**
  * <p>Original spec-file module name: GenomeAnnotationAPI</p>
  * <pre>
- * A KBase module: GenomeAnnotationAPI
  * </pre>
  */
 public class GenomeAnnotationAPIClient {
@@ -593,6 +592,42 @@ public class GenomeAnnotationAPIClient {
         args.add(params);
         TypeReference<List<GenomeAnnotationData>> retType = new TypeReference<List<GenomeAnnotationData>>() {};
         List<GenomeAnnotationData> res = caller.jsonrpcCall("GenomeAnnotationAPI.get_combined_data", args, retType, true, true, jsonRpcContext, this.serviceVersion);
+        return res.get(0);
+    }
+
+    /**
+     * <p>Original spec-file function name: get_genome_v1</p>
+     * <pre>
+     * A reasonably simple wrapper on get_objects2, but with Genome specific
+     * filters instead of arbitrary get subdata included paths.
+     * </pre>
+     * @param   params   instance of type {@link us.kbase.genomeannotationapi.GetGenomeParamsV1 GetGenomeParamsV1}
+     * @return   parameter "data" of type {@link us.kbase.genomeannotationapi.GenomeDataSetV1 GenomeDataSetV1}
+     * @throws IOException if an IO exception occurs
+     * @throws JsonClientException if a JSON RPC exception occurs
+     */
+    public GenomeDataSetV1 getGenomeV1(GetGenomeParamsV1 params, RpcContext... jsonRpcContext) throws IOException, JsonClientException {
+        List<Object> args = new ArrayList<Object>();
+        args.add(params);
+        TypeReference<List<GenomeDataSetV1>> retType = new TypeReference<List<GenomeDataSetV1>>() {};
+        List<GenomeDataSetV1> res = caller.jsonrpcCall("GenomeAnnotationAPI.get_genome_v1", args, retType, true, false, jsonRpcContext, this.serviceVersion);
+        return res.get(0);
+    }
+
+    /**
+     * <p>Original spec-file function name: save_one_genome_v1</p>
+     * <pre>
+     * </pre>
+     * @param   params   instance of type {@link us.kbase.genomeannotationapi.SaveOneGenomeParamsV1 SaveOneGenomeParamsV1}
+     * @return   parameter "result" of type {@link us.kbase.genomeannotationapi.SaveGenomeResultV1 SaveGenomeResultV1}
+     * @throws IOException if an IO exception occurs
+     * @throws JsonClientException if a JSON RPC exception occurs
+     */
+    public SaveGenomeResultV1 saveOneGenomeV1(SaveOneGenomeParamsV1 params, RpcContext... jsonRpcContext) throws IOException, JsonClientException {
+        List<Object> args = new ArrayList<Object>();
+        args.add(params);
+        TypeReference<List<SaveGenomeResultV1>> retType = new TypeReference<List<SaveGenomeResultV1>>() {};
+        List<SaveGenomeResultV1> res = caller.jsonrpcCall("GenomeAnnotationAPI.save_one_genome_v1", args, retType, true, false, jsonRpcContext, this.serviceVersion);
         return res.get(0);
     }
 
