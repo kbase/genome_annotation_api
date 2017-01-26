@@ -688,18 +688,12 @@ module GenomeAnnotationAPI {
     funcdef get_genome_v1(GetGenomeParamsV1 params)
                 returns (GenomeDataSetV1 data) authentication optional;
 
-    /*
-        preserve_handles - flag asking to not delete handles from genome (there are
-            two handles: 'genbank_handle_ref' and 'gff_handle_ref'), by default
-            handles are deleted from genome.
-    */
     typedef structure {
         string workspace;
         string name;
         KBaseGenomes.Genome data;
         list<Workspace.ProvenanceAction> provenance;
         boolean hidden;
-        boolean preserve_handles;
     } SaveOneGenomeParamsV1;
 
     typedef structure {

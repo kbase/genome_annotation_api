@@ -314,7 +314,7 @@ class GenomeAnnotationAPITests(unittest.TestCase):
         genome = self.impl.get_genome_v1(self.ctx2, {'genomes': [{'ref': wsName + '/' + genome_name}
                                                                  ]})[0]['genomes'][0]['data']
         self.impl.save_one_genome_v1(self.ctx2, {'workspace': wsName, 'name': genome_name,
-                                                 'data': genome, 'preserve_handles': 1})[0]
+                                                 'data': genome})[0]
         genome = self.impl.get_genome_v1(self.ctx2, {'genomes': [{'ref': wsName + '/' + genome_name}
                                                                  ]})[0]['genomes'][0]['data']
         self.assertTrue('genbank_handle_ref' in genome)

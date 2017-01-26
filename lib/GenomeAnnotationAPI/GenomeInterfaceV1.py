@@ -193,21 +193,14 @@ class GenomeInterfaceV1:
             raise ValueError('name parameter (giving new genome object name) is required')
         if 'data' not in params:
             raise ValueError('data parameter (giving new genome object data) is required')
-        preserve_handles = params.get('preserve_handles', 0)
 
         workspace = params['workspace']
         name = params['name']
         data = params['data']
 
-        if preserve_handles == 1:
-            # Let's check that all handles point to shock nodes owned by calling user
-            self.own_handle(data, 'genbank_handle_ref', ctx)
-            self.own_handle(data, 'gff_handle_ref', ctx)
-        else:
-            if 'genbank_handle_ref' in data:
-                del data['genbank_handle_ref']
-            if 'gff_handle_ref' in data:
-                del data['gff_handle_ref']
+        # Let's check that all handles point to shock nodes owned by calling user
+        self.own_handle(data, 'genbank_handle_ref', ctx)
+        self.own_handle(data, 'gff_handle_ref', ctx)
 
         provenance = None
         if 'provenance' in params:
