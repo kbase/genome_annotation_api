@@ -688,7 +688,6 @@ module GenomeAnnotationAPI {
     funcdef get_genome_v1(GetGenomeParamsV1 params)
                 returns (GenomeDataSetV1 data) authentication optional;
 
-
     typedef structure {
         string workspace;
         string name;

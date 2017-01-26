@@ -1,15 +1,20 @@
-
+import requests
+import json
+from requests_toolbelt.multipart.encoder import MultipartEncoder
 
 from biokbase.workspace.client import Workspace
-
+from biokbase.AbstractHandle.Client import AbstractHandle as HandleService  # @UnresolvedImport @IgnorePep8
+from biokbase.AbstractHandle.Client import ServerError as HandleError  # @UnresolvedImport @IgnorePep8
 
 from pprint import pprint
 
 class GenomeInterfaceV1:
 
 
-    def __init__(self, workspace_client):
-        self.ws = workspace_client;
+    def __init__(self, workspace_client, services):
+        self.ws = workspace_client
+        self.handle_url = services['handle_service_url']
+        self.shock_url = services['shock_service_url']
 
 
     # Input params:
@@ -193,6 +198,10 @@ class GenomeInterfaceV1:
         name = params['name']
         data = params['data']
 
+        # Let's check that all handles point to shock nodes owned by calling user
+        self.own_handle(data, 'genbank_handle_ref', ctx)
+        self.own_handle(data, 'gff_handle_ref', ctx)
+
         provenance = None
         if 'provenance' in params:
             provenance = params['provenance']
@@ -232,8 +241,86 @@ class GenomeInterfaceV1:
         return { 'info':results[0] }
 
 
+    def own_handle(self, genome, handle_property, ctx):
+        if not handle_property in genome:
+            return
+        token = ctx['token']
+        handle_id = genome[handle_property]
+        hs = HandleService(self.handle_url, token=token)
+        handles = hs.hids_to_handles([handle_id])
+        shock_id = handles[0]['id']
+
+        ## Copy from DataFileUtil.own_shock_node implementation:
+        header = {'Authorization': 'Oauth {}'.format(token)}
+        res = requests.get(self.shock_url + '/node/' + shock_id +
+                           '/acl/?verbosity=full',
+                           headers=header, allow_redirects=True)
+        self.check_shock_response(
+            res, 'Error getting ACLs for Shock node {}: '.format(shock_id))
+        owner = res.json()['data']['owner']['username']
+        if owner != ctx['user_id']:
+            shock_id = self.copy_shock_node(ctx, shock_id)
+            r = requests.get(self.shock_url + '/node/' + shock_id,
+                             headers=header, allow_redirects=True)
+            errtxt = ('Error downloading attributes from shock ' +
+                      'node {}: ').format(shock_id)
+            self.check_shock_response(r, errtxt)
+            shock_data = r.json()['data']
+            handle = {'id': shock_data['id'],
+                      'type': 'shock',
+                      'url': self.shock_url,
+                      'file_name': shock_data['file']['name'],
+                      'remote_md5': shock_data['file']['checksum']['md5']
+                      }
+            handle_id = hs.persist_handle(handle)
+            genome[handle_property] = handle_id
 
 
+    def copy_shock_node(self, ctx, shock_id):
+        token = ctx['token']
+        if token is None:
+            raise ValueError('Authentication token required!')
+        header = {'Authorization': 'Oauth {}'.format(token)}
+        source_id = shock_id
+        if not source_id:
+            raise ValueError('Must provide shock ID')
+        mpdata = MultipartEncoder(fields={'copy_data': source_id})
+        header['Content-Type'] = mpdata.content_type
+        response = requests.post(
+            # copy_attributes only works in 0.9.13+
+            self.shock_url + '/node?copy_indexes=1',
+            headers=header, data=mpdata, allow_redirects=True)
+        self.check_shock_response(
+            response, ('Error copying Shock node {}: '
+                       ).format(source_id))
+        shock_data = response.json()['data']
+        shock_id = shock_data['id']
+        del header['Content-Type']
+        r = requests.get(self.shock_url + '/node/' + source_id,
+                         headers=header, allow_redirects=True)
+        errtxt = ('Error downloading attributes from shock ' +
+                  'node {}: ').format(shock_id)
+        self.check_shock_response(r, errtxt)
+        attribs = r.json()['data']['attributes']
+        if attribs:
+            files = {'attributes': ('attributes',
+                                    json.dumps(attribs).encode('UTF-8'))}
+            response = requests.put(
+                self.shock_url + '/node/' + shock_id, headers=header,
+                files=files, allow_redirects=True)
+            self.check_shock_response(
+                response, ('Error setting attributes on Shock node {}: '
+                           ).format(shock_id))
+        return shock_id
 
 
-
+    def check_shock_response(self, response, errtxt):
+        if not response.ok:
+            try:
+                err = json.loads(response.content)['error'][0]
+            except:
+                # this means shock is down or not responding.
+                self.log("Couldn't parse response error content from Shock: " +
+                         response.content)
+                response.raise_for_status()
+            raise ValueError(errtxt + str(err))

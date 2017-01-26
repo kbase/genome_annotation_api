@@ -9,12 +9,16 @@ import unittest
 
 import json
 
+import requests
+import StringIO
+
 from pprint import pprint
 
 # local imports
 from biokbase.workspace.client import Workspace
 from GenomeAnnotationAPI.GenomeAnnotationAPIImpl import GenomeAnnotationAPI
 from GenomeAnnotationAPI.GenomeAnnotationAPIServer import MethodContext
+from DataFileUtil.DataFileUtilClient import DataFileUtil
 
 unittest.installHandler()
 
@@ -69,6 +73,32 @@ class GenomeAnnotationAPITests(unittest.TestCase):
         cls.ws = Workspace(cls.cfg['workspace-url'], token=token)
         cls.impl = GenomeAnnotationAPI(cls.cfg)
 
+        # Second user
+        test_cfg_file = '/kb/module/work/test.cfg'
+        test_cfg_text = "[test]\n"
+        with open(test_cfg_file, "r") as f:
+            test_cfg_text += f.read()
+        config = ConfigParser.ConfigParser()
+        config.readfp(StringIO.StringIO(test_cfg_text))
+        test_cfg_dict = dict(config.items("test"))
+        if ('test_user2' not in test_cfg_dict) or ('test_password2' not in test_cfg_dict):
+            raise ValueError("Configuration in <module>/test_local/test.cfg file should " +
+                             "include second user credentials ('test_user2', 'test_password2')")
+        user2 = test_cfg_dict['test_user2']
+        pwd2 = test_cfg_dict['test_password2']
+        token2 = requests.post(
+            'https://kbase.us/services/authorization/Sessions/Login',
+            data='user_id={}&password={}&fields=token'.format(user2, pwd2)).json()['token']
+        cls.ctx2 = MethodContext(None)
+        cls.ctx2.update({'token': token2,
+                         'user_id': user2,
+                         'provenance': [
+                            {'service': 'NarrativeService',
+                             'method': 'please_never_use_it_in_production',
+                             'method_params': []
+                             }],
+                         'authenticated': 1})
+        
         # create one WS for all tests
         suffix = int(time.time() * 1000)
         wsName = "test_GenomeAnnotationAPI_" + str(suffix)
@@ -79,6 +109,8 @@ class GenomeAnnotationAPITests(unittest.TestCase):
         with open ('data/rhodobacter.json', 'r') as file:
             data_str=file.read()
         data = json.loads(data_str)
+        data['cdss'] = []  # Support for new Genome type structure
+        data['mrnas'] = [] # Support for new Genome type structure
         # save to ws
         result = cls.ws.save_objects({
                 'workspace':wsName,
@@ -119,6 +151,8 @@ class GenomeAnnotationAPITests(unittest.TestCase):
         with open ('data/rhodobacter.json', 'r') as file:
             data_str=file.read()
         data = json.loads(data_str)
+        data['cdss'] = []  # Support for new Genome type structure
+        data['mrnas'] = [] # Support for new Genome type structure
         # save to ws
         result = self.ws.save_objects({
                 'workspace':wsName,
@@ -150,6 +184,9 @@ class GenomeAnnotationAPITests(unittest.TestCase):
         data = ret['genomes']
         self.assertEqual(len(data),1)
         self.assertEqual(data[0]['data']['scientific_name'],'Rhodobacter CACIA 14H1')
+        self.assertTrue('features' in data[0]['data'])
+        self.assertTrue('cdss' in data[0]['data'])
+        self.assertTrue('mrnas' in data[0]['data'])
 
     @log
     def test_get_feature_id_subdata(self):
@@ -168,7 +205,7 @@ class GenomeAnnotationAPITests(unittest.TestCase):
 
 
     @log
-    def test_get_feature_id_subdata(self):
+    def test_get_feature_id_subdata2(self):
         ret = self.impl.get_genome_v1(self.ctx, 
             {
                 'genomes': [ {
@@ -254,5 +291,32 @@ class GenomeAnnotationAPITests(unittest.TestCase):
         self.assertEqual(ret['info'][1], obj_name)
 
 
-
-    
+    @log
+    def test_handles(self):
+        wsName = self.generatePesudoRandomWorkspaceName()
+        self.ws.set_permissions({'workspace': wsName, 'new_permission': 'w',
+                                 'users': [self.ctx2['user_id']]})
+        temp_shock_file = "/kb/module/work/tmp/shock1.txt"
+        with open(temp_shock_file, "w") as f1:
+            f1.write("Test Shock Handle")
+        token1 = self.ctx['token']
+        dfu = DataFileUtil(os.environ['SDK_CALLBACK_URL'], token=token1)
+        handle1 = dfu.file_to_shock({'file_path': temp_shock_file, 'make_handle': 1})['handle']
+        hid1 = handle1['hid']
+        genome_name = "Genome.1"
+        ws2 = Workspace(self.cfg['workspace-url'], token=token1)
+        ws2.save_objects({'workspace': wsName,
+                          'objects': [{'name': genome_name, 'type': 'KBaseGenomes.Genome',
+                                       'data': {'id': "qwerty", 'scientific_name': "Qwerty", 
+                                                'domain': "Bacteria", 'genetic_code': 11,
+                                                'genbank_handle_ref': hid1}
+                                       }]})
+        genome = self.impl.get_genome_v1(self.ctx2, {'genomes': [{'ref': wsName + '/' + genome_name}
+                                                                 ]})[0]['genomes'][0]['data']
+        self.impl.save_one_genome_v1(self.ctx2, {'workspace': wsName, 'name': genome_name,
+                                                 'data': genome})[0]
+        genome = self.impl.get_genome_v1(self.ctx2, {'genomes': [{'ref': wsName + '/' + genome_name}
+                                                                 ]})[0]['genomes'][0]['data']
+        self.assertTrue('genbank_handle_ref' in genome)
+        hid2 = genome['genbank_handle_ref']
+        self.assertNotEqual(hid1, hid2)
