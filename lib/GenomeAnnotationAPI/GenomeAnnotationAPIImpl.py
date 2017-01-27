@@ -49,7 +49,8 @@ class GenomeAnnotationAPI:
         self.services = {
             "workspace_service_url": config['workspace-url'],
             "shock_service_url": config['shock-url'],
-            "handle_service_url": config['handle-service-url']
+            "handle_service_url": config['handle-service-url'],
+            "service_wizard_url": config['service-wizard-url']
         }
 
         try:
