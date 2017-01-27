@@ -277,19 +277,39 @@ class GenomeAnnotationAPITests(unittest.TestCase):
     @log
     def test_save_genome(self):
         wsName = self.generatePesudoRandomWorkspaceName()
-        # read in the test Rhodobacter genome
-        with open ('data/rhodobacter.json', 'r') as file:
-            data_str=file.read()
+        with open ('data/rhodobacter_contigs.json', 'r') as f1:
+            data_str=f1.read()
         data = json.loads(data_str)
+        # save to ws
+        self.ws.save_objects({
+                'workspace':wsName,
+                'objects': [{
+                    'type':'KBaseGenomes.ContigSet',
+                    'data':data,
+                    'name':'rhodobacter_contigs.1'
+                }]
+            })
+        # read in the test Rhodobacter genome
+        with open ('data/rhodobacter.json', 'r') as f2:
+            data_str=f2.read()
+        data = json.loads(data_str)
+        data['contigset_ref'] = wsName + '/rhodobacter_contigs.1'
         obj_name = 'test_save_new_genome'
         ret = self.impl.save_one_genome_v1(self.ctx, 
             {
                 'workspace':wsName,
-                'name':'test_save_new_genome',
+                'name':obj_name,
                 'data':data,
             })[0]
         self.assertEqual(ret['info'][1], obj_name)
-
+        ret = self.impl.get_genome_v1(self.ctx, {'genomes': [{'ref' : wsName + '/' + obj_name}]})[0]
+        data = ret['genomes'][0]['data']
+        feature_dna_sum = 0
+        for feature in data['features']:
+            if 'dna_sequence' in feature:
+                feature_dna_sum += len(feature['dna_sequence'])
+        print("feature_dna_sum=" + str(feature_dna_sum))
+        self.assertTrue(feature_dna_sum > 3000000)
 
     @log
     def test_handles(self):

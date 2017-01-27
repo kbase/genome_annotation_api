@@ -5,6 +5,7 @@ from requests_toolbelt.multipart.encoder import MultipartEncoder
 from biokbase.workspace.client import Workspace
 from biokbase.AbstractHandle.Client import AbstractHandle as HandleService  # @UnresolvedImport @IgnorePep8
 from biokbase.AbstractHandle.Client import ServerError as HandleError  # @UnresolvedImport @IgnorePep8
+from AssemblySequenceAPI.AssemblySequenceAPIServiceClient import AssemblySequenceAPI
 
 from pprint import pprint
 
@@ -15,6 +16,7 @@ class GenomeInterfaceV1:
         self.ws = workspace_client
         self.handle_url = services['handle_service_url']
         self.shock_url = services['shock_service_url']
+        self.sw_url = services['service_wizard_url']
 
 
     # Input params:
@@ -202,6 +204,8 @@ class GenomeInterfaceV1:
         self.own_handle(data, 'genbank_handle_ref', ctx)
         self.own_handle(data, 'gff_handle_ref', ctx)
 
+        self.check_dna_sequence_in_features(data, ctx)
+
         provenance = None
         if 'provenance' in params:
             provenance = params['provenance']
@@ -239,6 +243,30 @@ class GenomeInterfaceV1:
             raise ValueError('Error saving data.  Workspace did not return proper object info list')
 
         return { 'info':results[0] }
+
+
+    def check_dna_sequence_in_features(self, genome, ctx):
+        if not 'features' in genome:
+            return
+        features_to_work = {}
+        for feature in genome['features']:
+            if not 'dna_sequence' in feature:
+                features_to_work[feature['id']] = feature['location']
+        if len(features_to_work) > 0:
+            aseq = AssemblySequenceAPI(self.sw_url, token=ctx['token'])
+            get_dna_params = {'requested_features': features_to_work}
+            if 'assembly_ref' in genome:
+                get_dna_params['assembly_ref'] = genome['assembly_ref']
+            elif 'contigset_ref' in genome:
+                get_dna_params['contigset_ref'] = genome['contigset_ref']
+            else:
+                ## Nothing to do (it may be test genome without contigs)...
+                return
+            dna_sequences = aseq.get_dna_sequences(get_dna_params)['dna_sequences']
+            for feature in genome['features']:
+                if feature['id'] in dna_sequences:
+                    feature['dna_sequence'] = dna_sequences[feature['id']]
+                    feature['dna_sequence_length'] = len(feature['dna_sequence'])
 
 
     def own_handle(self, genome, handle_property, ctx):
