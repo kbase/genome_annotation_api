@@ -113,8 +113,15 @@ class GenomeAnnotationAPI:
         # ctx is the context object
         # return variables are: returnVal
         #BEGIN get_assembly
-        ga = GenomeAnnotationAPI_local(self.services, ctx['token'], inputs_get_assembly['ref'])
-        returnVal = ga.get_assembly(ref_only=True)
+        ws = Workspace(self.services['workspace_service_url'], token=ctx['token'])
+        objreq = {'objects': [{'ref': inputs_get_assembly['ref'], 
+                               'included': ['assembly_ref', 'contigset_ref']}]}
+        ref = ws.get_objects2(objreq)['data'][0]['data']
+        returnVal = None
+        if 'assembly_ref' in ref:
+            returnVal = ref['assembly_ref']
+        if 'contigset_ref' in ref:
+            returnVal = ref['contigset_ref']
         #END get_assembly
 
         # At some point might do deeper type checking...
