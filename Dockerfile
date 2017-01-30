@@ -2,7 +2,7 @@ FROM kbase/kbase:sdkbase.latest
 MAINTAINER KBase Developer
 # -----------------------------------------
 
-RUN pip install --upgrade ndg-httpsclient
+RUN pip install --upgrade ndg-httpsclient==0.4.2
 
 # update installed WS client (will now include get_objects2)
 RUN mkdir -p /kb/module && \
