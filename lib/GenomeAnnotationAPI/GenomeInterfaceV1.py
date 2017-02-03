@@ -211,6 +211,19 @@ class GenomeInterfaceV1:
             provenance = params['provenance']
         elif 'provenance' in ctx:
             provenance = ctx['provenance']
+            for prov_item in provenance:
+                if ('service' not in prov_item) or (prov_item['service'] != 'GenomeAnnotationAPI'):
+                    continue
+                if ('method' not in prov_item) or (prov_item['method'] != 'save_one_genome_v1'):
+                    continue
+                if 'method_params' not in prov_item:
+                    continue
+                input_array = prov_item['method_params']
+                if len(input_array) != 1:
+                    continue
+                input_obj = input_array[0]  # SaveOneGenomeParamsV1 type
+                if 'data' in input_obj:
+                    input_obj['data'] = "<large-data-excluded>"
 
         hidden = 0
         if 'hidden' in params:
