@@ -627,7 +627,7 @@ public class GenomeAnnotationAPIClient {
         List<Object> args = new ArrayList<Object>();
         args.add(params);
         TypeReference<List<SaveGenomeResultV1>> retType = new TypeReference<List<SaveGenomeResultV1>>() {};
-        List<SaveGenomeResultV1> res = caller.jsonrpcCall("GenomeAnnotationAPI.save_one_genome_v1", args, retType, true, false, jsonRpcContext, this.serviceVersion);
+        List<SaveGenomeResultV1> res = caller.jsonrpcCall("GenomeAnnotationAPI.save_one_genome_v1", args, retType, true, true, jsonRpcContext, this.serviceVersion);
         return res.get(0);
     }
 

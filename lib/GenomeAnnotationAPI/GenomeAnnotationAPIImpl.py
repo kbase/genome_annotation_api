@@ -19,16 +19,16 @@ class GenomeAnnotationAPI:
     
     '''
 
-    ######## WARNING FOR GEVENT USERS #######
+    ######## WARNING FOR GEVENT USERS ####### noqa
     # Since asynchronous IO can lead to methods - even the same method -
     # interrupting each other, you must be *very* careful when using global
     # state. A method could easily clobber the state set by another while
     # the latter method is running.
-    #########################################
-    VERSION = "0.1.1"
-    GIT_URL = "git@github.com:kbase/genome_annotation_api"
-    GIT_COMMIT_HASH = "ce65b4d242d5b1b342f9b9ca09bde1492d3605e4"
-    
+    ######################################### noqa
+    VERSION = "0.1.5"
+    GIT_URL = "https://github.com/rsutormin/genome_annotation_api"
+    GIT_COMMIT_HASH = "ad3b1d8fad4afb85ce6280482e89faaedb3f1347"
+
     #BEGIN_CLASS_HEADER
     def _migrate_property_internal(self, from_dict, to_dict, prop_name, to_prop_name = None):
         if not to_prop_name:
@@ -78,7 +78,7 @@ class GenomeAnnotationAPI:
 
         #END_CONSTRUCTOR
         pass
-    
+
 
     def get_taxon(self, ctx, inputs_get_taxon):
         """
@@ -1418,21 +1418,20 @@ class GenomeAnnotationAPI:
         """
         :param params: instance of type "SaveOneGenomeParamsV1" -> structure:
            parameter "workspace" of String, parameter "name" of String,
-           parameter "genomes" of list of type "GenomeSaveDataV1" ->
-           structure: parameter "data" of type "Genome" (Genome object holds
-           much of the data relevant for a genome in KBase Genome
-           publications should be papers about the genome, not papers about
-           certain features of the genome (which go into the Feature object)
-           Should the Genome object have a list of feature ids? (in addition
-           to having a list of feature_refs) Should the Genome object contain
-           a list of contig_ids too? @optional assembly_ref quality
-           close_genomes analysis_events features source_id source contigs
-           contig_ids publications md5 taxonomy gc_content complete dna_size
-           num_contigs contig_lengths contigset_ref @metadata ws gc_content
-           as GC content @metadata ws taxonomy as Taxonomy @metadata ws md5
-           as MD5 @metadata ws dna_size as Size @metadata ws genetic_code as
-           Genetic code @metadata ws domain as Domain @metadata ws source_id
-           as Source ID @metadata ws source as Source @metadata ws
+           parameter "data" of type "Genome" (Genome object holds much of the
+           data relevant for a genome in KBase Genome publications should be
+           papers about the genome, not papers about certain features of the
+           genome (which go into the Feature object) Should the Genome object
+           have a list of feature ids? (in addition to having a list of
+           feature_refs) Should the Genome object contain a list of
+           contig_ids too? @optional assembly_ref quality close_genomes
+           analysis_events features source_id source contigs contig_ids
+           publications md5 taxonomy gc_content complete dna_size num_contigs
+           contig_lengths contigset_ref @metadata ws gc_content as GC content
+           @metadata ws taxonomy as Taxonomy @metadata ws md5 as MD5
+           @metadata ws dna_size as Size @metadata ws genetic_code as Genetic
+           code @metadata ws domain as Domain @metadata ws source_id as
+           Source ID @metadata ws source as Source @metadata ws
            scientific_name as Name @metadata ws length(close_genomes) as
            Close genomes @metadata ws length(features) as Number features
            @metadata ws num_contigs as Number contigs) -> structure:
@@ -1571,50 +1570,48 @@ class GenomeAnnotationAPI:
            parameter "id" of type "Analysis_event_id", parameter "tool_name"
            of String, parameter "execution_time" of Double, parameter
            "parameters" of list of String, parameter "hostname" of String,
-           parameter "hidden" of type "boolean" (A boolean - 0 for false, 1
-           for true. @range (0, 1)), parameter "provenance" of list of type
-           "ProvenanceAction" (A provenance action. A provenance action (PA)
-           is an action taken while transforming one data object to another.
-           There may be several PAs taken in series. A PA is typically
-           running a script, running an api command, etc. All of the
-           following fields are optional, but more information provided
-           equates to better data provenance. resolved_ws_objects should
-           never be set by the user; it is set by the workspace service when
-           returning data. On input, only one of the time or epoch may be
-           supplied. Both are supplied on output. The maximum size of the
-           entire provenance object, including all actions, is 1MB. timestamp
-           time - the time the action was started epoch epoch - the time the
-           action was started. string caller - the name or id of the invoker
-           of this provenance action. In most cases, this will be the same
-           for all PAs. string service - the name of the service that
-           performed this action. string service_ver - the version of the
-           service that performed this action. string method - the method of
-           the service that performed this action. list<UnspecifiedObject>
-           method_params - the parameters of the method that performed this
-           action. If an object in the parameters is a workspace object, also
-           put the object reference in the input_ws_object list. string
-           script - the name of the script that performed this action. string
-           script_ver - the version of the script that performed this action.
-           string script_command_line - the command line provided to the
-           script that performed this action. If workspace objects were
-           provided in the command line, also put the object reference in the
-           input_ws_object list. list<obj_ref> input_ws_objects - the
-           workspace objects that were used as input to this action;
-           typically these will also be present as parts of the method_params
-           or the script_command_line arguments. list<obj_ref>
-           resolved_ws_objects - the workspace objects ids from
-           input_ws_objects resolved to permanent workspace object references
-           by the workspace service. list<string> intermediate_incoming - if
-           the previous action produced output that 1) was not stored in a
-           referrable way, and 2) is used as input for this action, provide
-           it with an arbitrary and unique ID here, in the order of the input
-           arguments to this action. These IDs can be used in the
-           method_params argument. list<string> intermediate_outgoing - if
-           this action produced output that 1) was not stored in a referrable
-           way, and 2) is used as input for the next action, provide it with
-           an arbitrary and unique ID here, in the order of the output values
-           from this action. These IDs can be used in the
-           intermediate_incoming argument in the next action.
+           parameter "provenance" of list of type "ProvenanceAction" (A
+           provenance action. A provenance action (PA) is an action taken
+           while transforming one data object to another. There may be
+           several PAs taken in series. A PA is typically running a script,
+           running an api command, etc. All of the following fields are
+           optional, but more information provided equates to better data
+           provenance. resolved_ws_objects should never be set by the user;
+           it is set by the workspace service when returning data. On input,
+           only one of the time or epoch may be supplied. Both are supplied
+           on output. The maximum size of the entire provenance object,
+           including all actions, is 1MB. timestamp time - the time the
+           action was started epoch epoch - the time the action was started.
+           string caller - the name or id of the invoker of this provenance
+           action. In most cases, this will be the same for all PAs. string
+           service - the name of the service that performed this action.
+           string service_ver - the version of the service that performed
+           this action. string method - the method of the service that
+           performed this action. list<UnspecifiedObject> method_params - the
+           parameters of the method that performed this action. If an object
+           in the parameters is a workspace object, also put the object
+           reference in the input_ws_object list. string script - the name of
+           the script that performed this action. string script_ver - the
+           version of the script that performed this action. string
+           script_command_line - the command line provided to the script that
+           performed this action. If workspace objects were provided in the
+           command line, also put the object reference in the input_ws_object
+           list. list<obj_ref> input_ws_objects - the workspace objects that
+           were used as input to this action; typically these will also be
+           present as parts of the method_params or the script_command_line
+           arguments. list<obj_ref> resolved_ws_objects - the workspace
+           objects ids from input_ws_objects resolved to permanent workspace
+           object references by the workspace service. list<string>
+           intermediate_incoming - if the previous action produced output
+           that 1) was not stored in a referrable way, and 2) is used as
+           input for this action, provide it with an arbitrary and unique ID
+           here, in the order of the input arguments to this action. These
+           IDs can be used in the method_params argument. list<string>
+           intermediate_outgoing - if this action produced output that 1) was
+           not stored in a referrable way, and 2) is used as input for the
+           next action, provide it with an arbitrary and unique ID here, in
+           the order of the output values from this action. These IDs can be
+           used in the intermediate_incoming argument in the next action.
            list<ExternalDataUnit> external_data - data external to the
            workspace that was either imported to the workspace or used to
            create a workspace object. list<SubAction> subactions - the
@@ -1706,10 +1703,11 @@ class GenomeAnnotationAPI:
            of String, parameter "ver" of String, parameter "code_url" of
            String, parameter "commit" of String, parameter "endpoint_url" of
            String, parameter "custom" of mapping from String to String,
-           parameter "description" of String
+           parameter "description" of String, parameter "hidden" of type
+           "boolean" (A boolean - 0 for false, 1 for true. @range (0, 1))
         :returns: instance of type "SaveGenomeResultV1" -> structure:
-           parameter "info" of list of type "object_info" (Information about
-           an object, including user provided metadata. obj_id objid - the
+           parameter "info" of type "object_info" (Information about an
+           object, including user provided metadata. obj_id objid - the
            numerical id of the object. obj_name name - the name of the
            object. type_string type - the type of the object. timestamp
            save_date - the save date of the object. obj_ver ver - the version
@@ -1767,7 +1765,6 @@ class GenomeAnnotationAPI:
                              'result is not type dict as required.')
         # return the results
         return [result]
-
     def status(self, ctx):
         #BEGIN_STATUS
         returnVal = {'state': "OK", 'message': "", 'version': self.VERSION,

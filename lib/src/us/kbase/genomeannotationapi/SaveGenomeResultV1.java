@@ -2,7 +2,6 @@
 package us.kbase.genomeannotationapi;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import javax.annotation.Generated;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
@@ -26,20 +25,20 @@ import us.kbase.common.service.Tuple11;
 public class SaveGenomeResultV1 {
 
     @JsonProperty("info")
-    private List<Tuple11 <Long, String, String, String, Long, String, Long, String, String, Long, Map<String, String>>> info;
+    private Tuple11 <Long, String, String, String, Long, String, Long, String, String, Long, Map<String, String>> info;
     private Map<java.lang.String, Object> additionalProperties = new HashMap<java.lang.String, Object>();
 
     @JsonProperty("info")
-    public List<Tuple11 <Long, String, String, String, Long, String, Long, String, String, Long, Map<String, String>>> getInfo() {
+    public Tuple11 <Long, String, String, String, Long, String, Long, String, String, Long, Map<String, String>> getInfo() {
         return info;
     }
 
     @JsonProperty("info")
-    public void setInfo(List<Tuple11 <Long, String, String, String, Long, String, Long, String, String, Long, Map<String, String>>> info) {
+    public void setInfo(Tuple11 <Long, String, String, String, Long, String, Long, String, String, Long, Map<String, String>> info) {
         this.info = info;
     }
 
-    public SaveGenomeResultV1 withInfo(List<Tuple11 <Long, String, String, String, Long, String, Long, String, String, Long, Map<String, String>>> info) {
+    public SaveGenomeResultV1 withInfo(Tuple11 <Long, String, String, String, Long, String, Long, String, String, Long, Map<String, String>> info) {
         this.info = info;
         return this;
     }
