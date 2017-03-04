@@ -3337,11 +3337,9 @@ $result is a GenomeAnnotationAPI.SaveGenomeResultV1
 SaveOneGenomeParamsV1 is a reference to a hash where the following keys are defined:
 	workspace has a value which is a string
 	name has a value which is a string
-	genomes has a value which is a reference to a list where each element is a GenomeAnnotationAPI.GenomeSaveDataV1
-GenomeSaveDataV1 is a reference to a hash where the following keys are defined:
 	data has a value which is a KBaseGenomes.Genome
-	hidden has a value which is a GenomeAnnotationAPI.boolean
 	provenance has a value which is a reference to a list where each element is a Workspace.ProvenanceAction
+	hidden has a value which is a GenomeAnnotationAPI.boolean
 Genome is a reference to a hash where the following keys are defined:
 	id has a value which is a KBaseGenomes.Genome_id
 	scientific_name has a value which is a string
@@ -3501,7 +3499,6 @@ Genome_quality_measure is a reference to a hash where the following keys are def
 Close_genome is a reference to a hash where the following keys are defined:
 	genome has a value which is a KBaseGenomes.Genome_id
 	closeness_measure has a value which is a float
-boolean is an int
 ProvenanceAction is a reference to a hash where the following keys are defined:
 	time has a value which is a Workspace.timestamp
 	epoch has a value which is a Workspace.epoch
@@ -3539,8 +3536,9 @@ SubAction is a reference to a hash where the following keys are defined:
 	code_url has a value which is a string
 	commit has a value which is a string
 	endpoint_url has a value which is a string
+boolean is an int
 SaveGenomeResultV1 is a reference to a hash where the following keys are defined:
-	info has a value which is a reference to a list where each element is a Workspace.object_info
+	info has a value which is a Workspace.object_info
 object_info is a reference to a list containing 11 items:
 	0: (objid) a Workspace.obj_id
 	1: (name) a Workspace.obj_name
@@ -3572,11 +3570,9 @@ $result is a GenomeAnnotationAPI.SaveGenomeResultV1
 SaveOneGenomeParamsV1 is a reference to a hash where the following keys are defined:
 	workspace has a value which is a string
 	name has a value which is a string
-	genomes has a value which is a reference to a list where each element is a GenomeAnnotationAPI.GenomeSaveDataV1
-GenomeSaveDataV1 is a reference to a hash where the following keys are defined:
 	data has a value which is a KBaseGenomes.Genome
-	hidden has a value which is a GenomeAnnotationAPI.boolean
 	provenance has a value which is a reference to a list where each element is a Workspace.ProvenanceAction
+	hidden has a value which is a GenomeAnnotationAPI.boolean
 Genome is a reference to a hash where the following keys are defined:
 	id has a value which is a KBaseGenomes.Genome_id
 	scientific_name has a value which is a string
@@ -3736,7 +3732,6 @@ Genome_quality_measure is a reference to a hash where the following keys are def
 Close_genome is a reference to a hash where the following keys are defined:
 	genome has a value which is a KBaseGenomes.Genome_id
 	closeness_measure has a value which is a float
-boolean is an int
 ProvenanceAction is a reference to a hash where the following keys are defined:
 	time has a value which is a Workspace.timestamp
 	epoch has a value which is a Workspace.epoch
@@ -3774,8 +3769,9 @@ SubAction is a reference to a hash where the following keys are defined:
 	code_url has a value which is a string
 	commit has a value which is a string
 	endpoint_url has a value which is a string
+boolean is an int
 SaveGenomeResultV1 is a reference to a hash where the following keys are defined:
-	info has a value which is a reference to a list where each element is a Workspace.object_info
+	info has a value which is a Workspace.object_info
 object_info is a reference to a list containing 11 items:
 	0: (objid) a Workspace.obj_id
 	1: (name) a Workspace.obj_name
@@ -3811,7 +3807,7 @@ usermeta is a reference to a hash where the key is a string and the value is a s
 {
     my($self, @args) = @_;
 
-# Authentication: optional
+# Authentication: required
 
     if ((my $n = @args) != 1)
     {
@@ -5530,40 +5526,6 @@ genomes has a value which is a reference to a list where each element is a Genom
 
 
 
-=head2 GenomeSaveDataV1
-
-=over 4
-
-
-
-=item Definition
-
-=begin html
-
-<pre>
-a reference to a hash where the following keys are defined:
-data has a value which is a KBaseGenomes.Genome
-hidden has a value which is a GenomeAnnotationAPI.boolean
-provenance has a value which is a reference to a list where each element is a Workspace.ProvenanceAction
-
-</pre>
-
-=end html
-
-=begin text
-
-a reference to a hash where the following keys are defined:
-data has a value which is a KBaseGenomes.Genome
-hidden has a value which is a GenomeAnnotationAPI.boolean
-provenance has a value which is a reference to a list where each element is a Workspace.ProvenanceAction
-
-
-=end text
-
-=back
-
-
-
 =head2 SaveOneGenomeParamsV1
 
 =over 4
@@ -5578,7 +5540,9 @@ provenance has a value which is a reference to a list where each element is a Wo
 a reference to a hash where the following keys are defined:
 workspace has a value which is a string
 name has a value which is a string
-genomes has a value which is a reference to a list where each element is a GenomeAnnotationAPI.GenomeSaveDataV1
+data has a value which is a KBaseGenomes.Genome
+provenance has a value which is a reference to a list where each element is a Workspace.ProvenanceAction
+hidden has a value which is a GenomeAnnotationAPI.boolean
 
 </pre>
 
@@ -5589,7 +5553,9 @@ genomes has a value which is a reference to a list where each element is a Genom
 a reference to a hash where the following keys are defined:
 workspace has a value which is a string
 name has a value which is a string
-genomes has a value which is a reference to a list where each element is a GenomeAnnotationAPI.GenomeSaveDataV1
+data has a value which is a KBaseGenomes.Genome
+provenance has a value which is a reference to a list where each element is a Workspace.ProvenanceAction
+hidden has a value which is a GenomeAnnotationAPI.boolean
 
 
 =end text
@@ -5610,7 +5576,7 @@ genomes has a value which is a reference to a list where each element is a Genom
 
 <pre>
 a reference to a hash where the following keys are defined:
-info has a value which is a reference to a list where each element is a Workspace.object_info
+info has a value which is a Workspace.object_info
 
 </pre>
 
@@ -5619,7 +5585,7 @@ info has a value which is a reference to a list where each element is a Workspac
 =begin text
 
 a reference to a hash where the following keys are defined:
-info has a value which is a reference to a list where each element is a Workspace.object_info
+info has a value which is a Workspace.object_info
 
 
 =end text

@@ -13,6 +13,7 @@ from biokbase.workspace.client import Workspace
 from GenomeAnnotationAPI.GenomeAnnotationAPIImpl import GenomeAnnotationAPI
 from GenomeAnnotationAPI.GenomeAnnotationAPIServer import MethodContext
 from GenomeFileUtil.GenomeFileUtilClient import GenomeFileUtil
+from GenomeAnnotationAPI.authclient import KBaseAuth as _KBaseAuth
 
 unittest.installHandler()
 
@@ -46,10 +47,19 @@ class GenomeAnnotationAPITests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         token = os.environ.get('KB_AUTH_TOKEN', None)
+        config_file = os.environ.get('KB_DEPLOYMENT_CONFIG', None)
+        config = ConfigParser.ConfigParser()
+        config.read(config_file)
+        cls.cfg = {n[0]: n[1] for n in config.items('GenomeAnnotationAPI')}
+        authServiceUrl = cls.cfg.get('auth-service-url',
+                "https://kbase.us/services/authorization/Sessions/Login")
+        auth_client = _KBaseAuth(authServiceUrl)
+        user_id = auth_client.get_user(token)
         # WARNING: don't call any logging methods on the context object,
         # it'll result in a NoneType error
         cls.ctx = MethodContext(None)
         cls.ctx.update({'token': token,
+                        'user_id': user_id,
                         'provenance': [
                             {'service': 'GenomeAnnotationAPI',
                              'method': 'please_never_use_it_in_production',
@@ -57,10 +67,6 @@ class GenomeAnnotationAPITests(unittest.TestCase):
                              }],
                         'authenticated': 1})
 
-        config_file = os.environ.get('KB_DEPLOYMENT_CONFIG', None)
-        config = ConfigParser.ConfigParser()
-        config.read(config_file)
-        cls.cfg = {n[0]: n[1] for n in config.items('GenomeAnnotationAPI')}
         cls.ws = Workspace(cls.cfg['workspace-url'], token=token)
         cls.impl = GenomeAnnotationAPI(cls.cfg)
         test_gbk_file = "/kb/module/test/data/kb_g.399.c.1.gbk"

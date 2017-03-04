@@ -19,6 +19,7 @@ from biokbase.workspace.client import Workspace
 from GenomeAnnotationAPI.GenomeAnnotationAPIImpl import GenomeAnnotationAPI
 from GenomeAnnotationAPI.GenomeAnnotationAPIServer import MethodContext
 from DataFileUtil.DataFileUtilClient import DataFileUtil
+from GenomeAnnotationAPI.authclient import KBaseAuth as _KBaseAuth
 
 unittest.installHandler()
 
@@ -55,10 +56,19 @@ class GenomeAnnotationAPITests(unittest.TestCase):
     def setUpClass(cls):
         print('Setting up class')
         token = os.environ.get('KB_AUTH_TOKEN', None)
+        config_file = os.environ.get('KB_DEPLOYMENT_CONFIG', None)
+        config = ConfigParser.ConfigParser()
+        config.read(config_file)
+        cls.cfg = {n[0]: n[1] for n in config.items('GenomeAnnotationAPI')}
+        authServiceUrl = cls.cfg.get('auth-service-url',
+                "https://kbase.us/services/authorization/Sessions/Login")
+        auth_client = _KBaseAuth(authServiceUrl)
+        user_id = auth_client.get_user(token)
         # WARNING: don't call any logging methods on the context object,
         # it'll result in a NoneType error
         cls.ctx = MethodContext(None)
         cls.ctx.update({'token': token,
+                        'user_id': user_id,
                         'provenance': [
                             {'service': 'GenomeAnnotationAPI',
                              'method': 'please_never_use_it_in_production',
@@ -66,10 +76,6 @@ class GenomeAnnotationAPITests(unittest.TestCase):
                              }],
                         'authenticated': 1})
 
-        config_file = os.environ.get('KB_DEPLOYMENT_CONFIG', None)
-        config = ConfigParser.ConfigParser()
-        config.read(config_file)
-        cls.cfg = {n[0]: n[1] for n in config.items('GenomeAnnotationAPI')}
         cls.ws = Workspace(cls.cfg['workspace-url'], token=token)
         cls.impl = GenomeAnnotationAPI(cls.cfg)
 
@@ -81,14 +87,11 @@ class GenomeAnnotationAPITests(unittest.TestCase):
         config = ConfigParser.ConfigParser()
         config.readfp(StringIO.StringIO(test_cfg_text))
         test_cfg_dict = dict(config.items("test"))
-        if ('test_user2' not in test_cfg_dict) or ('test_password2' not in test_cfg_dict):
+        if ('test_token2' not in test_cfg_dict):
             raise ValueError("Configuration in <module>/test_local/test.cfg file should " +
-                             "include second user credentials ('test_user2', 'test_password2')")
-        user2 = test_cfg_dict['test_user2']
-        pwd2 = test_cfg_dict['test_password2']
-        token2 = requests.post(
-            'https://kbase.us/services/authorization/Sessions/Login',
-            data='user_id={}&password={}&fields=token'.format(user2, pwd2)).json()['token']
+                             "include second user credentials ('test_token2')")
+        token2 = test_cfg_dict['test_token2']
+        user2 = auth_client.get_user(token2)
         cls.ctx2 = MethodContext(None)
         cls.ctx2.update({'token': token2,
                          'user_id': user2,
