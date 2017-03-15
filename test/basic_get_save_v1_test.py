@@ -297,6 +297,10 @@ class GenomeAnnotationAPITests(unittest.TestCase):
             data_str=f2.read()
         data = json.loads(data_str)
         data['contigset_ref'] = wsName + '/rhodobacter_contigs.1'
+        # Let's test dna sequence repare with help of AssemblySequenceAPI service
+        for feat in data['features']:
+            if 'dna_sequence' in feat:
+                del feat['dna_sequence']
         obj_name = 'test_save_new_genome'
         ret = self.impl.save_one_genome_v1(self.ctx, 
             {

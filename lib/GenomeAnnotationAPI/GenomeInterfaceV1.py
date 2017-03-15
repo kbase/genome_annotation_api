@@ -263,7 +263,7 @@ class GenomeInterfaceV1:
             return
         features_to_work = {}
         for feature in genome['features']:
-            if not 'dna_sequence' in feature:
+            if not ('dna_sequence' in feature and feature['dna_sequence']):
                 features_to_work[feature['id']] = feature['location']
         if len(features_to_work) > 0:
             aseq = AssemblySequenceAPI(self.sw_url, token=ctx['token'])
