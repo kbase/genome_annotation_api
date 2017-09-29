@@ -47,9 +47,6 @@ def log(func):
 
     return wrapper
 
-
-
-
 class GenomeAnnotationAPITests(unittest.TestCase):
 
     @classmethod
@@ -127,8 +124,6 @@ class GenomeAnnotationAPITests(unittest.TestCase):
         cls.rhodobacter_ref = str(info[6]) +'/' + str(info[0]) + '/' + str(info[4])
         print('created rhodobacter test genome: ' + cls.rhodobacter_ref)
 
-
-
     @classmethod
     def tearDownClass(cls):
         if hasattr(cls, 'wsName'):
@@ -170,8 +165,6 @@ class GenomeAnnotationAPITests(unittest.TestCase):
         print('created rhodobacter test genome: ' + self.rhodobacter_ref)
         return self.rhodobacter_ref
 
-
-
     def getType(self, ref=None):
         return self.ws.get_object_info_new({"objects": [{"ref": ref}]})[0][2]
 
@@ -205,7 +198,6 @@ class GenomeAnnotationAPITests(unittest.TestCase):
         self.assertEqual(data[0]['data']['features'][0]['id'],'kb|g.220339.CDS.1')
         self.assertEqual(len(data[0]['data']['features']),4158)
         self.assertTrue('scientific_name' not in data[0]['data'])
-
 
     @log
     def test_get_feature_id_subdata2(self):
@@ -347,3 +339,45 @@ class GenomeAnnotationAPITests(unittest.TestCase):
         self.assertTrue('genbank_handle_ref' in genome)
         hid2 = genome['genbank_handle_ref']
         self.assertNotEqual(hid1, hid2)
+
+    @log
+    def test_save_genome_with_close_genome(self):
+        wsName = self.generatePesudoRandomWorkspaceName()
+        with open('data/rhodobacter_contigs.json', 'r') as f1:
+            data_str = f1.read()
+        data = json.loads(data_str)
+        # save to ws
+        self.ws.save_objects({
+            'workspace': wsName,
+            'objects': [{
+                'type': 'KBaseGenomes.ContigSet',
+                'data': data,
+                'name': 'rhodobacter_contigs.1'
+            }]
+        })
+        # read in the test Rhodobacter genome
+        with open('data/rhodobacter_close.json', 'r') as f2:
+            data_str = f2.read()
+        data = json.loads(data_str)
+        data['contigset_ref'] = wsName + '/rhodobacter_contigs.1'
+        # Let's test dna sequence repare with help of AssemblySequenceAPI service
+        for feat in data['features']:
+            if 'dna_sequence' in feat:
+                del feat['dna_sequence']
+        obj_name = 'test_save_new_rhodo_close'
+        ret = self.impl.save_one_genome_v1(self.ctx,
+                                           {
+                                               'workspace': wsName,
+                                               'name': obj_name,
+                                               'data': data,
+                                           })[0]
+        self.assertEqual(ret['info'][1], obj_name)
+        ret = self.impl.get_genome_v1(self.ctx, {'genomes': [{'ref': wsName + '/' + obj_name}]})[0]
+        data = ret['genomes'][0]['data']
+        feature_dna_sum = 0
+        for feature in data['features']:
+            if 'dna_sequence' in feature:
+                feature_dna_sum += len(feature['dna_sequence'])
+        print("feature_dna_sum=" + str(feature_dna_sum))
+        self.assertTrue(feature_dna_sum > 3000000)
+

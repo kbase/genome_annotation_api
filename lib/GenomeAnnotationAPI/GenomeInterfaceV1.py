@@ -234,6 +234,19 @@ class GenomeInterfaceV1:
             else:
                 raise ValueError('hidden parameter must be set to 0 or 1; it was: '+str(hidden))
 
+        """
+        If the closeness_measure values are of type string convert to float before saving
+        """
+        close_genomes = data.get('close_genomes')
+        if close_genomes:
+            for close_genome in close_genomes:
+                closeness_measure = close_genome.get('closeness_measure')
+                if isinstance(closeness_measure, basestring):
+                    try:
+                        close_genome['closeness_measure'] = float(closeness_measure)
+                    except:
+                        raise TypeError('Invalid closeness_measure value "{}": float expected'.format(closeness_measure))
+
         save_params = {
             'objects': [{
                 'name': name,
