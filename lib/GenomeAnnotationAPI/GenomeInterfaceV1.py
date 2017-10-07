@@ -238,7 +238,7 @@ class GenomeInterfaceV1:
         If the closeness_measure values are of type string convert to float before saving
         """
         close_genomes = data.get('close_genomes')
-        if close_genomes:
+        if close_genomes and len(close_genomes) > 0:
             for close_genome in close_genomes:
                 closeness_measure = close_genome.get('closeness_measure')
                 if isinstance(closeness_measure, basestring):
