@@ -6,7 +6,7 @@ import os
 import sys
 import time
 import unittest
-
+import inspect
 import json
 
 import requests
@@ -380,4 +380,40 @@ class GenomeAnnotationAPITests(unittest.TestCase):
                 feature_dna_sum += len(feature['dna_sequence'])
         print("feature_dna_sum=" + str(feature_dna_sum))
         self.assertTrue(feature_dna_sum > 3000000)
+
+    @log
+    def test_save_genome_with_close_genome_error(self):
+        wsName = self.generatePesudoRandomWorkspaceName()
+        with open('data/rhodobacter_contigs.json', 'r') as f1:
+            data_str = f1.read()
+        data = json.loads(data_str)
+        # save to ws
+        self.ws.save_objects({
+            'workspace': wsName,
+            'objects': [{
+                'type': 'KBaseGenomes.ContigSet',
+                'data': data,
+                'name': 'rhodobacter_contigs.2'
+            }]
+        })
+        # read in the test Rhodobacter genome
+        with open('data/rhodobacter_close_nonfloat.json', 'r') as f2:
+            data_str = f2.read()
+        data = json.loads(data_str)
+        data['contigset_ref'] = wsName + '/rhodobacter_contigs.2'
+        # Let's test dna sequence repare with help of AssemblySequenceAPI service
+        for feat in data['features']:
+            if 'dna_sequence' in feat:
+                del feat['dna_sequence']
+        obj_name = 'test_save_new_rhodo_close_nonfloat'
+
+        error = 'Invalid closeness_measure value "fourHundredAndTwo": float expected'
+        with self.assertRaises(TypeError) as context:
+            ret = self.impl.save_one_genome_v1(self.ctx,
+                                           {
+                                               'workspace': wsName,
+                                               'name': obj_name,
+                                               'data': data,
+                                           })[0]
+        self.assertEqual(error, str(context.exception.message))
 

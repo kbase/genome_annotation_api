@@ -239,14 +239,15 @@ class GenomeInterfaceV1:
         """
         close_genomes = data.get('close_genomes')
         if close_genomes and len(close_genomes) > 0:
+
             for close_genome in close_genomes:
                 closeness_measure = close_genome.get('closeness_measure')
-                if isinstance(closeness_measure, basestring):
+                if not isinstance(closeness_measure, float):
                     try:
                         close_genome['closeness_measure'] = float(closeness_measure)
                     except:
-                        raise TypeError('Invalid closeness_measure value "{}": float expected'.format(closeness_measure))
-
+                        raise TypeError('Invalid closeness_measure value "{}": float expected'
+                                        .format(closeness_measure))
         save_params = {
             'objects': [{
                 'name': name,
