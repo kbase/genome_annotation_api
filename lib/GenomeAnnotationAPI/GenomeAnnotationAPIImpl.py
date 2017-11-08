@@ -3,7 +3,7 @@
 from doekbase.data_api.annotation.genome_annotation.api import GenomeAnnotationAPI as GenomeAnnotationAPI_local
 from doekbase.data_api import cache
 import logging
-from biokbase.workspace.client import Workspace
+from Workspace.WorkspaceClient import Workspace
 
 from GenomeAnnotationAPI.GenomeInterfaceV1 import GenomeInterfaceV1
 
@@ -72,7 +72,7 @@ class GenomeAnnotationAPI:
         elif cache_dir is not None:
             self.logger.info("Activating File")
             cache.ObjectCache.cache_class = cache.DBMCache
-            cache.ObjectCache.cache_params = {'path':cache_dir,'name':'data_api'}
+            cache.ObjectCache.cache_params = {'path':cache_dir, 'name': 'data_api'}
         else:
             self.logger.info("Not activating REDIS")
 
