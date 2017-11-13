@@ -11,7 +11,7 @@ module-version:
     0.2.0
 
 owners:
-    [scanon,mhenderson,msneddon,rsutormin,umaganapathyswork]
+    [scanon,umaganapathyswork,jjeffryes]
 
 service-config:
     dynamic-service: true
