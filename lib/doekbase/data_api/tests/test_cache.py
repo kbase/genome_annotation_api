@@ -50,8 +50,7 @@ class TestCache(unittest.TestCase):
             redis_region.get('foo')
             self.regions['Redis'] = redis_region
         except Exception as err:
-            _log.warn('Skipping Redis tests, simple get gave error: {'
-                      'e}'.format(e=err))
+            _log.warn('Skipping Redis tests, simple get gave error: {e}'.format(e=err))
         self._clear_keys = []
 
     def tearDown(self):
@@ -170,8 +169,8 @@ class TestCache(unittest.TestCase):
 
 class TestCachedObjectAPI(unittest.TestCase):
 
-    genome_new = "ReferenceGenomeAnnotations/kb|g.166819"
-    genome_old = "OriginalReferenceGenomes/kb|g.166819"
+    genome_new = "ReferenceGenomeAnnotations/kb|g.166819/1"
+    genome_old = "OriginalReferenceGenomes/kb|g.166819/1"
 
     def setUp(self):
         services = shared.get_services()
@@ -204,30 +203,42 @@ class TestCachedObjectAPI(unittest.TestCase):
     #                                                           p=paths[2])
 
     def test_get_new_data(self):
+        start = time.time()
         self.new_object.get_data()
-        event = self.new_object.cache_stats.get_last()
-        _log.info('Get new genome #1: {:.3f}'.format(event.duration))
+        end = time.time()
+        #event = self.new_object.cache_stats.get_last()
+        #_log.info('Get new genome #1: {:.3f}'.format(event.duration))
+        _log.info('Get new genome #1: {:.3f}'.format(end - start))
+        start = time.time()
         self.new_object.get_data()
-        event = self.new_object.cache_stats.get_last()
-        _log.info('Get new genome #2: {:.3f}'.format(event.duration))
+        end = time.time()
+        #event = self.new_object.cache_stats.get_last()
+        #_log.info('Get new genome #2: {:.3f}'.format(event.duration))
+        _log.info('Get new genome #2: {:.3f}'.format(end - start))
 
     def test_get_old_data(self):
+        start = time.time()
         self.old_object.get_data()
-        event = self.old_object.cache_stats.get_last()
-        _log.info('Get old genome #1: {:.3f}'.format(event.duration))
+        end = time.time()
+        #event = self.old_object.cache_stats.get_last()
+        #_log.info('Get old genome #1: {:.3f}'.format(event.duration))
+        _log.info('Get old genome #1: {:.3f}'.format(end - start))
+        start = time.time()
         self.old_object.get_data()
-        event = self.old_object.cache_stats.get_last()
-        _log.info('Get old genome #2: {:.3f}'.format(event.duration))
+        end = time.time()
+        #event = self.old_object.cache_stats.get_last()
+        #_log.info('Get old genome #2: {:.3f}'.format(event.duration))
+        _log.info('Get old genome #2: {:.3f}'.format(end - start))
 
-    def test_perf_stats(self):
-        g = ObjectAPI(services=shared.get_services(), ref=self.genome_old)
-        for method in ('get_schema', 'get_history', 'get_data', 'get_referrers',
-                       'copy', 'get_provenance'):
-            getattr(self.old_object, method)()
-            assert method in g.stats.get_last().event
-            _log.info('Old genome {:20s}  {:.3f} seconds'.format(
-                method, g.stats.get_last().duration))
-            getattr(self.new_object, method)()
-            assert method in g.stats.get_last().event
-            _log.info('New genome {:20s}  {:.3f} seconds'.format(
-                method, g.stats.get_last().duration))
+#    def test_perf_stats(self):
+#        g = ObjectAPI(services=shared.get_services(), ref=self.genome_old)
+#        for method in ('get_schema', 'get_history', 'get_data', 'get_referrers',
+#                       'copy', 'get_provenance'):
+#            getattr(self.old_object, method)()
+#            assert method in g.stats.get_last().event
+#            _log.info('Old genome {:20s}  {:.3f} seconds'.format(
+#                method, g.stats.get_last().duration))
+#            getattr(self.new_object, method)()
+#            assert method in g.stats.get_last().event
+#            _log.info('New genome {:20s}  {:.3f} seconds'.format(
+#                method, g.stats.get_last().duration))

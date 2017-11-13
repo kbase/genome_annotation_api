@@ -6,23 +6,21 @@ and the underlying contigs (GC content, length).
 
 # Stdlib
 import abc
-import itertools
+import sys
 import requests
-import re
-import collections
 import string
 import hashlib
 try:
     import cStringIO as StringIO
 except ImportError:
-    import StringIO as StringIO
+    import StringIO
 
 # Local
 from doekbase.data_api.core import ObjectAPI
-from doekbase.data_api.util import get_logger, logged, PerfCollector, collect_performance
+from doekbase.data_api.util import get_logger
 from doekbase.data_api import exceptions
-from doekbase.data_api.taxonomy.taxon.service import ttypes
 from doekbase.handle.Client import AbstractHandle as handleClient
+from doekbase.data_api.blob import blob
 
 _log = get_logger(__file__)
 
@@ -32,13 +30,18 @@ _CONTIGSET_TYPES = ['KBaseGenomes.ContigSet']
 _ASSEMBLY_TYPES = ['KBaseGenomeAnnotations.Assembly']
 TYPES = _CONTIGSET_TYPES + _ASSEMBLY_TYPES
 
-g_stats = PerfCollector('AssemblyAPI')
+#g_stats = PerfCollector('AssemblyAPI')
+
+# ============================================================================
 
 class AssemblyInterface(object):
     """API for a genome Assembly associated with a Genome Annotation.
     """
     
     __metaclass__ = abc.ABCMeta
+
+    #: Maximum length of lines of FASTA output
+    FASTA_LINE_LENGTH = 80
 
     @abc.abstractmethod    
     def get_assembly_id(self):
@@ -167,6 +170,17 @@ class AssemblyInterface(object):
         """
         pass
 
+    @abc.abstractmethod
+    def get_fasta(self):
+        """Create a FASTA representation of this assembly.
+
+        Returns:
+            (doekbase.data_api.blob.Blob) Temporary "blob" object
+        See Also:
+            :doc:`blob_api`
+        """
+        pass
+
 
 class AssemblyAPI(ObjectAPI, AssemblyInterface):
     def __init__(self, services, token, ref):
@@ -217,6 +231,11 @@ class AssemblyAPI(ObjectAPI, AssemblyInterface):
 
     def get_contigs(self, contig_id_list=None):
         return self.proxy.get_contigs(contig_id_list)
+
+    def get_fasta(self):
+        return self.proxy.get_fasta()
+
+# ============================================================================
 
 
 class _KBaseGenomes_ContigSet(ObjectAPI, AssemblyInterface):
@@ -342,7 +361,7 @@ class _KBaseGenomes_ContigSet(ObjectAPI, AssemblyInterface):
         contigs = self.get_data()["contigs"]
         return [c["id"] for c in contigs]
 
-    @collect_performance(g_stats, prefix='old.')
+#    @collect_performance(g_stats, prefix='old.')
     def get_contigs(self, contig_id_list=None):
         contigs = {}
 
@@ -384,6 +403,25 @@ class _KBaseGenomes_ContigSet(ObjectAPI, AssemblyInterface):
            sequence.
         """
         return sum(self._current_sequence.count(x) for x in ['g','G','c','C'])
+
+    def get_fasta(self):
+        temp_blob = blob.BlobBuffer() # XXX: change this to TemporaryBlobShockNode
+        self._create_fasta(temp_blob)
+        return temp_blob
+
+    def _create_fasta(self, stream):
+        raw_contigs = self.get_data()["contigs"]
+        num_bases = 0
+        # write out all contigs
+        i = 1
+        for c in raw_contigs:
+            desc = c.get('description', 'contig_{:d}'.format(i))
+            _create_fasta_contig_header(c['id'], desc, stream)
+            num_bases += _write_sequence_lines(c['sequence'], stream, self.FASTA_LINE_LENGTH)
+            i += 1
+        return num_bases
+
+# ============================================================================
 
 
 class _Assembly(ObjectAPI, AssemblyInterface):
@@ -452,7 +490,7 @@ class _Assembly(ObjectAPI, AssemblyInterface):
         contigs = self.get_data()["contigs"]
         return [contigs[c]["contig_id"] for c in contigs]
 
-    @collect_performance(g_stats, prefix='new.')
+#    @collect_performance(g_stats, prefix='new.')
     def get_contigs(self, contig_id_list=None):
         data = self.get_data()
 
@@ -469,10 +507,10 @@ class _Assembly(ObjectAPI, AssemblyInterface):
             hc = handleClient(url=self.services["handle_service_url"], token=self._token)
             handle = hc.hids_to_handles([fasta_ref])[0]
             shock_node_id = handle["id"]
-        except Exception, e:
+        except Exception as e:
             _log.debug("Failed to retrieve handle {} from {}".format(fasta_ref,
                                                                      self.services["handle_service_url"]))
-            _log.exception(e)
+            #_log.exception(e)
             shock_node_id = fasta_ref
 
         copy_keys = ["contig_id", "length", "gc_content", "md5", "name", "description", "is_complete", "is_circular"]
@@ -509,7 +547,7 @@ class _Assembly(ObjectAPI, AssemblyInterface):
         if num_contigs > total_contigs/3 or num_contigs == 0:
             try:
                 sequence_data = fetch_data(shock_node_id)
-            except Exception, e:
+            except Exception as e:
                 raise
 
             if num_contigs == 0:
@@ -546,120 +584,53 @@ class _Assembly(ObjectAPI, AssemblyInterface):
 
         return outContigs
 
+    def get_fasta(self):
+        b = blob.BlobShockNode(url=self._get_shock_url(),
+                               node_id=self._get_shock_node_id(),
+                               auth_token=self._get_shock_auth_token())
+        return b
 
-_as_log = get_logger('AssemblyClientAPI')
+    def _get_shock_url(self):
+        try:
+            shock_url = self.services['shock_service_url']
+        except KeyError:
+            raise exceptions.ServiceError('Cannot contact data service: "shock_service_url" not given')
+        return shock_url
 
-class AssemblyClientAPI(AssemblyInterface):
-    def client_method(func):
-        def wrapper(self, *args, **kwargs):
-            if not self.transport.isOpen():
-                self.transport.open()
+    def _get_shock_auth_token(self):
+        return 'Oauth {0}'.format(self._token)
 
-            try:
-                return func(self, *args, **kwargs)
-            except ttypes.AttributeException, e:
-                raise AttributeError(e.message)
-            except ttypes.AuthenticationException, e:
-                raise exceptions.AuthenticationError(e.message)
-            except ttypes.AuthorizationException, e:
-                raise exceptions.AuthorizationError(e.message)
-            except ttypes.TypeException, e:
-                raise exceptions.TypeError(e.message)
-            except ttypes.ServiceException, e:
-                raise exceptions.ServiceError(e.message)
-            except Exception, e:
-                raise
-            finally:
-                self.transport.close()
-        return wrapper
+    def _get_shock_node_id(self):
+        fasta_ref = self.get_data()['fasta_handle_ref']
+        shock_node_id = fasta_ref
+        try:
+            hc = handleClient(url=self.services['handle_service_url'], token=self._token)
+            handle = hc.hids_to_handles([fasta_ref])[0]
+            shock_node_id = handle['id']
+        except Exception as e:
+            _log.debug("Failed to retrieve handle {} from {}"
+                       .format(fasta_ref, self.services["handle_service_url"]))
+            _log.exception(e)
+        return shock_node_id
 
-    @logged(_as_log, log_name='init')
-    def __init__(self, url=None, token=None, ref=None):
-        from doekbase.data_api.sequence.assembly.service.interface import AssemblyClientConnection
 
-        # TODO add exception handling and better error messages here
-        self.url = url
-        self.transport, self.client = AssemblyClientConnection(url).get_client()
-        self.ref = ref
-        self._token = token
+# ------------------------------------------
+# FASTA helper functions
 
-    @logged(_as_log)
-    @client_method
-    def get_assembly_id(self):
-        return self.client.get_assembly_id(self._token, self.ref)
+def _create_fasta_contig_header(contig_id, description, stream):
+    stream.writeln('>{} {}'.format(contig_id, description))
 
-    @logged(_as_log)
-    @client_method
-    def get_genome_annotations(self, ref_only=True):
-        return self.client.get_genome_annotations(self._token, self.ref)
+def _write_sequence_lines(seq, stream, line_length):
+    """Write a sequence of bases as a number of lines
+    of length no more than `line_length`.
+    """
+    seq_len, offs = len(seq), 0
+    # write out `line_length` chars at a time
+    while offs < seq_len:
+        next_offs = offs + line_length
+        stream.writeln(seq[offs:next_offs])
+        offs = next_offs
+    return seq_len
 
-    @logged(_as_log)
-    @client_method
-    def get_external_source_info(self):
-        info = self.client.get_external_source_info(self._token, self.ref)
-        return {
-            "external_source": info.external_source,
-            "external_source_id": info.external_source_id,
-            "external_source_origination_date": info.external_source_origination_date
-        }
-
-    @logged(_as_log)
-    @client_method
-    def get_stats(self):
-        stats = self.client.get_stats(self._token, self.ref)
-        return {
-            "num_contigs": stats.num_contigs,
-            "dna_size": stats.dna_size,
-            "gc_content": stats.gc_content
-        }
-
-    @logged(_as_log)
-    @client_method
-    def get_number_contigs(self):
-        return self.client.get_number_contigs(self._token, self.ref)
-
-    @logged(_as_log)
-    @client_method
-    def get_gc_content(self):
-        return self.client.get_gc_content(self._token, self.ref)
-
-    @logged(_as_log)
-    @client_method
-    def get_dna_size(self):
-        return self.client.get_dna_size(self._token, self.ref)
-
-    @logged(_as_log)
-    @client_method
-    def get_contig_ids(self):
-        return self.client.get_contig_ids(self._token, self.ref)
-
-    @logged(_as_log)
-    @client_method
-    def get_contig_lengths(self, contig_id_list=None):
-        return self.client.get_contig_lengths(self._token, self.ref, contig_id_list)
-
-    @logged(_as_log)
-    @client_method
-    def get_contig_gc_content(self, contig_id_list=None):
-        return self.client.get_contig_gc_content(self._token, self.ref, contig_id_list)
-
-    @logged(_as_log)
-    @client_method
-    def get_contigs(self, contig_id_list=None):
-        contigs = self.client.get_contigs(self._token, self.ref, contig_id_list)
-
-        out_contigs = {}
-        for x in contigs:
-            out_contigs[x] = {
-                "contig_id": contigs[x].contig_id,
-                "sequence": contigs[x].sequence,
-                "length": contigs[x].length,
-                "gc_content": contigs[x].gc_content,
-                "md5": contigs[x].md5,
-                "name": contigs[x].name,
-                "description": contigs[x].description,
-                "is_complete": contigs[x].is_complete,
-                "is_circular": contigs[x].is_circular
-            }
-
-        return out_contigs
+# End: FASTA helper functions
+# --------------------------------------------

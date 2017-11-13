@@ -10,15 +10,16 @@ import time
 import unittest
 # Local
 from . import shared
-from doekbase.data_api import core, wsfile
+from doekbase.data_api import wsfile
 from doekbase.workspace import client as ws_client
+from doekbase.workspace.baseclient import ServerError
 
 _log = logging.getLogger('doekbase.tests.test_ws_client')
 
-genome_new = "ReferenceGenomeAnnotations/kb|g.166819"
-genome_old = "OriginalReferenceGenomes/kb|g.166819"
-taxon_new = "ReferenceTaxons/242159_taxon"
-taxon_old = "OriginalReferenceGenomes/kb|g.166819"
+genome_new = "8020/39/1"
+genome_old = "8020/41/1"
+taxon_new = "ReferenceTaxons/280699_taxon/1"
+taxon_old = "8020/41/1"
 
 def generic_object():
     """Get a generic object."""
@@ -27,12 +28,14 @@ def generic_object():
 
 NOT_SUPPORTED_MSG = 'Not supported by local Workspace implementation'
 
+shared.setup()
+
 class WorkspaceTests(unittest.TestCase):
     # maximum allowable version of workspace for this
     # test suite to be valid
     MAX_WS_VERSION = (0, 999, 999)
 
-    is_local = '://' not in core.g_ws_url
+    is_local = '://' not in shared.g_ws_url
 
     def setUp(self):
         if self.is_local:
@@ -62,14 +65,15 @@ class WorkspaceTests(unittest.TestCase):
             self._my_ws = ws_obj
         return name
 
-    def test_ver(self):
-        value = self.ws.ver()
-        p = value.split('.')
-        assert len(p) == 3, 'Bad version number: {}'.format(value)
-        for i in range(3):
-            assert int(p[i]) <= self.MAX_WS_VERSION[i], \
-                "Version mismatch: {ver} > {expected}".format(
-                    ver=value, expected='.'.join(map(str, self.MAX_WS_VERSION)))
+# latest workspace versions 0.5.0-dev, 0.5.0-dev2, etc invalidate this test
+#    def test_ver(self):
+#        value = self.ws.ver()
+#        p = value.split('.')
+#        assert len(p) == 3, 'Bad version number: {}'.format(value)
+#        for i in range(3):
+#            assert int(p[i]) <= self.MAX_WS_VERSION[i], \
+#                "Version mismatch: {ver} > {expected}".format(
+#                    ver=value, expected='.'.join(map(str, self.MAX_WS_VERSION)))
 
     @unittest.skipIf(is_local, NOT_SUPPORTED_MSG)
     def test_create_workspace(self):
@@ -148,7 +152,7 @@ class WorkspaceTests(unittest.TestCase):
     def test_administer(self):
         try:
             self.ws.administer({})
-        except ws_client.ServerError as err:
+        except ServerError as err:
             # fail if this is NOT the "normal" error
             # caused by lack of admin. permissions
             assert 'not an admin' in str(err)

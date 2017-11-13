@@ -14,12 +14,8 @@ RUN pip install setuptools --upgrade\
 
 # Install the data_api dependencies.  The code is directly copied into this repo
 # right now so we can make hotfixes
-RUN git clone https://github.com/kbase/data_api && \
-    cd data_api && \
-    git checkout 0.4.1-dev && \
-    pip install thrift && \
-    pip install -r requirements.txt && \
-    rm -rf /kb/module/data_api
+COPY ./lib/doekbase/requirements.txt /kb/module/requirements.txt
+RUN pip install -r /kb/module/requirements.txt
 
 COPY ./ /kb/module
 RUN mkdir -p /kb/module/work
