@@ -2,7 +2,7 @@ import requests
 import json
 from requests_toolbelt.multipart.encoder import MultipartEncoder
 
-from biokbase.workspace.client import Workspace
+from Workspace.WorkspaceClient import Workspace
 from biokbase.AbstractHandle.Client import AbstractHandle as HandleService  # @UnresolvedImport @IgnorePep8
 from biokbase.AbstractHandle.Client import ServerError as HandleError  # @UnresolvedImport @IgnorePep8
 from AssemblySequenceAPI.AssemblySequenceAPIServiceClient import AssemblySequenceAPI
