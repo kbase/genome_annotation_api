@@ -4,15 +4,16 @@ import functools
 import logging
 import os
 import sys
+import json
 import time
 import unittest
 import shutil
 
 # local imports
 from biokbase.workspace.client import Workspace
+from AssemblyUtil.AssemblyUtilClient import AssemblyUtil
 from GenomeAnnotationAPI.GenomeAnnotationAPIImpl import GenomeAnnotationAPI
 from GenomeAnnotationAPI.GenomeAnnotationAPIServer import MethodContext
-from GenomeFileUtil.GenomeFileUtilClient import GenomeFileUtil
 from GenomeAnnotationAPI.authclient import KBaseAuth as _KBaseAuth
 
 unittest.installHandler()
@@ -69,17 +70,35 @@ class GenomeAnnotationAPITests(unittest.TestCase):
 
         cls.ws = Workspace(cls.cfg['workspace-url'], token=token)
         cls.impl = GenomeAnnotationAPI(cls.cfg)
-        test_gbk_file = "/kb/module/test/data/kb_g.399.c.1.gbk"
-        temp_gbk_file = "/kb/module/work/tmp/kb_g.399.c.1.gbk"
-        shutil.copy(test_gbk_file, temp_gbk_file)
+        #cls.genome_ref = '6867/8/1'
         suffix = int(time.time() * 1000)
         wsName = "test_GenomeAnnotationAPI_" + str(suffix)
         cls.ws.create_workspace({'workspace': wsName})
         cls.wsName = wsName
-        gfu = GenomeFileUtil(os.environ['SDK_CALLBACK_URL'], token=token)
-        cls.genome_ref = gfu.genbank_to_genome({'file': {'path': temp_gbk_file},
-                                            'genome_name':'testGenome',
-                                            'workspace_name': cls.wsName})['genome_ref']
+        assembly_file_path = os.path.join(cls.cfg['scratch'],
+                                          'e_coli_assembly.fasta')
+        shutil.copy('data/e_coli_assembly.fasta', assembly_file_path)
+        au = AssemblyUtil(os.environ['SDK_CALLBACK_URL'])
+        assembly_ref = au.save_assembly_from_fasta({
+            'workspace_name': cls.wsName,
+            'assembly_name': 'ecoli.assembly',
+            'file': {'path': assembly_file_path}
+        })
+        data = json.load(open('data/new_ecoli_genome.json'))
+        data['assembly_ref'] = assembly_ref
+        # save to ws
+        save_info = {
+            'workspace': wsName,
+            'objects': [{
+                'type': 'NewTempGenomes.Genome',
+                'data': data,
+                'name': 'new_ecoli'
+            }]
+        }
+        result = cls.ws.save_objects(save_info)
+        info = result[0]
+        cls.genome_ref = str(info[6]) + '/' + str(info[0]) + '/' + str(info[4])
+        print('created test genome')
 
     @classmethod
     def tearDownClass(cls):
@@ -94,7 +113,7 @@ class GenomeAnnotationAPITests(unittest.TestCase):
     def test_get_taxon(self):
         inputs = {'ref': self.genome_ref}
         ret = self.impl.get_taxon(self.ctx, inputs)
-        self.assertTrue(self.getType(ret[0]).startswith("KBaseGenomes.Genome"),
+        self.assertTrue(self.getType(ret[0]).startswith("KBaseGenomeAnnotations.Taxon"),
                         "ERROR: Invalid Genome reference {} from {}".format(ret[0], self.genome_ref))
 
     @log
