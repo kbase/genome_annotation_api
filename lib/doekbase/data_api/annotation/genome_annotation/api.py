@@ -21,7 +21,7 @@ from doekbase.data_api.util import get_logger
 from doekbase.data_api.blob import blob
 from . import create
 
-_GENOME_TYPES = ['KBaseGenomes.Genome']
+_GENOME_TYPES = ['KBaseGenomes.Genome', 'NewTempGenomes.Genome']
 _GENOME_ANNOTATION_TYPES = ['KBaseGenomeAnnotations.GenomeAnnotation']
 TYPES = _GENOME_TYPES + _GENOME_ANNOTATION_TYPES
 
@@ -1063,10 +1063,12 @@ class _KBaseGenomes_Genome(ObjectAPI, GenomeAnnotationInterface):
             else:
                 f["feature_dna_sequence_length"] = -1
 
+            f["feature_aliases"] = {}
             if 'aliases' in x:
-                f["feature_aliases"] = {k: [] for k in x['aliases']}
-            else:
-                f["feature_aliases"] = {}
+                for key in x['aliases']:
+                    if isinstance(key, list):
+                        key = ':'.join(key)
+                    f["feature_aliases"][key] = []
 
             if "feature_quality_score" in x:
                 f["feature_quality_score"] = str(x['quality'])
