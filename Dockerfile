@@ -12,13 +12,7 @@ RUN pip install setuptools --upgrade\
     && pip install requests --upgrade \
     && pip install 'requests[security]' --upgrade #
 
-#install data_api
-RUN mkdir -p /kb/module && \
-    cd /kb/module && \
-    git clone https://github.com/kbase/data_api -b 0.4.0-dev
-
-RUN sed -i 's/six/#six/' /kb/module/data_api/requirements.txt && \
-    pip install /kb/module/data_api
+RUN pip install repoze.lru
 
 COPY ./ /kb/module
 RUN mkdir -p /kb/module/work
