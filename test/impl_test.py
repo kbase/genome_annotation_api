@@ -74,6 +74,35 @@ class GenomeAnnotationAPITests(unittest.TestCase):
         wsName = "test_GenomeAnnotationAPI_" + str(suffix)
         cls.ws.create_workspace({'workspace': wsName})
         cls.wsName = wsName
+
+        data = json.load(open('data/rhodobacter_contigs.json'))
+        # save to ws
+        save_info = {
+            'workspace': wsName,
+            'objects': [{
+                'type': 'KBaseGenomes.ContigSet',
+                'data': data,
+                'name': 'rhodo_contigs'
+            }]
+        }
+        info = cls.ws.save_objects(save_info)[0]
+        contigset_ref = str(info[6]) + '/' + str(info[0]) + '/' + str(info[4])
+        data = json.load(open('data/rhodobacter.json'))
+        data['contigset_ref'] = contigset_ref
+        # save to ws
+        save_info = {
+            'workspace': wsName,
+            'objects': [{
+                'type': 'KBaseGenomes.Genome',
+                'data': data,
+                'name': 'rhodobacter'
+            }]
+        }
+        info = cls.ws.save_objects(save_info)[0]
+        cls.old_genome_ref = str(info[6]) + '/' + str(info[0]) + '/' + str(
+            info[4])
+        print('created old test genome')
+
         assembly_file_path = os.path.join(cls.cfg['scratch'],
                                           'e_coli_assembly.fasta')
         shutil.copy('data/e_coli_assembly.fasta', assembly_file_path)
@@ -115,11 +144,29 @@ class GenomeAnnotationAPITests(unittest.TestCase):
                         "ERROR: Invalid Genome reference {} from {}".format(ret[0], self.new_genome_ref))
 
     @log
+    def test_get_taxon_old(self):
+        inputs = {'ref': self.new_genome_ref}
+        ret = self.impl.get_taxon(self.ctx, inputs)
+        self.assertTrue(
+            self.getType(ret[0]).startswith("KBaseGenomeAnnotations.Taxon"),
+            "ERROR: Invalid Genome reference {} from {}".format(ret[0],
+                                                                self.old_genome_ref))
+
+    @log
     def test_get_assembly(self):
         inputs = {'ref': self.new_genome_ref}
         ret = self.impl.get_assembly(self.ctx, inputs)
         self.assertTrue(self.getType(ret[0]).startswith("KBaseGenomeAnnotations.Assembly"),
-                        "ERROR: Invalid ContigSet reference {} from {}".format(ret[0], self.new_genome_ref))
+                        "ERROR: Invalid assembly reference {} from {}".format(ret[0], self.new_genome_ref))
+
+    @log
+    def test_get_assembly_old(self):
+        inputs = {'ref': self.new_genome_ref}
+        ret = self.impl.get_assembly(self.ctx, inputs)
+        self.assertTrue(
+            self.getType(ret[0]).startswith("KBaseGenomeAnnotations.Assembly"),
+            "ERROR: Invalid assembly reference {} from {}".format(ret[0],
+                                                                   self.old_genome_ref))
 
     @log
     def test_get_feature_types(self):
@@ -146,6 +193,14 @@ class GenomeAnnotationAPITests(unittest.TestCase):
         self.assertGreater(len(ret[0]), 0, "ERROR: No feature ids returned for all {}".format(self.new_genome_ref))
 
     @log
+    def test_get_feature_ids_all_old(self):
+        inputs = {'ref': self.new_genome_ref}
+        ret = self.impl.get_feature_ids(self.ctx, inputs)
+        self.assertGreater(len(ret[0]), 0,
+                           "ERROR: No feature ids returned for all {}".format(
+                               self.old_genome_ref))
+
+    @log
     def test_get_feature_ids_genes_by_function(self):
         inputs = {'ref': self.new_genome_ref,
                   'filters': {'function_list': ["structural component", "enzyme"]},
@@ -157,6 +212,19 @@ class GenomeAnnotationAPITests(unittest.TestCase):
                            "ERROR: No feature ids returned for {}".format(
                                inputs))
 
+    @log
+    def test_get_feature_ids_genes_by_function_old(self):
+        inputs = {'ref': self.old_genome_ref,
+                  'filters': {
+                      'function_list': ["SSU ribosomal protein S16p",
+                                        "hypothetical protein"]},
+                  'group_by': 'function'
+                  }
+        ret = self.impl.get_feature_ids(self.ctx, inputs)[0]
+        assert 'by_function' in ret
+        self.assertGreater(len(ret['by_function']), 0,
+                           "ERROR: No feature ids returned for {}".format(
+                               inputs))
     @log
     def test_get_feature_ids_genes_by_alias(self):
         inputs = {'ref': self.new_genome_ref,
@@ -170,8 +238,32 @@ class GenomeAnnotationAPITests(unittest.TestCase):
                                inputs))
 
     @log
+    def test_get_feature_ids_genes_by_alias_old(self):
+        inputs = {'ref': self.old_genome_ref,
+                  'filters': {'alias_list': ["b1018", "b2095"]},
+                  'group_by': 'alias'
+                  }
+        ret = self.impl.get_feature_ids(self.ctx, inputs)[0]
+        assert 'by_alias' in ret
+        self.assertGreater(len(ret['by_alias']), 0,
+                           "ERROR: No feature ids returned for {}".format(
+                               inputs))
+
+    @log
     def test_get_feature_ids_by_type(self):
         inputs = {'ref': self.new_genome_ref,
+                  'filters': {'type_list': ['gene', 'CDS']},
+                  'group_by': 'type'
+                  }
+        ret = self.impl.get_feature_ids(self.ctx, inputs)[0]
+        assert 'by_type' in ret
+        self.assertGreater(len(ret['by_type']), 0,
+                           "ERROR: No feature ids returned for {}".format(
+                               inputs))
+
+    @log
+    def test_get_feature_ids_by_type_old(self):
+        inputs = {'ref': self.old_genome_ref,
                   'filters': {'type_list': ['gene', 'CDS']},
                   'group_by': 'type'
                   }
@@ -196,22 +288,54 @@ class GenomeAnnotationAPITests(unittest.TestCase):
                                inputs))
 
     @log
-    def test_get_features_all(self):
-        inputs = {'ref': self.new_genome_ref}
-        ret = self.impl.get_features(self.ctx, inputs)
-        self.assertGreater(len(ret[0]), 0, "ERROR: No feature data returned for all {}".format(self.new_genome_ref))
+    def test_get_feature_ids_by_region_old(self):
+        inputs = {'ref': self.old_genome_ref,
+                  'filters': {'region_list': [{"contig_id": 'NODE_185_length_8164_cov_5.03663_ID_369',
+                                               "strand": "+", "start": 0,
+                                               "length": 5000}]},
+                  'group_by': 'region'
+                  }
+        ret = self.impl.get_feature_ids(self.ctx, inputs)[0]
+        assert 'by_region' in ret
+        self.assertGreater(len(ret['by_region']), 0,
+                           "ERROR: No feature ids returned for {}".format(
+                               inputs))
 
     @log
-    def test_get_features_all_exclude_sequence_false(self):
-        inputs = {'ref': self.new_genome_ref, 'exclude_sequence': 0}
-        ret = self.impl.get_features(self.ctx, inputs)
-        self.assertGreater(len(ret[0]), 0, "ERROR: No feature data returned for all {}".format(self.new_genome_ref))
+    def test_get_features_all(self):
+        inputs = {'ref': self.new_genome_ref}
+        ret = self.impl.get_features(self.ctx, inputs)[0]
+        self.assertGreater(len(ret), 0, "ERROR: No feature data returned for all {}".format(self.new_genome_ref))
+        assert 'b0021' in ret
+        assert ret['b0021']['feature_dna_sequence']
+
+    @log
+    def test_get_features_all_old(self):
+        inputs = {'ref': self.old_genome_ref}
+        ret = self.impl.get_features(self.ctx, inputs)[0]
+        self.assertGreater(len(ret), 0,
+                           "ERROR: No feature data returned for all {}".format(
+                               inputs))
+        assert 'kb|g.220339.CDS.1451' in ret
+        assert ret['kb|g.220339.CDS.1451']['feature_dna_sequence']
 
     @log
     def test_get_features_all_exclude_sequence_true(self):
         inputs = {'ref': self.new_genome_ref, 'exclude_sequence': 1}
-        ret = self.impl.get_features(self.ctx, inputs)
-        self.assertGreater(len(ret[0]), 0, "ERROR: No feature data returned for all {}".format(self.new_genome_ref))
+        ret = self.impl.get_features(self.ctx, inputs)[0]
+        self.assertGreater(len(ret), 0, "ERROR: No feature data returned for all {}".format(self.new_genome_ref))
+        assert 'b0021' in ret
+        self.assertFalse(ret['b0021']['feature_dna_sequence'])
+
+    @log
+    def test_get_features_all_exclude_sequence_true_old(self):
+        inputs = {'ref': self.old_genome_ref, 'exclude_sequence': 1}
+        ret = self.impl.get_features(self.ctx, inputs)[0]
+        self.assertGreater(len(ret), 0,
+                           "ERROR: No feature data returned for all {}".format(
+                               self.old_genome_ref))
+        assert 'kb|g.220339.CDS.1451' in ret
+        self.assertFalse(ret['kb|g.220339.CDS.1451']['feature_dna_sequence'])
 
     @log
     def test_get_proteins_all(self):
@@ -255,7 +379,19 @@ class GenomeAnnotationAPITests(unittest.TestCase):
         inputs = {'ref': self.new_genome_ref, 'filters': {'type_list': ['gene']}, 'group_by': 'type'}
         gene_id_list = self.impl.get_feature_ids(self.ctx, inputs)[0]["by_type"]["gene"]
         inputs = {'ref': self.new_genome_ref, 'gene_id_list': gene_id_list}
+        ret = self.impl.get_cds_by_gene(self.ctx, inputs)[0]
+        assert 'b3834' in ret
+        assert ret['b3834'] == ['b3834_CDS_1']
+
+    @log
+    def test_get_cds_by_gene_all_old(self):
+        inputs = {'ref': self.old_genome_ref,
+                  'filters': {'type_list': ['gene']}, 'group_by': 'type'}
+        gene_id_list = \
+            self.impl.get_feature_ids(self.ctx, inputs)[0]["by_type"]["gene"]
+        inputs = {'ref': self.old_genome_ref, 'gene_id_list': gene_id_list}
         ret = self.impl.get_cds_by_gene(self.ctx, inputs)
+        self.assertFalse(ret[0])
 
     @log
     def test_get_mrna_by_gene_all(self):

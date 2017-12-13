@@ -43,7 +43,7 @@ class GenomeIAnnotationUtil:
             for feat in genome.get(feat_array[0], []):
                 if 'type' not in feat:
                     feat['type'] = feat_array[1]
-                if isinstance(feat.get("aliases", [""])[0], list):
+                if feat.get("aliases") and isinstance(feat['aliases'][0], list):
                     feat['aliases'] = [x[1] for x in feat['aliases']]
                 if isinstance(feat.get("function"), basestring):
                     feat["functions"] = feat["function"].split("; ")
