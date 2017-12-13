@@ -1134,7 +1134,8 @@ class GenomeAnnotationAPI:
         # ctx is the context object
         # return variables are: data
         #BEGIN get_genome_v1
-        genome_interface_v1 = GenomeInterfaceV1(self.services)
+        ws = Workspace(self.services['workspace_service_url'], token=ctx['token'])
+        genome_interface_v1 = GenomeInterfaceV1(ws, self.services)
         data = genome_interface_v1.get_genome(ctx, params)
         #END get_genome_v1
 
@@ -1486,7 +1487,7 @@ class GenomeAnnotationAPI:
         # return variables are: result
         #BEGIN save_one_genome_v1
         ws = Workspace(self.services['workspace_service_url'], token=ctx['token'])
-        genome_interface_v1 = GenomeInterfaceV1(self.services)
+        genome_interface_v1 = GenomeInterfaceV1(ws, self.services)
         result = genome_interface_v1.save_one_genome(ctx, params)
         #END save_one_genome_v1
 

@@ -1,25 +1,20 @@
 import requests
 import json
-import os
-import re
-from collections import defaultdict
 from requests_toolbelt.multipart.encoder import MultipartEncoder
 
 from Workspace.WorkspaceClient import Workspace
 from biokbase.AbstractHandle.Client import AbstractHandle as HandleService  # @UnresolvedImport @IgnorePep8
 from biokbase.AbstractHandle.Client import ServerError as HandleError  # @UnresolvedImport @IgnorePep8
 from AssemblySequenceAPI.AssemblySequenceAPIServiceClient import AssemblySequenceAPI
-from DataFileUtil.DataFileUtilClient import DataFileUtil
 
+from pprint import pprint
 
 class GenomeInterfaceV1:
-    def __init__(self, services):
-        self.ws = Workspace(services['workspace_service_url'])
+    def __init__(self, workspace_client, services):
+        self.ws = workspace_client
         self.handle_url = services['handle_service_url']
         self.shock_url = services['shock_service_url']
         self.sw_url = services['service_wizard_url']
-        self.dfu = DataFileUtil(os.environ['SDK_CALLBACK_URL'])
-        self.taxon_wsname = 'ReferenceTaxons'
 
     # Input params:
     # typedef structure {
@@ -154,6 +149,7 @@ class GenomeInterfaceV1:
                 if i[2].split('-')[0] != type_name:
                     raise ValueError('An input object reference is not a '+type_name+'. It was: '+i[2])
 
+
     def create_base_object_spec(self, genome_ref, ref_path_to_genome):
         if ref_path_to_genome is not None:
             if len(ref_path_to_genome)>0:
@@ -257,124 +253,13 @@ class GenomeInterfaceV1:
         else:
             save_params['workspace'] = workspace
 
+
         results = self.ws.save_objects(save_params)
 
         if len(results) != 1:
             raise ValueError('Error saving data.  Workspace did not return proper object info list')
 
-        return {'info': results[0]}
-
-    def _update_genome(self, genome):
-        """Checks for missing required fields and fixes breaking changes"""
-        # do top level updates
-        if 'genome_tier' not in genome:
-            genome['source'], genome['genome_tiers'] = self.determine_tier(
-                genome['source'])
-        if 'molecule_type' not in genome:
-            genome['molecule_type'] = 'Unknown'
-        if 'taxon_ref' not in genome:
-            genome['taxonomy'], genome['taxon_ref'], genome['domain'] \
-                = self.retrieve_taxon(self.taxon_wsname,
-                                      genome['scientific_name'])
-        if any([x not in genome for x in ('dna_size', 'md5', 'gc_content')]):
-            assembly_data = self.dfu.get_objects(
-                {'object_refs': [genome['assembly_ref']],
-                 'ignore_errors': 0})['data'][0]['data']
-            genome["gc_content"] = assembly_data['gc_content']
-            genome["dna_size"] = assembly_data['dna_size']
-            genome["md5"] = assembly_data['md5']
-
-        if 'cdss' not in genome:
-            genome['cdss'] = []
-        if 'mrnas' not in genome:
-            genome['mrnas'] = []
-
-        # do feature level updates
-        retained_features = []
-        type_counts = defaultdict(int)
-        for field in ('mrnas', 'cdss', 'features'):
-            for i, feat in enumerate(genome.get(field, [])):
-                if 'function' in feat and not isinstance(feat, list):
-                    feat['function'] = [feat['function']]
-                if 'aliases' in feat:
-                    feat['aliases'] = [['db_xref', x] for x in feat['aliases']]
-                if 'type' in feat:
-                    type_counts[feat['type']] += 1
-                # TODO: Ontologies
-
-                # split all the stuff lumped together in old versions into the
-                # right arrays
-                if field == 'features':
-                    if feat.get('type', 'gene') == 'gene':
-                        if not feat.get('cdss', []):
-                            genome['non_coding_features'].append(feat)
-                        else:
-                            retained_features.append(feat)
-                    elif feat.get('type', 'gene') == 'CDS':
-                        if 'protein_md5' not in feat:
-                            feat['protein_md5'] = ''
-                        if 'parent_gene' not in feat:
-                            feat['parent_gene'] = ''
-                        genome['cdss'].append(feat)
-                    elif feat.get('type', 'gene') == 'mRNA':
-                        genome['mrnas'].append(feat)
-
-        genome['features'] = retained_features
-
-        type_counts['mRNA'] = len(genome.get('mrnas', []))
-        type_counts['CDS'] = len(genome.get('cdss', []))
-        type_counts['protein_encoding_gene'] = len(genome['features'])
-        type_counts['non-protein_encoding_gene'] = len(genome.get('non_coding_features', []))
-        genome['feature_counts'] = type_counts
-
-        return genome
-
-    @staticmethod
-    def retrieve_taxon(taxon_wsname, scientific_name):
-        """
-        _retrieve_taxon: retrieve taxonomy and taxon_reference
-
-        """
-        default = ('Unconfirmed Organism: ' + scientific_name,
-                   'ReferenceTaxons/unknown_taxon', 'Unknown')
-        solr_url = 'http://kbase.us/internal/solr-ci/search/'
-        solr_core = 'taxonomy_ci'
-        query = '/select?q=scientific_name:"{}"&fl=scientific_name%2Cscientific_lineage%2Ctaxonomy_id%2Cdomain&rows=5&wt=json'
-        match = re.match("\S+\s?\S*", scientific_name)
-        if not match:
-            return default
-        res = requests.get(solr_url + solr_core + query.format(match.group(0)))
-        results = res.json()['response']['docs']
-        if not results:
-            return default
-        taxonomy = results[0]['scientific_lineage']
-        taxon_reference = '{}/{}_taxon'.format(
-            taxon_wsname, results[0]['taxonomy_id'])
-        domain = results[0]['domain']
-
-        return taxonomy, taxon_reference, domain
-
-    @staticmethod
-    def determine_tier(source):
-        """
-        Given a user provided source parameter, assign a source and genome tier
-        """
-        low_source = source.lower()
-        if 'refseq' in low_source:
-            if 'reference' in low_source:
-                return "Refseq", ['Reference', 'Representative',
-                                  'ExternalDB']
-            if 'representative' in low_source:
-                return "Refseq", ['Representative', 'ExternalDB']
-            return "Refseq", ['ExternalDB']
-        if 'phytozome' in low_source:
-            if 'flagship' in source:
-                return "Phytosome", ['Reference', 'Representative',
-                                     'ExternalDB']
-            return "Phytosome", ['Representative', 'ExternalDB']
-        if 'ensembl' in low_source:
-            return "Ensembl", ['Representative', 'ExternalDB']
-        return source, ['User']
+        return { 'info':results[0] }
 
     def check_dna_sequence_in_features(self, genome, ctx):
         if not 'features' in genome:
