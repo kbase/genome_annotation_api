@@ -1,6 +1,7 @@
 import os
 import hashlib
 from collections import defaultdict
+from repoze.lru import lru_cache
 
 from Workspace.WorkspaceClient import Workspace
 from DataFileUtil.DataFileUtilClient import DataFileUtil
@@ -18,6 +19,7 @@ class GenomeIAnnotationUtil:
                                "alias_list"]
         self._valid_groups = ["type", "region", "function", "alias"]
 
+    @lru_cache(maxsize=8)
     def get_genome(self, genome_ref):
         return self.dfu.get_objects(
             {'object_refs': [genome_ref]}
@@ -41,6 +43,10 @@ class GenomeIAnnotationUtil:
             for feat in genome.get(feat_array[0], []):
                 if 'type' not in feat:
                     feat['type'] = feat_array[1]
+                if isinstance(feat.get("aliases", [""])[0], list):
+                    feat['aliases'] = [x[1] for x in feat['aliases']]
+                if isinstance(feat.get("function"), basestring):
+                    feat["functions"] = feat["function"].split("; ")
                 if limited_keys:
                     limited_keys = set(limited_keys)
                     feature_list.append({k: v for k, v in feat.items()
@@ -71,7 +77,7 @@ class GenomeIAnnotationUtil:
         elif group_by == "region" or "region_list" in filters:
             limited_keys.append("location")
         elif group_by == "function" or "function_list" in filters:
-            limited_keys.append("function")
+            limited_keys.append("functions")
         elif group_by == "alias" or "alias_list" in filters:
             limited_keys.append("aliases")
 
@@ -135,11 +141,11 @@ class GenomeIAnnotationUtil:
 
             function_set = set(filters["function_list"])
             for i in xrange(len(features)):
-                if "function" not in features[i]:
+                if "functions" not in features[i]:
                     remove_features.add(i)
                 else:
                     found = False
-                    for f in features[i]["function"]:
+                    for f in features[i]["functions"]:
                         if f in function_set:
                             found = True
                             break
@@ -160,8 +166,6 @@ class GenomeIAnnotationUtil:
                 else:
                     found = False
                     for alias in features[i]["aliases"]:
-                        if isinstance(alias, list):
-                            alias = ":".join(alias)
                         if alias in alias_set:
                             found = True
                             break
@@ -204,16 +208,12 @@ class GenomeIAnnotationUtil:
         elif group_by == "function":
             results["by_function"] = defaultdict(list)
             for i in keep_features:
-                if isinstance(features[i].get("function", ""), basestring):
-                    features[i]["function"] = [features[i]["function"]]
-                for func in features[i]["function"]:
+                for func in features[i]["functions"]:
                     results["by_function"][func].append(features[i]["id"])
         elif group_by == "alias":
             results["by_alias"] = defaultdict(list)
             for i in keep_features:
                 for alias in features[i]["aliases"]:
-                    if isinstance(alias, list):
-                        alias = ":".join(alias)
                     results["by_alias"][alias].append(features[i]["id"])
 
         return results
@@ -232,12 +232,14 @@ class GenomeIAnnotationUtil:
             f = {
                 "feature_id": x['id'],
                 "feature_type": x['type'],
-                "feature_function": "; ".join(x.get('function', [])),
+                "feature_function": x.get('function', ''),
                 "feature_publications": [],
                 "feature_notes": "",
                 "feature_inference": "",
                 "feature_quality_warnings": []
             }
+            if 'functions' in x:
+                f['feature_function'] = "; ".join(x.get('functions', [])),
 
             if "location" in x:
                 f["feature_locations"] = [{"contig_id": loc[0],

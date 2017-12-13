@@ -17,6 +17,8 @@ RUN pip install setuptools --upgrade\
 COPY ./lib/doekbase/requirements.txt /kb/module/requirements.txt
 RUN pip install -r /kb/module/requirements.txt
 
+RUN pip install repoze.lru
+
 COPY ./ /kb/module
 RUN mkdir -p /kb/module/work
 RUN chmod -R a+rw /kb/module

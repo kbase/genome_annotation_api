@@ -70,7 +70,6 @@ class GenomeAnnotationAPITests(unittest.TestCase):
 
         cls.ws = Workspace(cls.cfg['workspace-url'], token=token)
         cls.impl = GenomeAnnotationAPI(cls.cfg)
-        #cls.genome_ref = '6867/8/1'
         suffix = int(time.time() * 1000)
         wsName = "test_GenomeAnnotationAPI_" + str(suffix)
         cls.ws.create_workspace({'workspace': wsName})
@@ -95,10 +94,9 @@ class GenomeAnnotationAPITests(unittest.TestCase):
                 'name': 'new_ecoli'
             }]
         }
-        result = cls.ws.save_objects(save_info)
-        info = result[0]
-        cls.genome_ref = str(info[6]) + '/' + str(info[0]) + '/' + str(info[4])
-        print('created test genome')
+        info = cls.ws.save_objects(save_info)[0]
+        cls.new_genome_ref = str(info[6]) + '/' + str(info[0]) + '/' + str(info[4])
+        print('created new test genome')
 
     @classmethod
     def tearDownClass(cls):
@@ -111,45 +109,45 @@ class GenomeAnnotationAPITests(unittest.TestCase):
 
     @log
     def test_get_taxon(self):
-        inputs = {'ref': self.genome_ref}
+        inputs = {'ref': self.new_genome_ref}
         ret = self.impl.get_taxon(self.ctx, inputs)
         self.assertTrue(self.getType(ret[0]).startswith("KBaseGenomeAnnotations.Taxon"),
-                        "ERROR: Invalid Genome reference {} from {}".format(ret[0], self.genome_ref))
+                        "ERROR: Invalid Genome reference {} from {}".format(ret[0], self.new_genome_ref))
 
     @log
     def test_get_assembly(self):
-        inputs = {'ref': self.genome_ref}
+        inputs = {'ref': self.new_genome_ref}
         ret = self.impl.get_assembly(self.ctx, inputs)
         self.assertTrue(self.getType(ret[0]).startswith("KBaseGenomeAnnotations.Assembly"),
-                        "ERROR: Invalid ContigSet reference {} from {}".format(ret[0], self.genome_ref))
+                        "ERROR: Invalid ContigSet reference {} from {}".format(ret[0], self.new_genome_ref))
 
     @log
     def test_get_feature_types(self):
         with self.assertRaises(NotImplementedError):
-            inputs = {'ref': self.genome_ref}
+            inputs = {'ref': self.new_genome_ref}
             ret = self.impl.get_feature_types(self.ctx, inputs)
 
     @log
     def test_get_feature_type_descriptions_all_old(self):
         with self.assertRaises(NotImplementedError):
-            inputs = {'ref': self.genome_ref}
+            inputs = {'ref': self.new_genome_ref}
             ret = self.impl.get_feature_type_descriptions(self.ctx, inputs)
 
     @log
     def test_get_feature_type_counts_all(self):
         with self.assertRaises(NotImplementedError):
-            inputs = {'ref': self.genome_ref}
+            inputs = {'ref': self.new_genome_ref}
             ret = self.impl.get_feature_type_counts(self.ctx, inputs)
 
     @log
     def test_get_feature_ids_all(self):
-        inputs = {'ref': self.genome_ref}
+        inputs = {'ref': self.new_genome_ref}
         ret = self.impl.get_feature_ids(self.ctx, inputs)
-        self.assertGreater(len(ret[0]), 0, "ERROR: No feature ids returned for all {}".format(self.genome_ref))
+        self.assertGreater(len(ret[0]), 0, "ERROR: No feature ids returned for all {}".format(self.new_genome_ref))
 
     @log
     def test_get_feature_ids_genes_by_function(self):
-        inputs = {'ref': self.genome_ref,
+        inputs = {'ref': self.new_genome_ref,
                   'filters': {'function_list': ["structural component", "enzyme"]},
                   'group_by': 'function'
                   }
@@ -161,9 +159,8 @@ class GenomeAnnotationAPITests(unittest.TestCase):
 
     @log
     def test_get_feature_ids_genes_by_alias(self):
-        inputs = {'ref': self.genome_ref,
-                  'filters': {'alias_list': ["locus_tag:b1018",
-                                             "locus_tag:b2095"]},
+        inputs = {'ref': self.new_genome_ref,
+                  'filters': {'alias_list': ["b1018", "b2095"]},
                   'group_by': 'alias'
                   }
         ret = self.impl.get_feature_ids(self.ctx, inputs)[0]
@@ -174,7 +171,7 @@ class GenomeAnnotationAPITests(unittest.TestCase):
 
     @log
     def test_get_feature_ids_by_type(self):
-        inputs = {'ref': self.genome_ref,
+        inputs = {'ref': self.new_genome_ref,
                   'filters': {'type_list': ['gene', 'CDS']},
                   'group_by': 'type'
                   }
@@ -186,7 +183,7 @@ class GenomeAnnotationAPITests(unittest.TestCase):
 
     @log
     def test_get_feature_ids_by_region(self):
-        inputs = {'ref': self.genome_ref,
+        inputs = {'ref': self.new_genome_ref,
                   'filters': {'region_list': [{"contig_id": 'NC_000913.3',
                                                "strand": "+", "start": 0,
                                                "length": 5000}]},
@@ -200,76 +197,76 @@ class GenomeAnnotationAPITests(unittest.TestCase):
 
     @log
     def test_get_features_all(self):
-        inputs = {'ref': self.genome_ref}
+        inputs = {'ref': self.new_genome_ref}
         ret = self.impl.get_features(self.ctx, inputs)
-        self.assertGreater(len(ret[0]), 0, "ERROR: No feature data returned for all {}".format(self.genome_ref))
+        self.assertGreater(len(ret[0]), 0, "ERROR: No feature data returned for all {}".format(self.new_genome_ref))
 
     @log
     def test_get_features_all_exclude_sequence_false(self):
-        inputs = {'ref': self.genome_ref, 'exclude_sequence': 0}
+        inputs = {'ref': self.new_genome_ref, 'exclude_sequence': 0}
         ret = self.impl.get_features(self.ctx, inputs)
-        self.assertGreater(len(ret[0]), 0, "ERROR: No feature data returned for all {}".format(self.genome_ref))
+        self.assertGreater(len(ret[0]), 0, "ERROR: No feature data returned for all {}".format(self.new_genome_ref))
 
     @log
     def test_get_features_all_exclude_sequence_true(self):
-        inputs = {'ref': self.genome_ref, 'exclude_sequence': 1}
+        inputs = {'ref': self.new_genome_ref, 'exclude_sequence': 1}
         ret = self.impl.get_features(self.ctx, inputs)
-        self.assertGreater(len(ret[0]), 0, "ERROR: No feature data returned for all {}".format(self.genome_ref))
+        self.assertGreater(len(ret[0]), 0, "ERROR: No feature data returned for all {}".format(self.new_genome_ref))
 
     @log
     def test_get_proteins_all(self):
         with self.assertRaises(NotImplementedError):
-            inputs = {'ref': self.genome_ref}
+            inputs = {'ref': self.new_genome_ref}
             ret = self.impl.get_proteins(self.ctx, inputs)
 
     @log
     def test_get_feature_locations_all(self):
         with self.assertRaises(NotImplementedError):
-            inputs = {'ref': self.genome_ref}
+            inputs = {'ref': self.new_genome_ref}
             ret = self.impl.get_feature_locations(self.ctx, inputs)
 
     @log
     def test_get_feature_publications_all(self):
         with self.assertRaises(NotImplementedError):
-            inputs = {'ref': self.genome_ref}
+            inputs = {'ref': self.new_genome_ref}
             ret = self.impl.get_feature_publications(self.ctx, inputs)
 
     @log
     def test_get_feature_dna_all(self):
         with self.assertRaises(NotImplementedError):
-            inputs = {'ref': self.genome_ref}
+            inputs = {'ref': self.new_genome_ref}
             ret = self.impl.get_feature_dna(self.ctx, inputs)
-            self.assertGreater(len(ret[0].keys()), 0, "ERROR: No DNA sequence for {}".format(self.genome_ref))
+            self.assertGreater(len(ret[0].keys()), 0, "ERROR: No DNA sequence for {}".format(self.new_genome_ref))
 
     @log
     def test_get_feature_functions_all(self):
         with self.assertRaises(NotImplementedError):
-            inputs = {'ref': self.genome_ref}
+            inputs = {'ref': self.new_genome_ref}
             ret = self.impl.get_feature_functions(self.ctx, inputs)
 
     @log
     def test_get_feature_aliases_all(self):
         with self.assertRaises(NotImplementedError):
-            inputs = {'ref': self.genome_ref}
+            inputs = {'ref': self.new_genome_ref}
             ret = self.impl.get_feature_aliases(self.ctx, inputs)
 
     @log
     def test_get_cds_by_gene_all(self):
-        inputs = {'ref': self.genome_ref, 'filters': {'type_list': ['gene']}, 'group_by': 'type'}
+        inputs = {'ref': self.new_genome_ref, 'filters': {'type_list': ['gene']}, 'group_by': 'type'}
         gene_id_list = self.impl.get_feature_ids(self.ctx, inputs)[0]["by_type"]["gene"]
-        inputs = {'ref': self.genome_ref, 'gene_id_list': gene_id_list}
+        inputs = {'ref': self.new_genome_ref, 'gene_id_list': gene_id_list}
         ret = self.impl.get_cds_by_gene(self.ctx, inputs)
 
     @log
     def test_get_mrna_by_gene_all(self):
         with self.assertRaises(NotImplementedError):
-            inputs = {'ref': self.genome_ref, 'filters': {'type_list': ['gene']}, 'group_by': 'type'}
+            inputs = {'ref': self.new_genome_ref, 'filters': {'type_list': ['gene']}, 'group_by': 'type'}
             gene_id_list = self.impl.get_feature_ids(self.ctx, inputs)[0]["by_type"]["gene"]
-            inputs = {'ref': self.genome_ref, 'gene_id_list': gene_id_list}
+            inputs = {'ref': self.new_genome_ref, 'gene_id_list': gene_id_list}
             ret = self.impl.get_mrna_by_gene(self.ctx, inputs)
 
     @log
     def test_get_summary(self):
         with self.assertRaises(NotImplementedError):
-            inputs = {'ref': self.genome_ref}
+            inputs = {'ref': self.new_genome_ref}
             self.impl.get_summary(self.ctx, inputs)
