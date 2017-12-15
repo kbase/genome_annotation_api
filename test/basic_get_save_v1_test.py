@@ -6,7 +6,7 @@ import os
 import sys
 import time
 import unittest
-import inspect
+import shutil
 import json
 
 import requests
@@ -20,6 +20,7 @@ from GenomeAnnotationAPI.GenomeAnnotationAPIImpl import GenomeAnnotationAPI
 from GenomeAnnotationAPI.GenomeAnnotationAPIServer import MethodContext
 from DataFileUtil.DataFileUtilClient import DataFileUtil
 from GenomeAnnotationAPI.authclient import KBaseAuth as _KBaseAuth
+from AssemblyUtil.AssemblyUtilClient import AssemblyUtil
 
 unittest.installHandler()
 
@@ -105,7 +106,7 @@ class GenomeAnnotationAPITests(unittest.TestCase):
         ret = cls.ws.create_workspace({'workspace': wsName})
         cls.wsName = wsName
 
-        # preload with reference data
+        """"# preload with reference data
         with open ('data/rhodobacter.json', 'r') as file:
             data_str=file.read()
         data = json.loads(data_str)
@@ -122,7 +123,32 @@ class GenomeAnnotationAPITests(unittest.TestCase):
             })
         info = result[0]
         cls.rhodobacter_ref = str(info[6]) +'/' + str(info[0]) + '/' + str(info[4])
-        print('created rhodobacter test genome: ' + cls.rhodobacter_ref)
+        print('created rhodobacter test genome: ' + cls.rhodobacter_ref)"""
+
+        assembly_file_path = os.path.join(cls.cfg['scratch'],
+                                          'e_coli_assembly.fasta')
+        shutil.copy('data/e_coli_assembly.fasta', assembly_file_path)
+        au = AssemblyUtil(os.environ['SDK_CALLBACK_URL'])
+        assembly_ref = au.save_assembly_from_fasta({
+            'workspace_name': cls.wsName,
+            'assembly_name': 'ecoli.assembly',
+            'file': {'path': assembly_file_path}
+        })
+        data = json.load(open('data/new_ecoli_genome.json'))
+        data['assembly_ref'] = assembly_ref
+        # save to ws
+        save_info = {
+            'workspace': wsName,
+            'objects': [{
+                'type': 'NewTempGenomes.Genome',
+                'data': data,
+                'name': 'new_ecoli'
+            }]
+        }
+        info = cls.ws.save_objects(save_info)[0]
+        cls.new_genome_ref = str(info[6]) + '/' + str(info[0]) + '/' + str(
+            info[4])
+        print('created new test genome')
 
     @classmethod
     def tearDownClass(cls):
@@ -167,6 +193,30 @@ class GenomeAnnotationAPITests(unittest.TestCase):
 
     def getType(self, ref=None):
         return self.ws.get_object_info_new({"objects": [{"ref": ref}]})[0][2]
+
+    @log
+    def test_get_new_genome(self):
+        ret = self.impl.get_genome_v1(self.ctx,
+          {
+              'genomes': [{
+                  'ref': self.new_genome_ref
+              }]
+          })[0]
+        # test stuff
+        data = ret['genomes'][0]['data']
+        self.assertEqual(len(ret['genomes']), 1)
+        self.assertTrue('features' in data)
+        self.assertTrue('cdss' not in data)
+        self.assertTrue('mrnas' not in data)
+        one_feat = data['features'][0]
+        self.assertEqual(one_feat['type'], 'gene')
+        self.assertEqual(one_feat['function'], 'leader; Amino acid biosynthesi'
+                                               's: Threonine; product:thr oper'
+                                               'on leader peptide')
+        self.assertEqual(one_feat['aliases'][0], 'ECK0001; JW4367')
+        two_feat = data['features'][-1]
+        self.assertEqual(two_feat['type'], 'gene')
+        self.assertEqual(two_feat['aliases'][0], 'b4370')
 
     @log
     def test_get_all(self):

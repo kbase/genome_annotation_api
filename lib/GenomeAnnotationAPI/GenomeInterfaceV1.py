@@ -10,14 +10,11 @@ from AssemblySequenceAPI.AssemblySequenceAPIServiceClient import AssemblySequenc
 from pprint import pprint
 
 class GenomeInterfaceV1:
-
-
     def __init__(self, workspace_client, services):
         self.ws = workspace_client
         self.handle_url = services['handle_service_url']
         self.shock_url = services['shock_service_url']
         self.sw_url = services['service_wizard_url']
-
 
     # Input params:
     # typedef structure {
@@ -41,7 +38,7 @@ class GenomeInterfaceV1:
 
         object_specifications = self.build_object_specifications(params)
 
-        getObjParams = { 'objects':object_specifications }
+        getObjParams = {'objects': object_specifications}
 
         if 'ignoreErrors' in params:
             if params['ignoreErrors']==0:
@@ -65,19 +62,43 @@ class GenomeInterfaceV1:
 
         self.validate_proper_ws_type(object_specifications, getObjParams['ignoreErrors'], 'KBaseGenomes.Genome')
         data = self.ws.get_objects2(getObjParams)['data']
+        for i, genome in enumerate(data):
+            if 'genome_tiers' in genome['data']:
+                data[i]['data'] = self.downgrade_genome(genome['data'])
 
         if 'no_metadata' in params:
-            if params['no_metadata']==1:
+            if params['no_metadata'] == 1:
                 d2 = []
                 for obj in data:
-                    d2.append({'data':obj['data']})
+                    d2.append({'data': obj['data']})
                 data = d2
 
-        returnPackage = { 'genomes':data }
+        returnPackage = {'genomes': data}
         return returnPackage
 
+    @staticmethod
+    def downgrade_genome(genome_data):
+        """This reverts a genome to an older style for back compatibility"""
+        print("Downgrading Genome for back compatibility")
+        feature_list = []
+        for feat_array in (('features', 'gene'), ('mrnas', 'mRNA'),
+                           ('cdss', 'CDS'), ('non_coding_features', 'gene')):
+            for feat in genome_data.get(feat_array[0], []):
+                if 'type' not in feat:
+                    feat['type'] = feat_array[1]
+                if feat.get("aliases") and isinstance(feat['aliases'][0], list):
+                    feat['aliases'] = [x[1] for x in feat['aliases']]
+                if feat.get('functions'):
+                    feat['function'] = "; ".join(feat['functions'])
+                feature_list.append(feat)
 
-    def build_object_specifications(self,params):
+            if feat_array[0] in genome_data:
+                del genome_data[feat_array[0]]
+
+        genome_data['features'] = feature_list
+        return genome_data
+
+    def build_object_specifications(self, params):
 
         if 'genomes' not in params:
             raise ValueError('Invalid input - "genomes" input argument field is missing.')
@@ -132,7 +153,6 @@ class GenomeInterfaceV1:
             object_specifications.append(selector)
         return object_specifications
 
-
     def create_feature_selectors(self, base, included_feature_fields):
         included = []
         if len(included_feature_fields)>0:
@@ -141,8 +161,7 @@ class GenomeInterfaceV1:
         else:
             included = [base]
         return included
-      
-    
+
     def validate_proper_ws_type(self, object_specifications, ignore_errors, type_name):
         info = self.ws.get_object_info_new({
                                 'objects': object_specifications,
@@ -154,7 +173,6 @@ class GenomeInterfaceV1:
             if i is not None:
                 if i[2].split('-')[0] != type_name:
                     raise ValueError('An input object reference is not a '+type_name+'. It was: '+i[2])
-
 
 
     def create_base_object_spec(self, genome_ref, ref_path_to_genome):
@@ -170,9 +188,6 @@ class GenomeInterfaceV1:
                     'obj_ref_path':obj_ref_path
                 }
         return { 'ref':genome_ref }
-
-
-
 
     def save_one_genome(self, ctx, params):
         """
@@ -271,7 +286,6 @@ class GenomeInterfaceV1:
 
         return { 'info':results[0] }
 
-
     def check_dna_sequence_in_features(self, genome, ctx):
         if not 'features' in genome:
             return
@@ -294,7 +308,6 @@ class GenomeInterfaceV1:
                 if feature['id'] in dna_sequences:
                     feature['dna_sequence'] = dna_sequences[feature['id']]
                     feature['dna_sequence_length'] = len(feature['dna_sequence'])
-
 
     def own_handle(self, genome, handle_property, ctx):
         if not handle_property in genome:
@@ -329,7 +342,6 @@ class GenomeInterfaceV1:
                       }
             handle_id = hs.persist_handle(handle)
             genome[handle_property] = handle_id
-
 
     def copy_shock_node(self, ctx, shock_id):
         token = ctx['token']
@@ -367,7 +379,6 @@ class GenomeInterfaceV1:
                 response, ('Error setting attributes on Shock node {}: '
                            ).format(shock_id))
         return shock_id
-
 
     def check_shock_response(self, response, errtxt):
         if not response.ok:
