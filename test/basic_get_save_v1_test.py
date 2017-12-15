@@ -214,10 +214,15 @@ class GenomeAnnotationAPITests(unittest.TestCase):
                                                's: Threonine; product:thr oper'
                                                'on leader peptide')
         self.assertEqual(one_feat['aliases'][0], 'ECK0001; JW4367')
+        self.assertEqual(one_feat['ontology_terms'], {'GO': {'GO:0009088':
+            {"evidence": [], "id": "GO:0009088", "ontology_ref": "6308/3/2",
+             "term_lineage": [], "term_name": "threonine biosynthetic process"
+             }}})
         two_feat = data['features'][-1]
         self.assertEqual(two_feat['type'], 'gene')
         self.assertEqual(two_feat['aliases'][0], 'b4370')
 
+"""
     @log
     def test_get_all(self):
         ret = self.impl.get_genome_v1(self.ctx, 
@@ -465,5 +470,4 @@ class GenomeAnnotationAPITests(unittest.TestCase):
                                                'name': obj_name,
                                                'data': data,
                                            })[0]
-        self.assertEqual(error, str(context.exception.message))
-
+        self.assertEqual(error, str(context.exception.message))"""
