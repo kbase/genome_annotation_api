@@ -1,29 +1,24 @@
-import os
 import hashlib
 from collections import defaultdict
 from repoze.lru import lru_cache
 
 from Workspace.WorkspaceClient import Workspace
-from DataFileUtil.DataFileUtilClient import DataFileUtil
 
 
-class GenomeIAnnotationUtil:
+class GenomeAnnotationUtil:
     def __init__(self, services):
         self.ws = Workspace(services['workspace_service_url'])
         self.handle_url = services['handle_service_url']
         self.shock_url = services['shock_service_url']
         self.sw_url = services['service_wizard_url']
-        self.dfu = DataFileUtil(os.environ['SDK_CALLBACK_URL'])
-        self.taxon_wsname = 'ReferenceTaxons'
         self._valid_filters = ["type_list", "region_list", "function_list",
                                "alias_list"]
         self._valid_groups = ["type", "region", "function", "alias"]
 
     @lru_cache(maxsize=8)
     def get_genome(self, genome_ref):
-        return self.dfu.get_objects(
-            {'object_refs': [genome_ref]}
-        )['data'][0]['data']
+        return self.ws.get_objects2({'objects': [{'ref': genome_ref}]}
+                                    )['data'][0]['data']
 
     def get_taxon_ref(self, genome_ref):
         return self.ws.get_objects2({'objects': [
@@ -31,9 +26,16 @@ class GenomeIAnnotationUtil:
         ]})['data'][0]['data']['taxon_ref']
 
     def get_assembly_ref(self, genome_ref):
-        return self.ws.get_objects2({'objects': [
-            {'ref': genome_ref, 'included': ['/assembly_ref']}
-        ]})['data'][0]['data']['assembly_ref']
+        data = self.ws.get_objects2({'objects': [
+            {'ref': genome_ref, 'included': ['/assembly_ref', '/contigset_ref']
+             }]})['data'][0]['data']
+        if 'assembly_ref' in data:
+            return data['assembly_ref']
+        elif 'contigset_ref' in data:
+            return data['contigset_ref']
+        else:
+            raise TypeError('No assembly data in {}'.format(genome_ref))
+
 
     @staticmethod
     def _make_feature_list(genome, limited_keys=()):
@@ -55,6 +57,26 @@ class GenomeIAnnotationUtil:
                     feature_list.append(feat)
         return feature_list
 
+    @staticmethod
+    def _is_feature_in_regions(f, regions):
+        if "location" not in f:
+            return False
+        for loc in f["location"]:
+            for r in regions:
+                if r["contig_id"] == loc[0] and loc[2] == r["strand"]:
+                    if loc[2] == "+" and \
+                                    max(loc[1], r["start"]) <= min(
+                                        loc[1] + loc[3],
+                                        r["start"] + r["length"]):
+                        return True
+                    elif loc[2] == "-" and \
+                                    max(loc[1] - loc[3],
+                                        r["start"] - r[
+                                            "length"]) <= min(
+                                loc[1], r["start"]):
+                        return True
+        return False
+
     def get_feature_ids(self, genome_ref, filters=None, group_by="type"):
         if filters is None:
             filters = {}
@@ -74,11 +96,11 @@ class GenomeIAnnotationUtil:
 
         if group_by == "type" or "type_list" in filters:
             limited_keys.append('type')
-        elif group_by == "region" or "region_list" in filters:
+        if group_by == "region" or "region_list" in filters:
             limited_keys.append("location")
-        elif group_by == "function" or "function_list" in filters:
+        if group_by == "function" or "function_list" in filters:
             limited_keys.append("functions")
-        elif group_by == "alias" or "alias_list" in filters:
+        if group_by == "alias" or "alias_list" in filters:
             limited_keys.append("aliases")
 
         genome = self.get_genome(genome_ref)
@@ -106,29 +128,9 @@ class GenomeIAnnotationUtil:
                 raise TypeError(
                     "A list of region dictionaries is required, received an empty list.")
 
-            def is_feature_in_regions(f, regions):
-                if "location" not in f:
-                    return False
-
-                for loc in f["location"]:
-                    for r in regions:
-                        if r["contig_id"] == loc[0] and loc[2] == r["strand"]:
-                            if loc[2] == "+" and \
-                                            max(loc[1], r["start"]) <= min(
-                                                loc[1] + loc[3],
-                                                r["start"] + r["length"]):
-                                return True
-                            elif loc[2] == "-" and \
-                                            max(loc[1] - loc[3],
-                                                r["start"] - r[
-                                                    "length"]) <= min(
-                                        loc[1], r["start"]):
-                                return True
-                return False
-
             for i in xrange(len(features)):
-                if not is_feature_in_regions(features[i],
-                                             filters["region_list"]):
+                if not self._is_feature_in_regions(features[i],
+                                                   filters["region_list"]):
                     remove_features.add(i)
 
         if "function_list" in filters and filters["function_list"] is not None:
@@ -218,91 +220,96 @@ class GenomeIAnnotationUtil:
 
         return results
 
+    @staticmethod
+    def _fill_out_feature(in_feat):
+        f = {
+            "feature_id": in_feat['id'],
+            "feature_type": in_feat['type'],
+            "feature_function": in_feat.get('function', ''),
+            "feature_publications": [],
+            "feature_notes": in_feat.get('note', []),
+            "feature_inference": "",
+            "feature_quality_warnings": in_feat.get('warnings', [])
+        }
+        if 'functions' in in_feat:
+            f['feature_function'] = "; ".join(in_feat.get('functions', [])),
+
+        if "location" in in_feat:
+            f["feature_locations"] = [{"contig_id": loc[0],
+                                       "start": loc[1],
+                                       "strand": loc[2],
+                                       "length": loc[3]} for loc in
+                                      in_feat['location']]
+        else:
+            f["feature_locations"] = []
+
+        if 'dna_sequence' in in_feat:
+            f["feature_dna_sequence"] = in_feat['dna_sequence']
+
+            if 'md5' in in_feat:
+                f["feature_md5"] = in_feat['md5']
+            else:
+                f["feature_md5"] = hashlib.md5(
+                    in_feat["dna_sequence"].upper()).hexdigest()
+        else:
+            f["feature_dna_sequence"] = ""
+            f["feature_md5"] = ""
+
+        if 'dna_sequence_length' in in_feat:
+            f["feature_dna_sequence_length"] = in_feat['dna_sequence_length']
+        else:
+            f["feature_dna_sequence_length"] = -1
+
+        f["feature_aliases"] = {}
+        if 'aliases' in in_feat:
+            for key in in_feat['aliases']:
+                if isinstance(key, list):
+                    key = ':'.join(key)
+                f["feature_aliases"][key] = []
+
+        if "feature_quality_score" in in_feat:
+            f["feature_quality_score"] = str(in_feat['quality'])
+        else:
+            f["feature_quality_score"] = ""
+
+        return f
+
     def get_features(self, genome_ref, feature_id_list=None, exclude_sequence=False):
         out_features = {}
         genome = self.get_genome(genome_ref)
 
         if exclude_sequence:
-            limited_keys = ["function", "location", "md5", "type", "id", "aliases", "dna_sequence_length"]
+            limited_keys = ["function", "location", "md5", "type", "id",
+                            "aliases", "dna_sequence_length"]
             features = self._make_feature_list(genome, limited_keys)
         else:
             features = self._make_feature_list(genome)
 
-        def fill_out_feature(x):
-            f = {
-                "feature_id": x['id'],
-                "feature_type": x['type'],
-                "feature_function": x.get('function', ''),
-                "feature_publications": [],
-                "feature_notes": "",
-                "feature_inference": "",
-                "feature_quality_warnings": []
-            }
-            if 'functions' in x:
-                f['feature_function'] = "; ".join(x.get('functions', [])),
-
-            if "location" in x:
-                f["feature_locations"] = [{"contig_id": loc[0],
-                                           "start": loc[1],
-                                           "strand": loc[2],
-                                           "length": loc[3]} for loc in x['location']]
-            else:
-                f["feature_locations"] = []
-
-            if 'dna_sequence' in x:
-                f["feature_dna_sequence"] = x['dna_sequence']
-
-                if 'md5' in x:
-                    f["feature_md5"] = x['md5']
-                else:
-                    f["feature_md5"] = hashlib.md5(x["dna_sequence"].upper()).hexdigest()
-            else:
-                f["feature_dna_sequence"] = ""
-                f["feature_md5"] = ""
-
-            if 'dna_sequence_length' in x:
-                f["feature_dna_sequence_length"] = x['dna_sequence_length']
-            else:
-                f["feature_dna_sequence_length"] = -1
-
-            f["feature_aliases"] = {}
-            if 'aliases' in x:
-                for key in x['aliases']:
-                    if isinstance(key, list):
-                        key = ':'.join(key)
-                    f["feature_aliases"][key] = []
-
-            if "feature_quality_score" in x:
-                f["feature_quality_score"] = str(x['quality'])
-            else:
-                f["feature_quality_score"] = ""
-
-            return f
-
         if feature_id_list is None:
             for x in features:
-                out_features[x['id']] = fill_out_feature(x)
+                out_features[x['id']] = self._fill_out_feature(x)
         else:
             if not isinstance(feature_id_list, list):
                 raise TypeError("A list of strings indicating Feature identifiers is required.")
             try:
                 feature_refs = ["features/" + x for x in feature_id_list]
                 assert len(feature_refs) > 0
-            except TypeError:
-                raise TypeError("A list of strings indicating Feature identifiers is required.")
             except AssertionError:
                 raise TypeError("A list of strings indicating Feature identifiers is required, received an empty list.")
 
             for x in features:
                 if x['id'] in feature_id_list:
-                    out_features[x['id']] = fill_out_feature(x)
+                    out_features[x['id']] = self._fill_out_feature(x)
 
         return out_features
 
     def get_cds_by_gene(self, genome_ref, gene_id_list=None):
         cds_by_gene = {}
         genome = self.get_genome(genome_ref)
-        id_set = set(gene_id_list)
+        if gene_id_list:
+            id_set = set(gene_id_list)
+        else:
+            id_set = False
         for gene in genome.get('features', []):
             if id_set and gene['id'] not in id_set:
                 continue

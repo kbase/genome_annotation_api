@@ -4,7 +4,7 @@ import logging
 
 from Workspace.WorkspaceClient import Workspace
 from GenomeAnnotationAPI.GenomeInterfaceV1 import GenomeInterfaceV1
-from GenomeAnnotationAPI.GenomeAnnotationUtil import GenomeIAnnotationUtil
+from GenomeAnnotationAPI.GenomeAnnotationUtil import GenomeAnnotationUtil
 
 #END_HEADER
 
@@ -44,15 +44,13 @@ class GenomeAnnotationAPI:
         log_handler = logging.StreamHandler()
         log_handler.setFormatter(logging.Formatter("%(asctime)s [%(levelname)s] %(message)s"))
         self.logger.addHandler(log_handler)
-        self.cfg = config
-
         self.services = {
             "workspace_service_url": config['workspace-url'],
             "shock_service_url": config['shock-url'],
             "handle_service_url": config['handle-service-url'],
             "service_wizard_url": config['service-wizard-url']
         }
-        self.gautil = GenomeIAnnotationUtil(self.services)
+        self.gautil = GenomeAnnotationUtil(self.services)
         #END_CONSTRUCTOR
         pass
 
