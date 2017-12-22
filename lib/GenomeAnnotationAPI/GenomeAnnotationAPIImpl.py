@@ -1,11 +1,10 @@
 # -*- coding: utf-8 -*-
 #BEGIN_HEADER
-from doekbase.data_api.annotation.genome_annotation.api import GenomeAnnotationAPI as GenomeAnnotationAPI_local
-from doekbase.data_api import cache
 import logging
-from biokbase.workspace.client import Workspace
 
+from Workspace.WorkspaceClient import Workspace
 from GenomeAnnotationAPI.GenomeInterfaceV1 import GenomeInterfaceV1
+from GenomeAnnotationAPI.GenomeAnnotationUtil import GenomeIAnnotationUtil
 
 #END_HEADER
 
@@ -45,6 +44,7 @@ class GenomeAnnotationAPI:
         log_handler = logging.StreamHandler()
         log_handler.setFormatter(logging.Formatter("%(asctime)s [%(levelname)s] %(message)s"))
         self.logger.addHandler(log_handler)
+        self.cfg = config
 
         self.services = {
             "workspace_service_url": config['workspace-url'],
@@ -52,30 +52,7 @@ class GenomeAnnotationAPI:
             "handle_service_url": config['handle-service-url'],
             "service_wizard_url": config['service-wizard-url']
         }
-
-        try:
-            cache_dir = config['cache_dir']
-        except KeyError:
-            cache_dir = None
-
-        try:
-            redis_host = config['redis_host']
-            redis_port = config['redis_port']
-        except KeyError:
-            redis_host = None
-            redis_port = None
-
-        if redis_host is not None and redis_port is not None:
-            self.logger.info("Activating REDIS at host:{} port:{}".format(redis_host, redis_port))
-            cache.ObjectCache.cache_class = cache.RedisCache
-            cache.ObjectCache.cache_params = {'redis_host': redis_host, 'redis_port': redis_port}
-        elif cache_dir is not None:
-            self.logger.info("Activating File")
-            cache.ObjectCache.cache_class = cache.DBMCache
-            cache.ObjectCache.cache_params = {'path':cache_dir,'name':'data_api'}
-        else:
-            self.logger.info("Not activating REDIS")
-
+        self.gautil = GenomeIAnnotationUtil(self.services)
         #END_CONSTRUCTOR
         pass
 
@@ -91,8 +68,7 @@ class GenomeAnnotationAPI:
         # ctx is the context object
         # return variables are: returnVal
         #BEGIN get_taxon
-        ga = GenomeAnnotationAPI_local(self.services, ctx['token'], inputs_get_taxon['ref'])
-        returnVal = ga.get_taxon(ref_only=True)
+        returnVal = self.gautil.get_taxon_ref(inputs_get_taxon['ref'])
         #END get_taxon
 
         # At some point might do deeper type checking...
@@ -142,8 +118,7 @@ class GenomeAnnotationAPI:
         # ctx is the context object
         # return variables are: returnVal
         #BEGIN get_feature_types
-        ga = GenomeAnnotationAPI_local(self.services, ctx['token'], inputs_get_feature_types['ref'])
-        returnVal = ga.get_feature_types()
+        raise NotImplementedError('This method is deprecated')
         #END get_feature_types
 
         # At some point might do deeper type checking...
@@ -164,12 +139,7 @@ class GenomeAnnotationAPI:
         # ctx is the context object
         # return variables are: returnVal
         #BEGIN get_feature_type_descriptions
-        ga = GenomeAnnotationAPI_local(self.services, ctx['token'], inputs_get_feature_type_descriptions['ref'])
-
-        if 'feature_id_list' in inputs_get_feature_type_descriptions:
-            returnVal = ga.get_feature_type_descriptions(inputs_get_feature_type_descriptions['feature_id_list'])
-        else:
-            returnVal = ga.get_feature_type_descriptions()
+        raise NotImplementedError('This method is deprecated')
         #END get_feature_type_descriptions
 
         # At some point might do deeper type checking...
@@ -190,12 +160,7 @@ class GenomeAnnotationAPI:
         # ctx is the context object
         # return variables are: returnVal
         #BEGIN get_feature_type_counts
-        ga = GenomeAnnotationAPI_local(self.services, ctx['token'], inputs_get_feature_type_counts['ref'])
-
-        if 'feature_type_list' in inputs_get_feature_type_counts:
-            returnVal = ga.get_feature_type_counts(inputs_get_feature_type_counts['feature_type_list'])
-        else:
-            returnVal = ga.get_feature_type_counts()
+        raise NotImplementedError('This method is deprecated')
         #END get_feature_type_counts
 
         # At some point might do deeper type checking...
@@ -229,19 +194,11 @@ class GenomeAnnotationAPI:
         # ctx is the context object
         # return variables are: returnVal
         #BEGIN get_feature_ids
-        ga = GenomeAnnotationAPI_local(self.services, ctx['token'], inputs_get_feature_ids['ref'])
-
-        if 'group_type' in inputs_get_feature_ids:
-            if 'filters' in inputs_get_feature_ids:
-                returnVal = ga.get_feature_ids(inputs_get_feature_ids['filters'],
-                                               inputs_get_feature_ids['group_by'])
-            else:
-                returnVal = ga.get_feature_ids(group_by=inputs_get_feature_ids['group_by'])
-        else:
-            if 'filters' in inputs_get_feature_ids:
-                returnVal = ga.get_feature_ids(inputs_get_feature_ids['filters'])
-            else:
-                returnVal = ga.get_feature_ids()
+        returnVal = self.gautil.get_feature_ids(
+            inputs_get_feature_ids['ref'],
+            inputs_get_feature_ids.get('filters', None),
+            inputs_get_feature_ids.get('group_by', 'type'),
+        )
         #END get_feature_ids
 
         # At some point might do deeper type checking...
@@ -276,17 +233,11 @@ class GenomeAnnotationAPI:
         # ctx is the context object
         # return variables are: returnVal
         #BEGIN get_features
-        ga = GenomeAnnotationAPI_local(self.services, ctx['token'], inputs_get_features['ref'])
-
-        if 'exclude_sequence' in inputs_get_features:
-            exclude_sequence = inputs_get_features['exclude_sequence'] == 1
-        else:
-            exclude_sequence = False
-
-        if 'feature_id_list' in inputs_get_features:
-            returnVal = ga.get_features(inputs_get_features['feature_id_list'], exclude_sequence)
-        else:
-            returnVal = ga.get_features(exclude_sequence=exclude_sequence)
+        returnVal = self.gautil.get_features(
+            inputs_get_features['ref'],
+            inputs_get_features.get('feature_id_list', None),
+            inputs_get_features.get('exclude_sequence', False),
+        )
         #END get_features
 
         # At some point might do deeper type checking...
@@ -326,26 +277,7 @@ class GenomeAnnotationAPI:
         # ctx is the context object
         # return variables are: returnVal
         #BEGIN get_features2
-
-        if 'ref' not in params:
-          raise ValueError('ref field in parameters object is required')
-
-        feature_id_list = None
-        if 'feature_id_list' in params:
-          feature_id_list = params['feature_id_list']
-
-        exclude_sequence = False
-        if 'exclude_sequence' in params:
-          if params['exclude_sequence'] == 1:
-            exclude_sequence = True
-          elif params['exclude_sequence'] != 0:
-            raise ValueError('exclude_sequence field in parameters object must be set to either 1 or 0')
-
-        ga = GenomeAnnotationAPI_local(self.services, ctx['token'], params['ref'])
-        returnVal = ga.get_features(
-                          feature_id_list=feature_id_list,
-                          exclude_sequence=exclude_sequence)
-
+        raise NotImplementedError('This method is deprecated')
         #END get_features2
 
         # At some point might do deeper type checking...
@@ -371,8 +303,7 @@ class GenomeAnnotationAPI:
         # ctx is the context object
         # return variables are: returnVal
         #BEGIN get_proteins
-        ga = GenomeAnnotationAPI_local(self.services, ctx['token'], inputs_get_proteins['ref'])
-        returnVal = ga.get_proteins()
+        raise NotImplementedError('This method is deprecated')
         #END get_proteins
 
         # At some point might do deeper type checking...
@@ -395,12 +326,7 @@ class GenomeAnnotationAPI:
         # ctx is the context object
         # return variables are: returnVal
         #BEGIN get_feature_locations
-        ga = GenomeAnnotationAPI_local(self.services, ctx['token'], inputs_get_feature_locations['ref'])
-
-        if 'feature_id_list' in inputs_get_feature_locations:
-            returnVal = ga.get_feature_locations(inputs_get_feature_locations['feature_id_list'])
-        else:
-            returnVal = ga.get_feature_locations()
+        raise NotImplementedError('This method is deprecated')
         #END get_feature_locations
 
         # At some point might do deeper type checking...
@@ -421,12 +347,7 @@ class GenomeAnnotationAPI:
         # ctx is the context object
         # return variables are: returnVal
         #BEGIN get_feature_publications
-        ga = GenomeAnnotationAPI_local(self.services, ctx['token'], inputs_get_feature_publications['ref'])
-
-        if 'feature_id_list' in inputs_get_feature_publications:
-            returnVal = ga.get_feature_publications(inputs_get_feature_publications['feature_id_list'])
-        else:
-            returnVal = ga.get_feature_publications()
+        raise NotImplementedError('This method is deprecated')
         #END get_feature_publications
 
         # At some point might do deeper type checking...
@@ -450,12 +371,7 @@ class GenomeAnnotationAPI:
         # ctx is the context object
         # return variables are: returnVal
         #BEGIN get_feature_dna
-        ga = GenomeAnnotationAPI_local(self.services, ctx['token'], inputs_get_feature_dna['ref'])
-
-        if 'feature_id_list' in inputs_get_feature_dna:
-            returnVal = ga.get_feature_dna(inputs_get_feature_dna['feature_id_list'])
-        else:
-            returnVal = ga.get_feature_dna()
+        raise NotImplementedError('This method is deprecated')
         #END get_feature_dna
 
         # At some point might do deeper type checking...
@@ -476,12 +392,7 @@ class GenomeAnnotationAPI:
         # ctx is the context object
         # return variables are: returnVal
         #BEGIN get_feature_functions
-        ga = GenomeAnnotationAPI_local(self.services, ctx['token'], inputs_get_feature_functions['ref'])
-
-        if 'feature_id_list' in inputs_get_feature_functions:
-            returnVal = ga.get_feature_functions(inputs_get_feature_functions['feature_id_list'])
-        else:
-            returnVal = ga.get_feature_functions()
+        raise NotImplementedError('This method is deprecated')
         #END get_feature_functions
 
         # At some point might do deeper type checking...
@@ -502,12 +413,7 @@ class GenomeAnnotationAPI:
         # ctx is the context object
         # return variables are: returnVal
         #BEGIN get_feature_aliases
-        ga = GenomeAnnotationAPI_local(self.services, ctx['token'], inputs_get_feature_aliases['ref'])
-
-        if 'feature_id_list' in inputs_get_feature_aliases:
-            returnVal = ga.get_feature_aliases(inputs_get_feature_aliases['feature_id_list'])
-        else:
-            returnVal = ga.get_feature_aliases()
+        raise NotImplementedError('This method is deprecated')
         #END get_feature_aliases
 
         # At some point might do deeper type checking...
@@ -532,12 +438,8 @@ class GenomeAnnotationAPI:
         # ctx is the context object
         # return variables are: returnVal
         #BEGIN get_cds_by_gene
-        ga = GenomeAnnotationAPI_local(self.services, ctx['token'], inputs_get_cds_by_gene['ref'])
-
-        if 'gene_id_list' in inputs_get_cds_by_gene:
-            returnVal = ga.get_cds_by_gene(inputs_get_cds_by_gene['gene_id_list'])
-        else:
-            returnVal = ga.get_cds_by_gene()
+        returnVal = self.gautil.get_cds_by_gene(inputs_get_cds_by_gene['ref'],
+                                                inputs_get_cds_by_gene['gene_id_list'])
         #END get_cds_by_gene
 
         # At some point might do deeper type checking...
@@ -557,12 +459,7 @@ class GenomeAnnotationAPI:
         # ctx is the context object
         # return variables are: returnVal
         #BEGIN get_cds_by_mrna
-        ga = GenomeAnnotationAPI_local(self.services, ctx['token'], inputs_mrna_id_list['ref'])
-
-        if 'mrna_id_list' in inputs_mrna_id_list:
-            returnVal = ga.get_cds_by_mrna(inputs_mrna_id_list['mrna_id_list'])
-        else:
-            returnVal = ga.get_cds_by_mrna()
+        raise NotImplementedError('This method is deprecated')
         #END get_cds_by_mrna
 
         # At some point might do deeper type checking...
@@ -583,12 +480,7 @@ class GenomeAnnotationAPI:
         # ctx is the context object
         # return variables are: returnVal
         #BEGIN get_gene_by_cds
-        ga = GenomeAnnotationAPI_local(self.services, ctx['token'], inputs_get_gene_by_cds['ref'])
-
-        if 'cds_id_list' in inputs_get_gene_by_cds:
-            returnVal = ga.get_gene_by_cds(inputs_get_gene_by_cds['cds_id_list'])
-        else:
-            returnVal = ga.get_gene_by_cds([])
+        raise NotImplementedError('This method is deprecated')
         #END get_gene_by_cds
 
         # At some point might do deeper type checking...
@@ -609,12 +501,7 @@ class GenomeAnnotationAPI:
         # ctx is the context object
         # return variables are: returnVal
         #BEGIN get_gene_by_mrna
-        ga = GenomeAnnotationAPI_local(self.services, ctx['token'], inputs_get_gene_by_mrna['ref'])
-
-        if 'mrna_id_list' in inputs_get_gene_by_mrna:
-            returnVal = ga.get_gene_by_mrna(inputs_get_gene_by_mrna['mrna_id_list'])
-        else:
-            returnVal = ga.get_gene_by_mrna([])
+        raise NotImplementedError('This method is deprecated')
         #END get_gene_by_mrna
 
         # At some point might do deeper type checking...
@@ -635,12 +522,7 @@ class GenomeAnnotationAPI:
         # ctx is the context object
         # return variables are: returnVal
         #BEGIN get_mrna_by_cds
-        ga = GenomeAnnotationAPI_local(self.services, ctx['token'], inputs_get_mrna_by_cds['ref'])
-
-        if 'cds_id_list' in inputs_get_mrna_by_cds:
-            returnVal = ga.get_mrna_by_cds(inputs_get_mrna_by_cds['cds_id_list'])
-        else:
-            returnVal = ga.get_mrna_by_cds()
+        raise NotImplementedError('This method is deprecated')
         #END get_mrna_by_cds
 
         # At some point might do deeper type checking...
@@ -661,12 +543,7 @@ class GenomeAnnotationAPI:
         # ctx is the context object
         # return variables are: returnVal
         #BEGIN get_mrna_by_gene
-        ga = GenomeAnnotationAPI_local(self.services, ctx['token'], inputs_get_mrna_by_gene['ref'])
-
-        if 'gene_id_list' in inputs_get_mrna_by_gene:
-            returnVal = ga.get_mrna_by_gene(inputs_get_mrna_by_gene['gene_id_list'])
-        else:
-            returnVal = ga.get_mrna_by_gene()
+        raise NotImplementedError('This method is deprecated')
         #END get_mrna_by_gene
 
         # At some point might do deeper type checking...
@@ -692,12 +569,7 @@ class GenomeAnnotationAPI:
         # ctx is the context object
         # return variables are: returnVal
         #BEGIN get_mrna_exons
-        ga = GenomeAnnotationAPI_local(self.services, ctx['token'], inputs_get_mrna_exons['ref'])
-
-        if 'mrna_id_list' in inputs_get_mrna_exons:
-            returnVal = ga.get_mrna_exons(inputs_get_mrna_exons['mrna_id_list'])
-        else:
-            returnVal = ga.get_mrna_exons()
+        raise NotImplementedError('This method is deprecated')
         #END get_mrna_exons
 
         # At some point might do deeper type checking...
@@ -721,12 +593,7 @@ class GenomeAnnotationAPI:
         # ctx is the context object
         # return variables are: returnVal
         #BEGIN get_mrna_utrs
-        ga = GenomeAnnotationAPI_local(self.services, ctx['token'], inputs_get_mrna_utrs['ref'])
-
-        if 'mrna_id_list' in inputs_get_mrna_utrs:
-            returnVal = ga.get_mrna_utrs(inputs_get_mrna_utrs['mrna_id_list'])
-        else:
-            returnVal = ga.get_mrna_utrs()
+        raise NotImplementedError('This method is deprecated')
         #END get_mrna_utrs
 
         # At some point might do deeper type checking...
@@ -759,8 +626,7 @@ class GenomeAnnotationAPI:
         # ctx is the context object
         # return variables are: returnVal
         #BEGIN get_summary
-        ga = GenomeAnnotationAPI_local(self.services, ctx['token'], inputs_get_summary['ref'])
-        returnVal = ga.get_summary()
+        raise NotImplementedError('This method is deprecated')
         #END get_summary
 
         # At some point might do deeper type checking...
@@ -793,10 +659,7 @@ class GenomeAnnotationAPI:
         # ctx is the context object
         # return variables are: return_1, return_2
         #BEGIN save_summary
-        ga = GenomeAnnotationAPI_local(self.services, ctx['token'], inputs_save_summary['ref'])
-        returnVal = ga.save_summary()
-        return_1 = returnVal[0]
-        return_2 = returnVal[1]
+        raise NotImplementedError('This method is deprecated')
         #END save_summary
 
         # At some point might do deeper type checking...
@@ -894,138 +757,7 @@ class GenomeAnnotationAPI:
         # ctx is the context object
         # return variables are: returnVal
         #BEGIN get_combined_data
-        ws = Workspace(self.services['workspace_service_url'], token=ctx['token'])
-        input_obj_info = ws.get_object_info_new({'objects': [{'ref': params['ref']}]})[0]
-        input_obj_type = input_obj_info[2].split('-')[0]
-        is_legacy = input_obj_type == "KBaseGenomes.Genome"
-        exclude_genes = 'exclude_genes' in params and params['exclude_genes'] == 1
-        include_mrnas = 'include_mrnas' in params and params['include_mrnas'] == 1
-        exclude_cdss = 'exclude_cdss' in params and params['exclude_cdss'] == 1
-        gene_type = 'gene'
-        mrna_type = 'mRNA'
-        cds_type = 'CDS'
-        load_features_by_type = None
-        if 'include_features_by_type' in params:
-            load_features_by_type = set(params['include_features_by_type'])
-        else:
-            load_features_by_type = set([gene_type, cds_type])
-        if exclude_genes and gene_type in load_features_by_type:
-            load_features_by_type.remove(gene_type)
-        if include_mrnas:
-            load_features_by_type.add(mrna_type)
-        if exclude_cdss and cds_type in load_features_by_type:
-            load_features_by_type.remove(cds_type)
-        load_protein_by_cds_id = not ('exclude_protein_by_cds_id' in params and params['exclude_protein_by_cds_id'] == 1)
-        load_mrna_ids_by_gene_id = 'include_mrna_ids_by_gene_id' in params and params['include_mrna_ids_by_gene_id'] == 1
-        load_cds_ids_by_gene_id = not ('exclude_cds_ids_by_gene_id' in params and params['exclude_cds_ids_by_gene_id'] == 1)
-        load_cds_id_by_mrna_id = 'include_cds_id_by_mrna_id' in params and params['include_cds_id_by_mrna_id'] == 1
-        load_exons_by_mrna_id = 'include_exons_by_mrna_id' in params and params['include_exons_by_mrna_id'] == 1
-        load_utr_by_utr_type_by_mrna_id = 'include_utr_by_utr_type_by_mrna_id' in params and params['include_utr_by_utr_type_by_mrna_id'] == 1
-        load_summary = not ('exclude_summary' in params and params['exclude_summary'] == 1)
-        ga = GenomeAnnotationAPI_local(self.services, ctx['token'], params['ref'])
-        genome_data = {'gene_type': gene_type, 'mrna_type': mrna_type, 'cds_type': cds_type}
-        all_feature_types = ga.get_feature_types()
-        genome_data['feature_types'] = all_feature_types
-        feature_types_to_load = list(load_features_by_type)
-        feature_ids_by_type = ga.get_feature_ids({"type_list": all_feature_types})['by_type']
-        feature_ids = []
-        for feature_type in feature_types_to_load:
-            feature_ids.extend(feature_ids_by_type[feature_type])
-        feature_map = None
-        if len(feature_ids) > 0:
-            feature_map = ga.get_features(feature_ids)
-        else:
-            feature_map = {}
-        feature_by_id_by_type = {}
-        for feature_type in feature_types_to_load:
-            id_to_feature = {}
-            for feature_id in feature_ids_by_type[feature_type]:
-                feature_data = feature_map[feature_id]
-                if 'feature_quality_score' in feature_data:
-                    fq_score = feature_data['feature_quality_score']
-                    if fq_score is not None and not isinstance(fq_score, list):
-                        if isinstance(fq_score, basestring):
-                            feature_data['feature_quality_score'] = [fq_score]
-                        else:
-                            feature_data['feature_quality_score'] = [str(fq_score)]
-                id_to_feature[feature_id] = feature_data
-            feature_by_id_by_type[feature_type] = id_to_feature
-        genome_data['feature_by_id_by_type'] = feature_by_id_by_type
-        if load_protein_by_cds_id:
-            genome_data['protein_by_cds_id'] = ga.get_proteins()
-        if load_mrna_ids_by_gene_id:
-            if is_legacy:
-                genome_data['mrna_ids_by_gene_id'] = {}
-            else:
-                genome_data['mrna_ids_by_gene_id'] = ga.get_mrna_by_gene(feature_ids_by_type[gene_type])
-        if load_cds_ids_by_gene_id:
-            if is_legacy:
-                genome_data['cds_ids_by_gene_id'] = {}
-            else:
-                genome_data['cds_ids_by_gene_id'] = ga.get_cds_by_gene(feature_ids_by_type[gene_type])
-        if load_cds_id_by_mrna_id:
-            if is_legacy:
-                genome_data['cds_id_by_mrna_id'] = {}
-            else:
-                genome_data['cds_id_by_mrna_id'] = ga.get_cds_by_mrna()
-        if load_exons_by_mrna_id:
-            genome_data['exons_by_mrna_id'] = ga.get_mrna_exons()
-        if load_utr_by_utr_type_by_mrna_id:
-            genome_data['utr_by_utr_type_by_mrna_id'] = ga.get_mrna_utrs()
-        if load_summary:
-            if is_legacy:
-                genome = ws.get_objects2({'objects': [{'ref': params['ref'], 'included': [
-                    "/scientific_name", "/tax_id", "/contig_ids", "/dna_size", "/gc_content",
-                    "/genetic_code", "/num_contigs", "/source", "/source_id", "/domain",
-                    "/taxonomy"]}]})['data'][0]['data']
-                summary = {}
-                self._migrate_property_internal(genome, summary, 'scientific_name')
-                self._migrate_property_internal(genome, summary, 'tax_id', 'taxonomy_id')
-                self._migrate_property_internal(genome, summary, 'contig_ids')
-                self._migrate_property_internal(genome, summary, 'dna_size')
-                self._migrate_property_internal(genome, summary, 'gc_content')
-                self._migrate_property_internal(genome, summary, 'genetic_code')
-                self._migrate_property_internal(genome, summary, 'num_contigs')
-                self._migrate_property_internal(genome, summary, 'source', 'assembly_source')
-                self._migrate_property_internal(genome, summary, 'source_id', 'assembly_source_id')
-                self._migrate_property_internal(genome, summary, 'domain', 'kingdom')
-                feature_type_counts = {}
-                for feature_type in feature_ids_by_type:
-                    feature_type_counts[feature_type] = len(feature_ids_by_type[feature_type])
-                summary['feature_type_counts'] = feature_type_counts
-                if 'taxonomy' in genome and genome['taxonomy'] is not None:
-                    summary['scientific_lineage'] = [x.strip() for x in genome["taxonomy"].split(";")]
-                genome_data['summary'] = summary
-            else:
-                summary = ga.get_summary()
-                if 'taxonomy' in summary:
-                    taxonomy = summary['taxonomy']
-                    self._migrate_property_internal(taxonomy, summary, 'scientific_name')
-                    self._migrate_property_internal(taxonomy, summary, 'taxonomy_id')
-                    self._migrate_property_internal(taxonomy, summary, 'kingdom')
-                    self._migrate_property_internal(taxonomy, summary, 'scientific_lineage')
-                    self._migrate_property_internal(taxonomy, summary, 'genetic_code')
-                    self._migrate_property_internal(taxonomy, summary, 'organism_aliases')
-                    del summary['taxonomy']
-                if 'assembly' in summary:
-                    assembly = summary['assembly']
-                    self._migrate_property_internal(assembly, summary, 'assembly_source')
-                    self._migrate_property_internal(assembly, summary, 'assembly_source_id')
-                    self._migrate_property_internal(assembly, summary, 'assembly_source_date')
-                    self._migrate_property_internal(assembly, summary, 'gc_content')
-                    self._migrate_property_internal(assembly, summary, 'dna_size')
-                    self._migrate_property_internal(assembly, summary, 'num_contigs')
-                    self._migrate_property_internal(assembly, summary, 'contig_ids')
-                    del summary['assembly']
-                if 'annotation' in summary:
-                    annotation = summary['annotation']
-                    self._migrate_property_internal(annotation, summary, 'external_source')
-                    self._migrate_property_internal(annotation, summary, 'external_source_date')
-                    self._migrate_property_internal(annotation, summary, 'release')
-                    self._migrate_property_internal(annotation, summary, 'original_source_filename')
-                    self._migrate_property_internal(annotation, summary, 'feature_type_counts')
-                    del summary['annotation']
-                genome_data['summary'] = summary
+        raise NotImplementedError('This method is deprecated')
         returnVal = genome_data
         #END get_combined_data
 
