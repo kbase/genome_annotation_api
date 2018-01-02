@@ -106,7 +106,7 @@ class GenomeAnnotationAPITests(unittest.TestCase):
         ret = cls.ws.create_workspace({'workspace': wsName})
         cls.wsName = wsName
 
-        """"# preload with reference data
+        # preload with reference data
         with open ('data/rhodobacter.json', 'r') as file:
             data_str=file.read()
         data = json.loads(data_str)
@@ -123,7 +123,7 @@ class GenomeAnnotationAPITests(unittest.TestCase):
             })
         info = result[0]
         cls.rhodobacter_ref = str(info[6]) +'/' + str(info[0]) + '/' + str(info[4])
-        print('created rhodobacter test genome: ' + cls.rhodobacter_ref)"""
+        print('created rhodobacter test genome: ' + cls.rhodobacter_ref)
 
         assembly_file_path = os.path.join(cls.cfg['scratch'],
                                           'e_coli_assembly.fasta')
@@ -195,7 +195,7 @@ class GenomeAnnotationAPITests(unittest.TestCase):
         return self.ws.get_object_info_new({"objects": [{"ref": ref}]})[0][2]
 
     @log
-    def test_get_new_genome(self):
+    def test_get_new_genome_downgrade(self):
         ret = self.impl.get_genome_v1(self.ctx,
           {
               'genomes': [{
@@ -221,8 +221,52 @@ class GenomeAnnotationAPITests(unittest.TestCase):
         two_feat = data['features'][-1]
         self.assertEqual(two_feat['type'], 'gene')
         self.assertEqual(two_feat['aliases'][0], 'b4370')
+        # TODO: remove this when the genome object spec is updated
+        result = self.ws.save_objects({
+            'workspace': self.wsName,
+            'objects': [{
+                'type': 'KBaseGenomes.Genome',
+                'data': data,
+                'name': 'test_revert'
+            }]
+        })
+        self.assertTrue(result[0])
 
-"""
+    @log
+    def test_get_new_genome_full(self):
+        ret = self.impl.get_genome_v1(self.ctx,
+                                      {
+                                          'genomes': [{
+                                              'ref': self.new_genome_ref
+                                          }],
+                                          'downgrade': 0
+                                      })[0]
+        # test stuff
+        data = ret['genomes'][0]['data']
+        self.assertEqual(len(ret['genomes']), 1)
+        self.assertTrue('features' in data)
+        self.assertTrue('cdss' in data)
+        self.assertTrue('mrnas' in data)
+
+    @log
+    def test_get_new_genome_subset(self):
+        ret = self.impl.get_genome_v1(self.ctx,
+                  {
+                      'genomes': [{
+                          'ref': self.new_genome_ref,
+                          'feature_array': 'cdss',
+                          'included_feature_position_index': [0]
+                      }],
+                      'included_feature_fields': ['id', 'dna_sequence']
+                  })[0]
+
+        data = ret['genomes'][0]['data']
+        self.assertEqual(len(ret['genomes']), 1)
+        self.assertTrue('features' in data)
+        self.assertEqual(len(data['features']), 1)
+        self.assertEqual(data['features'][0]['id'], 'b0001_CDS_1')
+        self.assertEqual(len(data['features'][0]['dna_sequence']), 66)
+
     @log
     def test_get_all(self):
         ret = self.impl.get_genome_v1(self.ctx, 
@@ -236,8 +280,6 @@ class GenomeAnnotationAPITests(unittest.TestCase):
         self.assertEqual(len(data),1)
         self.assertEqual(data[0]['data']['scientific_name'],'Rhodobacter CACIA 14H1')
         self.assertTrue('features' in data[0]['data'])
-        self.assertTrue('cdss' in data[0]['data'])
-        self.assertTrue('mrnas' in data[0]['data'])
 
     @log
     def test_get_feature_id_subdata(self):
@@ -470,4 +512,4 @@ class GenomeAnnotationAPITests(unittest.TestCase):
                                                'name': obj_name,
                                                'data': data,
                                            })[0]
-        self.assertEqual(error, str(context.exception.message))"""
+        self.assertEqual(error, str(context.exception.message))

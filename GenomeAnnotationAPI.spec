@@ -633,22 +633,32 @@ module GenomeAnnotationAPI {
 
 
     /*
-
+        ref - genome refference
+        feature array - optional, which array the included_feature_position_index
+            refer to. defaults to "features".
+        included_feature_position_index - optional, only include features at
+            the specified indices
+        ref_path_to_genome - optional, a reference path to the genome.
     */
     typedef structure {
         string ref;
+        string feature_array;
         list <int> included_feature_position_index;
         list <string> ref_path_to_genome;
     } GenomeSelectorV1;
 
 
-
+    /*
+        downgrade - optional, defaults to true. Convert new genome features into
+            a back-compatible representation.
+    */
     typedef structure {
         list <GenomeSelectorV1> genomes;
 
         list <string> included_fields;
         list <string> included_feature_fields;
 
+        boolean downgrade;
         boolean ignore_errors;
         boolean no_data;
         boolean no_metadata;

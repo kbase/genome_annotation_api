@@ -63,8 +63,8 @@ class GenomeInterfaceV1:
         self.validate_proper_ws_type(object_specifications, getObjParams['ignoreErrors'], 'KBaseGenomes.Genome')
         data = self.ws.get_objects2(getObjParams)['data']
         for i, genome in enumerate(data):
-            if 'genome_tiers' in genome['data']:
-                data[i]['data'] = self.downgrade_genome(genome['data'])
+            if params.get('downgrade', True):
+                data[i]['data'] = self.downgrade_genome(genome.get('data', {}))
 
         if 'no_metadata' in params:
             if params['no_metadata'] == 1:
@@ -95,6 +95,8 @@ class GenomeInterfaceV1:
                     feat['function'] = "; ".join(feat['functions'])
                 for ont, terms in feat.get('ontology_terms', {}).items():
                     for _id, term in terms.items():
+                        if "term_lineage" in feat['ontology_terms'][ont][_id]:
+                            continue  # don't change a properly styled feature
                         feat['ontology_terms'][ont][_id] = {
                             "evidence": [],
                             "id": _id,
@@ -144,19 +146,24 @@ class GenomeInterfaceV1:
             ref_path_to_genome = []
             if 'ref_path_to_genome' in g:
                 ref_path_to_genome = g['ref_path_to_genome']
-            selector = self.create_base_object_spec(g['ref'],ref_path_to_genome)
+            selector = self.create_base_object_spec(g['ref'],
+                                                    ref_path_to_genome)
             included = included_fields
+            feature_array = 'features'
+            if g.get('feature_array'):
+                feature_array = g['feature_array']
 
             # if there are specific features selected, get those
-            if 'included_feature_position_index' in g and len(g['included_feature_position_index'])>0:
+            if len(g.get('included_feature_position_index', [])) > 0:
                 for pos in g['included_feature_position_index']:
-                    base = 'features/'+str(pos)
+                    base = feature_array+'/'+str(pos)
                     included_feature_paths = self.create_feature_selectors(base, included_feature_fields)
                     for p in included_feature_paths:
                         included.append(p)
             # no selected features, but if included_feature_fields is defined, do that
             elif len(included_feature_fields) >0:
-                included_feature_paths = self.create_feature_selectors('features/[*]', included_feature_fields)
+                base = feature_array + '/[*]'
+                included_feature_paths = self.create_feature_selectors(base, included_feature_fields)
                 for p in included_feature_paths:
                     included.append(p)
 
@@ -165,11 +172,12 @@ class GenomeInterfaceV1:
             object_specifications.append(selector)
         return object_specifications
 
-    def create_feature_selectors(self, base, included_feature_fields):
+    @staticmethod
+    def create_feature_selectors(base, included_feature_fields):
         included = []
-        if len(included_feature_fields)>0:
+        if len(included_feature_fields) > 0:
             for f in included_feature_fields:
-                included.append( base + '/' + f)
+                included.append(base + '/' + f)
         else:
             included = [base]
         return included

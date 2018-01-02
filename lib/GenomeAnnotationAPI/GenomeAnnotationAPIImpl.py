@@ -25,9 +25,9 @@ class GenomeAnnotationAPI:
     # state. A method could easily clobber the state set by another while
     # the latter method is running.
     ######################################### noqa
-    VERSION = "0.1.5"
-    GIT_URL = "https://github.com/rsutormin/genome_annotation_api"
-    GIT_COMMIT_HASH = "ad3b1d8fad4afb85ce6280482e89faaedb3f1347"
+    VERSION = "0.3.0"
+    GIT_URL = "git@github.com:kbase/genome_annotation_api.git"
+    GIT_COMMIT_HASH = "f67d18f16e6a1b39476ff0e1a67938dd9db08bbd"
 
     #BEGIN_CLASS_HEADER
     def _migrate_property_internal(self, from_dict, to_dict, prop_name, to_prop_name = None):
@@ -1040,18 +1040,26 @@ class GenomeAnnotationAPI:
         """
         A reasonably simple wrapper on get_objects2, but with Genome specific
         filters instead of arbitrary get subdata included paths.
-        :param params: instance of type "GetGenomeParamsV1" -> structure:
-           parameter "genomes" of list of type "GenomeSelectorV1" ->
-           structure: parameter "ref" of String, parameter
+        :param params: instance of type "GetGenomeParamsV1" (downgrade -
+           optional, defaults to true. Convert new genome features into a
+           back-compatible representation.) -> structure: parameter "genomes"
+           of list of type "GenomeSelectorV1" (ref - genome refference
+           feature array - optional, which array the
+           included_feature_position_index refer to. defaults to "features".
+           included_feature_position_index - optional, only include features
+           at the specified indices ref_path_to_genome - optional, a
+           reference path to the genome.) -> structure: parameter "ref" of
+           String, parameter "feature_array" of String, parameter
            "included_feature_position_index" of list of Long, parameter
            "ref_path_to_genome" of list of String, parameter
            "included_fields" of list of String, parameter
-           "included_feature_fields" of list of String, parameter
-           "ignore_errors" of type "boolean" (A boolean - 0 for false, 1 for
-           true. @range (0, 1)), parameter "no_data" of type "boolean" (A
-           boolean - 0 for false, 1 for true. @range (0, 1)), parameter
-           "no_metadata" of type "boolean" (A boolean - 0 for false, 1 for
-           true. @range (0, 1))
+           "included_feature_fields" of list of String, parameter "downgrade"
+           of type "boolean" (A boolean - 0 for false, 1 for true. @range (0,
+           1)), parameter "ignore_errors" of type "boolean" (A boolean - 0
+           for false, 1 for true. @range (0, 1)), parameter "no_data" of type
+           "boolean" (A boolean - 0 for false, 1 for true. @range (0, 1)),
+           parameter "no_metadata" of type "boolean" (A boolean - 0 for
+           false, 1 for true. @range (0, 1))
         :returns: instance of type "GenomeDataSetV1" -> structure: parameter
            "genomes" of list of type "GenomeDataV1" -> structure: parameter
            "data" of type "Genome" (Genome object holds much of the data
