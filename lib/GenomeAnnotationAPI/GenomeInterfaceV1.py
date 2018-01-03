@@ -34,44 +34,33 @@ class GenomeInterfaceV1:
     #     boolean no_metadata;
     # } GetGenomeParamsV1;
     #
+    def _check_bool(self, params, key, default):
+        if key in params:
+            if params[key] not in {0, 1}:
+                raise ValueError(
+                    '{} input field must be set to 0 or 1'.format(key))
+            return params[key]
+        return default
+
     def get_genome(self, ctx, params):
 
         object_specifications = self.build_object_specifications(params)
 
         getObjParams = {'objects': object_specifications}
 
-        if 'ignoreErrors' in params:
-            if params['ignoreErrors']==0:
-                getObjParams['ignoreErrors']=0
-            elif params['ignoreErrors']==1:
-                getObjParams['ignoreErrors']=1
-            else:
-                raise ValueError('ignoreErrors input field must be set to 0 or 1')
-        else:
-            getObjParams['ignoreErrors']=0
-
-        if 'no_data' in params:
-            if params['no_data']==0:
-                getObjParams['no_data']=0
-            elif params['no_data']==1:
-                getObjParams['no_data']=1
-            else:
-                raise ValueError('no_data input field must be set to 0 or 1')
-        else:
-            getObjParams['no_data']=0
+        getObjParams['no_data'] = self._check_bool(params, 'no_data', 0)
+        getObjParams['ignoreErrors'] = self._check_bool(params, 'ignoreErrors', 0)
+        downgrade = self._check_bool(params, 'downgrade', 1)
+        no_metadata = self._check_bool(params, 'no_metadata', 0)
 
         self.validate_proper_ws_type(object_specifications, getObjParams['ignoreErrors'], 'Genome')
         data = self.ws.get_objects2(getObjParams)['data']
         for i, genome in enumerate(data):
-            if params.get('downgrade', True):
+            if downgrade:
                 data[i]['data'] = self.downgrade_genome(genome.get('data', {}))
 
-        if 'no_metadata' in params:
-            if params['no_metadata'] == 1:
-                d2 = []
-                for obj in data:
-                    d2.append({'data': obj['data']})
-                data = d2
+        if no_metadata:
+            data = [{'data': obj['data']} for obj in data]
 
         returnPackage = {'genomes': data}
         return returnPackage

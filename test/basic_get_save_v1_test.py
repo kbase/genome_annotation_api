@@ -21,6 +21,7 @@ from GenomeAnnotationAPI.GenomeAnnotationAPIServer import MethodContext
 from DataFileUtil.DataFileUtilClient import DataFileUtil
 from GenomeAnnotationAPI.authclient import KBaseAuth as _KBaseAuth
 from AssemblyUtil.AssemblyUtilClient import AssemblyUtil
+from GenomeAnnotationAPI.GenomeInterfaceV1 import GenomeInterfaceV1
 
 unittest.installHandler()
 
@@ -194,6 +195,70 @@ class GenomeAnnotationAPITests(unittest.TestCase):
     def getType(self, ref=None):
         return self.ws.get_object_info_new({"objects": [{"ref": ref}]})[0][2]
 
+    def _downgraded(self, data):
+        self.assertTrue('features' in data)
+        self.assertTrue('cdss' not in data)
+        self.assertTrue('mrnas' not in data)
+        one_feat = data['features'][0]
+        self.assertEqual(one_feat['type'], 'gene')
+        self.assertEqual(one_feat['function'], 'leader; Amino acid biosynthesi'
+                                               's: Threonine; product:thr oper'
+                                               'on leader peptide')
+        self.assertEqual(one_feat['aliases'][0], 'ECK0001; JW4367')
+        self.assertEqual(one_feat['ontology_terms'],
+                         {'GO':
+                             {'GO:0009088':
+                                 {
+                                     "evidence": [],
+                                     "id": "GO:0009088",
+                                     "ontology_ref": "6308/3/2",
+                                     "term_lineage": [],
+                                     "term_name": "threonine biosynthetic process"
+                                 }}})
+        two_feat = data['features'][-1]
+        self.assertEqual(two_feat['type'], 'gene')
+        self.assertEqual(two_feat['aliases'][0], 'b4370')
+
+    @log
+    def test_genome_downgrade(self):
+        data = json.load(open('data/new_ecoli_genome.json'))
+        down_data = GenomeInterfaceV1.downgrade_genome(data)
+        self._downgraded(down_data)
+
+    def test_bad_get_genome_input(self):
+        with self.assertRaises(ValueError):
+            ret = self.impl.get_genome_v1(self.ctx,
+                      {
+                          'genomes': [{
+                              'ref': self.new_genome_ref
+                          }],
+                          'no_data': 'T'
+                      })[0]
+        with self.assertRaises(ValueError):
+            ret = self.impl.get_genome_v1(self.ctx,
+                      {
+                          'genomes': [{
+                              'ref': self.new_genome_ref
+                          }],
+                          'ignoreErrors': 'T'
+                      })[0]
+        with self.assertRaises(ValueError):
+            ret = self.impl.get_genome_v1(self.ctx,
+                      {
+                          'genomes': [{
+                              'ref': self.new_genome_ref
+                          }],
+                          'downgrade': 'T'
+                      })[0]
+        with self.assertRaises(ValueError):
+            ret = self.impl.get_genome_v1(self.ctx,
+                      {
+                          'genomes': [{
+                              'ref': self.new_genome_ref
+                          }],
+                          'no_metadata': 'T'
+                      })[0]
+
     @log
     def test_get_new_genome_downgrade(self):
         ret = self.impl.get_genome_v1(self.ctx,
@@ -205,22 +270,7 @@ class GenomeAnnotationAPITests(unittest.TestCase):
         # test stuff
         data = ret['genomes'][0]['data']
         self.assertEqual(len(ret['genomes']), 1)
-        self.assertTrue('features' in data)
-        self.assertTrue('cdss' not in data)
-        self.assertTrue('mrnas' not in data)
-        one_feat = data['features'][0]
-        self.assertEqual(one_feat['type'], 'gene')
-        self.assertEqual(one_feat['function'], 'leader; Amino acid biosynthesi'
-                                               's: Threonine; product:thr oper'
-                                               'on leader peptide')
-        self.assertEqual(one_feat['aliases'][0], 'ECK0001; JW4367')
-        self.assertEqual(one_feat['ontology_terms'], {'GO': {'GO:0009088':
-            {"evidence": [], "id": "GO:0009088", "ontology_ref": "6308/3/2",
-             "term_lineage": [], "term_name": "threonine biosynthetic process"
-             }}})
-        two_feat = data['features'][-1]
-        self.assertEqual(two_feat['type'], 'gene')
-        self.assertEqual(two_feat['aliases'][0], 'b4370')
+        self._downgraded(data)
         # TODO: remove this when the genome object spec is updated
         result = self.ws.save_objects({
             'workspace': self.wsName,
