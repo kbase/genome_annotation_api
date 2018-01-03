@@ -60,7 +60,7 @@ class GenomeInterfaceV1:
         else:
             getObjParams['no_data']=0
 
-        self.validate_proper_ws_type(object_specifications, getObjParams['ignoreErrors'], 'KBaseGenomes.Genome')
+        self.validate_proper_ws_type(object_specifications, getObjParams['ignoreErrors'], 'Genome')
         data = self.ws.get_objects2(getObjParams)['data']
         for i, genome in enumerate(data):
             if params.get('downgrade', True):
@@ -191,7 +191,7 @@ class GenomeInterfaceV1:
         # Make sure type name matches, no check for version yet!
         for i in info:
             if i is not None:
-                if i[2].split('-')[0] != type_name:
+                if i[2].split('-')[0].split('.')[1] != type_name:
                     raise ValueError('An input object reference is not a '+type_name+'. It was: '+i[2])
 
 
