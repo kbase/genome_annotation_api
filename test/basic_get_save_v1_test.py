@@ -111,8 +111,6 @@ class GenomeAnnotationAPITests(unittest.TestCase):
         with open ('data/rhodobacter.json', 'r') as file:
             data_str=file.read()
         data = json.loads(data_str)
-        data['cdss'] = []  # Support for new Genome type structure
-        data['mrnas'] = [] # Support for new Genome type structure
         # save to ws
         result = cls.ws.save_objects({
                 'workspace':wsName,
@@ -173,7 +171,7 @@ class GenomeAnnotationAPITests(unittest.TestCase):
         # create a WS
         wsName = self.generatePesudoRandomWorkspaceName()
         # read in the test Rhodobacter genome
-        with open ('data/rhodobacter.json', 'r') as file:
+        with open('data/rhodobacter.json', 'r') as file:
             data_str=file.read()
         data = json.loads(data_str)
         data['cdss'] = []  # Support for new Genome type structure
@@ -226,7 +224,7 @@ class GenomeAnnotationAPITests(unittest.TestCase):
         self._downgraded(down_data)
 
     def test_bad_get_genome_input(self):
-        with self.assertRaises(ValueError):
+        with self.assertRaisesRegexp(ValueError, 'must be a boolean'):
             ret = self.impl.get_genome_v1(self.ctx,
                       {
                           'genomes': [{
@@ -234,7 +232,7 @@ class GenomeAnnotationAPITests(unittest.TestCase):
                           }],
                           'no_data': 'T'
                       })[0]
-        with self.assertRaises(ValueError):
+        with self.assertRaisesRegexp(ValueError, 'must be a boolean'):
             ret = self.impl.get_genome_v1(self.ctx,
                       {
                           'genomes': [{
@@ -242,7 +240,7 @@ class GenomeAnnotationAPITests(unittest.TestCase):
                           }],
                           'ignoreErrors': 'T'
                       })[0]
-        with self.assertRaises(ValueError):
+        with self.assertRaisesRegexp(ValueError, 'must be a boolean'):
             ret = self.impl.get_genome_v1(self.ctx,
                       {
                           'genomes': [{
@@ -250,7 +248,7 @@ class GenomeAnnotationAPITests(unittest.TestCase):
                           }],
                           'downgrade': 'T'
                       })[0]
-        with self.assertRaises(ValueError):
+        with self.assertRaisesRegexp(ValueError, 'must be a boolean'):
             ret = self.impl.get_genome_v1(self.ctx,
                       {
                           'genomes': [{
@@ -295,8 +293,29 @@ class GenomeAnnotationAPITests(unittest.TestCase):
         data = ret['genomes'][0]['data']
         self.assertEqual(len(ret['genomes']), 1)
         self.assertTrue('features' in data)
+        feat = data['features'][0]
+        self.assertEqual(feat['id'], 'b0001')
+        self.assertTrue('db_xrefs' in feat)
+        self.assertTrue('functions' in feat)
         self.assertTrue('cdss' in data)
+        cds = data['cdss'][0]
+        self.assertEqual(cds['id'], 'b0001_CDS_1')
+        self.assertTrue('db_xrefs' in cds)
+        self.assertTrue('functions' in cds)
+        self.assertTrue('inference_data' in cds)
+        self.assertItemsEqual(cds["aliases"],
+                              [["gene_synonym", "ECK0001; JW4367"],
+                              ["gene", "thrL"],
+                              ["locus_tag", "b0001"],
+                              ["protein_id", "NP_414542.1"]
+                               ])
         self.assertTrue('mrnas' in data)
+        self.assertEqual(len(data['mrnas']), 0)
+        self.assertTrue('non_coding_features' in data)
+        self.assertEqual(data['non_coding_features'][0]["id"],
+                         "repeat_region_1")
+        self.assertTrue('genome_tiers' in data)
+        self.assertTrue('ontologies_present' in data)
 
     @log
     def test_get_new_genome_subset(self):
@@ -320,16 +339,30 @@ class GenomeAnnotationAPITests(unittest.TestCase):
     @log
     def test_get_all(self):
         ret = self.impl.get_genome_v1(self.ctx, 
-            {
-                'genomes': [ {
-                    'ref' : self.getRhodobacterRef()
-                }]
-            })[0]
-        # test stuff
-        data = ret['genomes']
-        self.assertEqual(len(data),1)
-        self.assertEqual(data[0]['data']['scientific_name'],'Rhodobacter CACIA 14H1')
-        self.assertTrue('features' in data[0]['data'])
+                                      {
+                                          'genomes': [{
+                                              'ref': self.getRhodobacterRef()
+                                          }],
+                                          'downgrade': 0
+                                      })[0]
+        no_down = ret['genomes']
+        self.assertEqual(len(no_down),1)
+        self.assertEqual(no_down[0]['data']['scientific_name'],'Rhodobacter CACIA 14H1')
+        self.assertTrue('features' in no_down[0]['data'])
+        ret = self.impl.get_genome_v1(self.ctx,
+                                      {
+                                          'genomes': [{
+                                              'ref': self.getRhodobacterRef()
+                                          }],
+                                          'downgrade': 1
+                                      })[0]
+        downgraded = ret['genomes']
+        self.assertEqual(len(downgraded), 1)
+        self.assertEqual(downgraded[0]['data']['scientific_name'],
+                         'Rhodobacter CACIA 14H1')
+        self.assertTrue('features' in downgraded[0]['data'])
+        self.assertDictEqual(downgraded[0]['data'], no_down[0]['data'],
+                             "Downgrading an old genome should not change it")
 
     @log
     def test_get_feature_id_subdata(self):

@@ -36,9 +36,9 @@ class GenomeInterfaceV1:
     #
     def _check_bool(self, params, key, default):
         if key in params:
-            if params[key] not in {0, 1}:
+            if not isinstance(params[key], bool) and params[key] not in {0, 1}:
                 raise ValueError(
-                    '{} input field must be set to 0 or 1'.format(key))
+                    '{} input field must be a boolean'.format(key))
             return params[key]
         return default
 
