@@ -14,7 +14,10 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * <p>Original spec-file type: GetGenomeParamsV1</p>
- * 
+ * <pre>
+ * downgrade - optional, defaults to true. Convert new genome features into
+ *     a back-compatible representation.
+ * </pre>
  * 
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -23,6 +26,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
     "genomes",
     "included_fields",
     "included_feature_fields",
+    "downgrade",
     "ignore_errors",
     "no_data",
     "no_metadata"
@@ -35,6 +39,8 @@ public class GetGenomeParamsV1 {
     private List<String> includedFields;
     @JsonProperty("included_feature_fields")
     private List<String> includedFeatureFields;
+    @JsonProperty("downgrade")
+    private Long downgrade;
     @JsonProperty("ignore_errors")
     private Long ignoreErrors;
     @JsonProperty("no_data")
@@ -85,6 +91,21 @@ public class GetGenomeParamsV1 {
 
     public GetGenomeParamsV1 withIncludedFeatureFields(List<String> includedFeatureFields) {
         this.includedFeatureFields = includedFeatureFields;
+        return this;
+    }
+
+    @JsonProperty("downgrade")
+    public Long getDowngrade() {
+        return downgrade;
+    }
+
+    @JsonProperty("downgrade")
+    public void setDowngrade(Long downgrade) {
+        this.downgrade = downgrade;
+    }
+
+    public GetGenomeParamsV1 withDowngrade(Long downgrade) {
+        this.downgrade = downgrade;
         return this;
     }
 
@@ -145,7 +166,7 @@ public class GetGenomeParamsV1 {
 
     @Override
     public java.lang.String toString() {
-        return ((((((((((((((("GetGenomeParamsV1"+" [genomes=")+ genomes)+", includedFields=")+ includedFields)+", includedFeatureFields=")+ includedFeatureFields)+", ignoreErrors=")+ ignoreErrors)+", noData=")+ noData)+", noMetadata=")+ noMetadata)+", additionalProperties=")+ additionalProperties)+"]");
+        return ((((((((((((((((("GetGenomeParamsV1"+" [genomes=")+ genomes)+", includedFields=")+ includedFields)+", includedFeatureFields=")+ includedFeatureFields)+", downgrade=")+ downgrade)+", ignoreErrors=")+ ignoreErrors)+", noData=")+ noData)+", noMetadata=")+ noMetadata)+", additionalProperties=")+ additionalProperties)+"]");
     }
 
 }

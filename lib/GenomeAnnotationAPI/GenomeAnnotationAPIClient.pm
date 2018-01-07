@@ -81,12 +81,19 @@ sub new
     # We create an auth token, passing through the arguments that we were (hopefully) given.
 
     {
-	my $token = Bio::KBase::AuthToken->new(@args);
+	my %arg_hash2 = @args;
+	if (exists $arg_hash2{"token"}) {
+	    $self->{token} = $arg_hash2{"token"};
+	} elsif (exists $arg_hash2{"user_id"}) {
+	    my $token = Bio::KBase::AuthToken->new(@args);
+	    if (!$token->error_message) {
+	        $self->{token} = $token->token;
+	    }
+	}
 	
-	if (!$token->error_message)
+	if (exists $self->{token})
 	{
-	    $self->{token} = $token->token;
-	    $self->{client}->{token} = $token->token;
+	    $self->{client}->{token} = $self->{token};
 	}
     }
 
@@ -2765,11 +2772,13 @@ GetGenomeParamsV1 is a reference to a hash where the following keys are defined:
 	genomes has a value which is a reference to a list where each element is a GenomeAnnotationAPI.GenomeSelectorV1
 	included_fields has a value which is a reference to a list where each element is a string
 	included_feature_fields has a value which is a reference to a list where each element is a string
+	downgrade has a value which is a GenomeAnnotationAPI.boolean
 	ignore_errors has a value which is a GenomeAnnotationAPI.boolean
 	no_data has a value which is a GenomeAnnotationAPI.boolean
 	no_metadata has a value which is a GenomeAnnotationAPI.boolean
 GenomeSelectorV1 is a reference to a hash where the following keys are defined:
 	ref has a value which is a string
+	feature_array has a value which is a string
 	included_feature_position_index has a value which is a reference to a list where each element is an int
 	ref_path_to_genome has a value which is a reference to a list where each element is a string
 boolean is an int
@@ -3019,11 +3028,13 @@ GetGenomeParamsV1 is a reference to a hash where the following keys are defined:
 	genomes has a value which is a reference to a list where each element is a GenomeAnnotationAPI.GenomeSelectorV1
 	included_fields has a value which is a reference to a list where each element is a string
 	included_feature_fields has a value which is a reference to a list where each element is a string
+	downgrade has a value which is a GenomeAnnotationAPI.boolean
 	ignore_errors has a value which is a GenomeAnnotationAPI.boolean
 	no_data has a value which is a GenomeAnnotationAPI.boolean
 	no_metadata has a value which is a GenomeAnnotationAPI.boolean
 GenomeSelectorV1 is a reference to a hash where the following keys are defined:
 	ref has a value which is a string
+	feature_array has a value which is a string
 	included_feature_position_index has a value which is a reference to a list where each element is an int
 	ref_path_to_genome has a value which is a reference to a list where each element is a string
 boolean is an int
@@ -5374,6 +5385,16 @@ exclude_summary has a value which is a GenomeAnnotationAPI.boolean
 
 
 
+=item Description
+
+ref - genome refference
+feature array - optional, which array the included_feature_position_index
+    refer to. defaults to "features".
+included_feature_position_index - optional, only include features at
+    the specified indices
+ref_path_to_genome - optional, a reference path to the genome.
+
+
 =item Definition
 
 =begin html
@@ -5381,6 +5402,7 @@ exclude_summary has a value which is a GenomeAnnotationAPI.boolean
 <pre>
 a reference to a hash where the following keys are defined:
 ref has a value which is a string
+feature_array has a value which is a string
 included_feature_position_index has a value which is a reference to a list where each element is an int
 ref_path_to_genome has a value which is a reference to a list where each element is a string
 
@@ -5392,6 +5414,7 @@ ref_path_to_genome has a value which is a reference to a list where each element
 
 a reference to a hash where the following keys are defined:
 ref has a value which is a string
+feature_array has a value which is a string
 included_feature_position_index has a value which is a reference to a list where each element is an int
 ref_path_to_genome has a value which is a reference to a list where each element is a string
 
@@ -5408,6 +5431,12 @@ ref_path_to_genome has a value which is a reference to a list where each element
 
 
 
+=item Description
+
+downgrade - optional, defaults to true. Convert new genome features into
+    a back-compatible representation.
+
+
 =item Definition
 
 =begin html
@@ -5417,6 +5446,7 @@ a reference to a hash where the following keys are defined:
 genomes has a value which is a reference to a list where each element is a GenomeAnnotationAPI.GenomeSelectorV1
 included_fields has a value which is a reference to a list where each element is a string
 included_feature_fields has a value which is a reference to a list where each element is a string
+downgrade has a value which is a GenomeAnnotationAPI.boolean
 ignore_errors has a value which is a GenomeAnnotationAPI.boolean
 no_data has a value which is a GenomeAnnotationAPI.boolean
 no_metadata has a value which is a GenomeAnnotationAPI.boolean
@@ -5431,6 +5461,7 @@ a reference to a hash where the following keys are defined:
 genomes has a value which is a reference to a list where each element is a GenomeAnnotationAPI.GenomeSelectorV1
 included_fields has a value which is a reference to a list where each element is a string
 included_feature_fields has a value which is a reference to a list where each element is a string
+downgrade has a value which is a GenomeAnnotationAPI.boolean
 ignore_errors has a value which is a GenomeAnnotationAPI.boolean
 no_data has a value which is a GenomeAnnotationAPI.boolean
 no_metadata has a value which is a GenomeAnnotationAPI.boolean

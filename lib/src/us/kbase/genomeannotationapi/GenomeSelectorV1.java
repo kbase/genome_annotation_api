@@ -14,13 +14,21 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * <p>Original spec-file type: GenomeSelectorV1</p>
- * 
+ * <pre>
+ * ref - genome refference
+ * feature array - optional, which array the included_feature_position_index
+ *     refer to. defaults to "features".
+ * included_feature_position_index - optional, only include features at
+ *     the specified indices
+ * ref_path_to_genome - optional, a reference path to the genome.
+ * </pre>
  * 
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Generated("com.googlecode.jsonschema2pojo")
 @JsonPropertyOrder({
     "ref",
+    "feature_array",
     "included_feature_position_index",
     "ref_path_to_genome"
 })
@@ -28,6 +36,8 @@ public class GenomeSelectorV1 {
 
     @JsonProperty("ref")
     private java.lang.String ref;
+    @JsonProperty("feature_array")
+    private java.lang.String featureArray;
     @JsonProperty("included_feature_position_index")
     private List<Long> includedFeaturePositionIndex;
     @JsonProperty("ref_path_to_genome")
@@ -46,6 +56,21 @@ public class GenomeSelectorV1 {
 
     public GenomeSelectorV1 withRef(java.lang.String ref) {
         this.ref = ref;
+        return this;
+    }
+
+    @JsonProperty("feature_array")
+    public java.lang.String getFeatureArray() {
+        return featureArray;
+    }
+
+    @JsonProperty("feature_array")
+    public void setFeatureArray(java.lang.String featureArray) {
+        this.featureArray = featureArray;
+    }
+
+    public GenomeSelectorV1 withFeatureArray(java.lang.String featureArray) {
+        this.featureArray = featureArray;
         return this;
     }
 
@@ -91,7 +116,7 @@ public class GenomeSelectorV1 {
 
     @Override
     public java.lang.String toString() {
-        return ((((((((("GenomeSelectorV1"+" [ref=")+ ref)+", includedFeaturePositionIndex=")+ includedFeaturePositionIndex)+", refPathToGenome=")+ refPathToGenome)+", additionalProperties=")+ additionalProperties)+"]");
+        return ((((((((((("GenomeSelectorV1"+" [ref=")+ ref)+", featureArray=")+ featureArray)+", includedFeaturePositionIndex=")+ includedFeaturePositionIndex)+", refPathToGenome=")+ refPathToGenome)+", additionalProperties=")+ additionalProperties)+"]");
     }
 
 }
