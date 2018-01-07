@@ -8,10 +8,10 @@ service-language:
     python
 
 module-version:
-    0.2.0
+    0.3.0
 
 owners:
-    [scanon,mhenderson,msneddon,rsutormin,umaganapathyswork]
+    [scanon,mhenderson,msneddon,rsutormin,umaganapathyswork,jjeffryes]
 
 service-config:
     dynamic-service: true
