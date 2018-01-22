@@ -200,6 +200,7 @@ class GenomeInterfaceV1:
 
     def save_one_genome(self, ctx, params):
         """
+        DEPRICATED: use GenomeFileUtil.save_one_genome
         typedef structure {
             string workspace;
             string name;
@@ -272,11 +273,16 @@ class GenomeInterfaceV1:
                     except:
                         raise TypeError('Invalid closeness_measure value "{}": float expected'
                                         .format(closeness_measure))
+
+        # pegging this API to a specific, old version of the genome
+        old_genome_type = self.ws.translate_from_MD5_types(
+            ['KBaseGenomes.Genome-f6e83df5424e9e67c6185f1d21e07b50']).values()[0][0]
+
         save_params = {
             'objects': [{
                 'name': name,
                 'data': data,
-                'type': 'KBaseGenomes.Genome',
+                'type': old_genome_type,
                 'provenance': provenance,
                 'hidden': hidden
             }]

@@ -709,6 +709,9 @@ module GenomeAnnotationAPI {
     typedef structure {
         Workspace.object_info info;
     } SaveGenomeResultV1;
+    /*
+        @deprecated: GenomeFileUtil.save_one_genome
+    */
 
     funcdef save_one_genome_v1(SaveOneGenomeParamsV1 params)
                 returns (SaveGenomeResultV1 result) authentication required;
