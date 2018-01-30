@@ -617,6 +617,7 @@ public class GenomeAnnotationAPIClient {
     /**
      * <p>Original spec-file function name: save_one_genome_v1</p>
      * <pre>
+     * @deprecated: GenomeFileUtil.save_one_genome
      * </pre>
      * @param   params   instance of type {@link us.kbase.genomeannotationapi.SaveOneGenomeParamsV1 SaveOneGenomeParamsV1}
      * @return   parameter "result" of type {@link us.kbase.genomeannotationapi.SaveGenomeResultV1 SaveGenomeResultV1}

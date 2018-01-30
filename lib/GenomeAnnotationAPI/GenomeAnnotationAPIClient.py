@@ -875,6 +875,7 @@ class GenomeAnnotationAPI(object):
 
     def save_one_genome_v1(self, params, context=None):
         """
+        @deprecated: GenomeFileUtil.save_one_genome
         :param params: instance of type "SaveOneGenomeParamsV1" -> structure:
            parameter "workspace" of String, parameter "name" of String,
            parameter "data" of type "Genome" (Genome object holds much of the

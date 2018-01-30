@@ -3808,7 +3808,7 @@ usermeta is a reference to a hash where the key is a string and the value is a s
 
 =item Description
 
-
+@deprecated: GenomeFileUtil.save_one_genome
 
 =back
 

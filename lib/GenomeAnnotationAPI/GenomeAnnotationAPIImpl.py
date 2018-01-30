@@ -27,7 +27,7 @@ class GenomeAnnotationAPI:
     ######################################### noqa
     VERSION = "0.3.0"
     GIT_URL = "git@github.com:kbase/genome_annotation_api.git"
-    GIT_COMMIT_HASH = "f67d18f16e6a1b39476ff0e1a67938dd9db08bbd"
+    GIT_COMMIT_HASH = "737ba428e1da7cae290ba9ebdda274ddef83f0b7"
 
     #BEGIN_CLASS_HEADER
     def _migrate_property_internal(self, from_dict, to_dict, prop_name, to_prop_name = None):
@@ -1424,6 +1424,7 @@ class GenomeAnnotationAPI:
 
     def save_one_genome_v1(self, ctx, params):
         """
+        @deprecated: GenomeFileUtil.save_one_genome
         :param params: instance of type "SaveOneGenomeParamsV1" -> structure:
            parameter "workspace" of String, parameter "name" of String,
            parameter "data" of type "Genome" (Genome object holds much of the
