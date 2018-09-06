@@ -51,13 +51,14 @@ class GenomeInterfaceV1:
         getObjParams['no_data'] = self._check_bool(params, 'no_data', 0)
         getObjParams['ignoreErrors'] = self._check_bool(params, 'ignoreErrors', 0)
         downgrade = self._check_bool(params, 'downgrade', 1)
+        no_merge = self._check_bool(params, 'no_merge', 0)
         no_metadata = self._check_bool(params, 'no_metadata', 0)
 
         self.validate_proper_ws_type(object_specifications, getObjParams['ignoreErrors'], 'Genome')
         data = self.ws.get_objects2(getObjParams)['data']
         for i, genome in enumerate(data):
             if downgrade:
-                data[i]['data'] = self.downgrade_genome(genome.get('data', {}))
+                data[i]['data'] = self.downgrade_genome(genome.get('data', {}), not no_merge)
 
         if no_metadata:
             data = [{'data': obj['data']} for obj in data]
@@ -66,15 +67,16 @@ class GenomeInterfaceV1:
         return returnPackage
 
     @staticmethod
-    def downgrade_genome(genome_data):
+    def downgrade_genome(genome_data, merge=False):
         """This reverts a genome to an older style for back compatibility"""
         print("Downgrading Genome for back compatibility")
-        feature_list = []
         ont_present = genome_data.get('ontologies_present', {})
         ont_ref = genome_data.get('ontology_events',
                                   [{"ontology_ref": ""}])[0]['ontology_ref']
+
         for feat_array in (('features', 'gene'), ('mrnas', 'mRNA'),
                            ('cdss', 'CDS'), ('non_coding_features', 'gene')):
+            feature_list = []
             for feat in genome_data.get(feat_array[0], []):
                 if 'type' not in feat:
                     feat['type'] = feat_array[1]
@@ -94,11 +96,10 @@ class GenomeInterfaceV1:
                             "term_name": ont_present.get(ont, {}).get(_id, "")
                         }
                 feature_list.append(feat)
-
-            if feat_array[0] in genome_data:
+            genome_data[feat_array[0]] = feature_list
+            if merge and feat_array[0] != 'features':
+                genome_data['features'].extend(feature_list)
                 del genome_data[feat_array[0]]
-
-        genome_data['features'] = feature_list
         return genome_data
 
     def build_object_specifications(self, params):

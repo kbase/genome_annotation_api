@@ -189,10 +189,14 @@ class GenomeAnnotationAPITests(unittest.TestCase):
     def getType(self, ref=None):
         return self.ws.get_object_info_new({"objects": [{"ref": ref}]})[0][2]
 
-    def _downgraded(self, data):
+    def _downgraded(self, data, merged=True):
         self.assertTrue('features' in data)
-        self.assertTrue('cdss' not in data)
-        self.assertTrue('mrnas' not in data)
+        if merged:
+            self.assertTrue('cdss' not in data)
+            self.assertTrue('mrnas' not in data)
+        else:
+            self.assertTrue('cdss' in data)
+            self.assertTrue('mrnas' in data)
         one_feat = data['features'][0]
         self.assertEqual(one_feat['type'], 'gene')
         self.assertEqual(one_feat['function'], 'leader; Amino acid biosynthesi'
@@ -218,6 +222,12 @@ class GenomeAnnotationAPITests(unittest.TestCase):
         data = json.load(open('data/new_ecoli_genome.json'))
         down_data = GenomeInterfaceV1.downgrade_genome(data)
         self._downgraded(down_data)
+
+    @log
+    def test_genome_downgrade_no_merge(self):
+        data = json.load(open('data/new_ecoli_genome.json'))
+        down_data = GenomeInterfaceV1.downgrade_genome(data, merge=False)
+        self._downgraded(down_data, merged=False)
 
     def test_bad_get_genome_input(self):
         with self.assertRaisesRegexp(ValueError, 'must be a boolean'):
