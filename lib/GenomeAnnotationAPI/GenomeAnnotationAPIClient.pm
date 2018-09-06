@@ -2773,6 +2773,7 @@ GetGenomeParamsV1 is a reference to a hash where the following keys are defined:
 	included_fields has a value which is a reference to a list where each element is a string
 	included_feature_fields has a value which is a reference to a list where each element is a string
 	downgrade has a value which is a GenomeAnnotationAPI.boolean
+	no_merge has a value which is a GenomeAnnotationAPI.boolean
 	ignore_errors has a value which is a GenomeAnnotationAPI.boolean
 	no_data has a value which is a GenomeAnnotationAPI.boolean
 	no_metadata has a value which is a GenomeAnnotationAPI.boolean
@@ -3029,6 +3030,7 @@ GetGenomeParamsV1 is a reference to a hash where the following keys are defined:
 	included_fields has a value which is a reference to a list where each element is a string
 	included_feature_fields has a value which is a reference to a list where each element is a string
 	downgrade has a value which is a GenomeAnnotationAPI.boolean
+	no_merge has a value which is a GenomeAnnotationAPI.boolean
 	ignore_errors has a value which is a GenomeAnnotationAPI.boolean
 	no_data has a value which is a GenomeAnnotationAPI.boolean
 	no_metadata has a value which is a GenomeAnnotationAPI.boolean
@@ -5435,6 +5437,8 @@ ref_path_to_genome has a value which is a reference to a list where each element
 
 downgrade - optional, defaults to true. Convert new genome features into
     a back-compatible representation.
+no_merge - optional, defaults to false. If a new genome is being downgraded, do not merge
+    new fields into the features field.
 
 
 =item Definition
@@ -5447,6 +5451,7 @@ genomes has a value which is a reference to a list where each element is a Genom
 included_fields has a value which is a reference to a list where each element is a string
 included_feature_fields has a value which is a reference to a list where each element is a string
 downgrade has a value which is a GenomeAnnotationAPI.boolean
+no_merge has a value which is a GenomeAnnotationAPI.boolean
 ignore_errors has a value which is a GenomeAnnotationAPI.boolean
 no_data has a value which is a GenomeAnnotationAPI.boolean
 no_metadata has a value which is a GenomeAnnotationAPI.boolean
@@ -5462,6 +5467,7 @@ genomes has a value which is a reference to a list where each element is a Genom
 included_fields has a value which is a reference to a list where each element is a string
 included_feature_fields has a value which is a reference to a list where each element is a string
 downgrade has a value which is a GenomeAnnotationAPI.boolean
+no_merge has a value which is a GenomeAnnotationAPI.boolean
 ignore_errors has a value which is a GenomeAnnotationAPI.boolean
 no_data has a value which is a GenomeAnnotationAPI.boolean
 no_metadata has a value which is a GenomeAnnotationAPI.boolean

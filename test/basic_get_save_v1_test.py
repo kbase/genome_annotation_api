@@ -111,16 +111,12 @@ class GenomeAnnotationAPITests(unittest.TestCase):
         with open ('data/rhodobacter.json', 'r') as file:
             data_str=file.read()
         data = json.loads(data_str)
-        # save to ws
-        result = cls.ws.save_objects({
-                'workspace':wsName,
-                'objects': [{
-                    'type':'KBaseGenomes.Genome',
-                    'data':data,
-                    'name':'rhodobacter'
-                }]
-            })
-        info = result[0]
+        # save old genome
+        info = cls.impl.save_one_genome_v1(cls.ctx, {
+               'workspace': wsName,
+               'name': "rhodobacter",
+               'data': data,
+           })[0]['info']
         cls.rhodobacter_ref = str(info[6]) +'/' + str(info[0]) + '/' + str(info[4])
         print('created rhodobacter test genome: ' + cls.rhodobacter_ref)
 
@@ -135,11 +131,11 @@ class GenomeAnnotationAPITests(unittest.TestCase):
         })
         data = json.load(open('data/new_ecoli_genome.json'))
         data['assembly_ref'] = assembly_ref
-        # save to ws
+        # save new genome
         save_info = {
             'workspace': wsName,
             'objects': [{
-                'type': 'NewTempGenomes.Genome',
+                'type': 'KBaseGenomes.Genome',
                 'data': data,
                 'name': 'new_ecoli'
             }]
@@ -193,10 +189,14 @@ class GenomeAnnotationAPITests(unittest.TestCase):
     def getType(self, ref=None):
         return self.ws.get_object_info_new({"objects": [{"ref": ref}]})[0][2]
 
-    def _downgraded(self, data):
+    def _downgraded(self, data, merged=True):
         self.assertTrue('features' in data)
-        self.assertTrue('cdss' not in data)
-        self.assertTrue('mrnas' not in data)
+        if merged:
+            self.assertTrue('cdss' not in data)
+            self.assertTrue('mrnas' not in data)
+        else:
+            self.assertTrue('cdss' in data)
+            self.assertTrue('mrnas' in data)
         one_feat = data['features'][0]
         self.assertEqual(one_feat['type'], 'gene')
         self.assertEqual(one_feat['function'], 'leader; Amino acid biosynthesi'
@@ -222,6 +222,12 @@ class GenomeAnnotationAPITests(unittest.TestCase):
         data = json.load(open('data/new_ecoli_genome.json'))
         down_data = GenomeInterfaceV1.downgrade_genome(data)
         self._downgraded(down_data)
+
+    @log
+    def test_genome_downgrade_no_merge(self):
+        data = json.load(open('data/new_ecoli_genome.json'))
+        down_data = GenomeInterfaceV1.downgrade_genome(data, merge=False)
+        self._downgraded(down_data, merged=False)
 
     def test_bad_get_genome_input(self):
         with self.assertRaisesRegexp(ValueError, 'must be a boolean'):
@@ -269,16 +275,13 @@ class GenomeAnnotationAPITests(unittest.TestCase):
         data = ret['genomes'][0]['data']
         self.assertEqual(len(ret['genomes']), 1)
         self._downgraded(data)
-        # TODO: remove this when the genome object spec is updated
-        result = self.ws.save_objects({
-            'workspace': self.wsName,
-            'objects': [{
-                'type': 'KBaseGenomes.Genome',
-                'data': data,
-                'name': 'test_revert'
-            }]
-        })
-        self.assertTrue(result[0])
+        # api saves as old type
+        ret = self.impl.save_one_genome_v1(self.ctx, {
+               'workspace': self.wsName,
+               'name': "test_revert",
+               'data': data,
+           })[0]
+        self.assertTrue(ret)
 
     @log
     def test_get_new_genome_full(self):
@@ -503,13 +506,12 @@ class GenomeAnnotationAPITests(unittest.TestCase):
         handle1 = dfu.file_to_shock({'file_path': temp_shock_file, 'make_handle': 1})['handle']
         hid1 = handle1['hid']
         genome_name = "Genome.1"
-        ws2 = Workspace(self.cfg['workspace-url'], token=token1)
-        ws2.save_objects({'workspace': wsName,
-                          'objects': [{'name': genome_name, 'type': 'KBaseGenomes.Genome',
-                                       'data': {'id': "qwerty", 'scientific_name': "Qwerty", 
-                                                'domain': "Bacteria", 'genetic_code': 11,
-                                                'genbank_handle_ref': hid1}
-                                       }]})
+        self.impl.save_one_genome_v1(self.ctx, {
+            'workspace': wsName, 'name': genome_name, 'data': {
+                'id': "qwerty", 'scientific_name': "Qwerty",
+                'domain': "Bacteria", 'genetic_code': 11,
+                'genbank_handle_ref': hid1}
+            })
         genome = self.impl.get_genome_v1(self.ctx2, {'genomes': [{'ref': wsName + '/' + genome_name}
                                                                  ]})[0]['genomes'][0]['data']
         self.impl.save_one_genome_v1(self.ctx2, {'workspace': wsName, 'name': genome_name,

@@ -651,6 +651,8 @@ module GenomeAnnotationAPI {
     /*
         downgrade - optional, defaults to true. Convert new genome features into
             a back-compatible representation.
+        no_merge - optional, defaults to false. If a new genome is being downgraded, do not merge
+            new fields into the features field.
     */
     typedef structure {
         list <GenomeSelectorV1> genomes;
@@ -659,6 +661,7 @@ module GenomeAnnotationAPI {
         list <string> included_feature_fields;
 
         boolean downgrade;
+        boolean no_merge;
         boolean ignore_errors;
         boolean no_data;
         boolean no_metadata;
