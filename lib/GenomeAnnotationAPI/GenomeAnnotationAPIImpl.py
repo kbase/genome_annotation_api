@@ -25,9 +25,9 @@ class GenomeAnnotationAPI:
     # state. A method could easily clobber the state set by another while
     # the latter method is running.
     ######################################### noqa
-    VERSION = "0.3.0"
+    VERSION = "0.3.2"
     GIT_URL = "git@github.com:kbase/genome_annotation_api.git"
-    GIT_COMMIT_HASH = "737ba428e1da7cae290ba9ebdda274ddef83f0b7"
+    GIT_COMMIT_HASH = "5fbda70cd92680d474994f3af5dbadffe84852d7"
 
     #BEGIN_CLASS_HEADER
     def _migrate_property_internal(self, from_dict, to_dict, prop_name, to_prop_name = None):
@@ -1042,7 +1042,9 @@ class GenomeAnnotationAPI:
         filters instead of arbitrary get subdata included paths.
         :param params: instance of type "GetGenomeParamsV1" (downgrade -
            optional, defaults to true. Convert new genome features into a
-           back-compatible representation.) -> structure: parameter "genomes"
+           back-compatible representation. no_merge - optional, defaults to
+           false. If a new genome is being downgraded, do not merge new
+           fields into the features field.) -> structure: parameter "genomes"
            of list of type "GenomeSelectorV1" (ref - genome refference
            feature array - optional, which array the
            included_feature_position_index refer to. defaults to "features".
@@ -1055,11 +1057,12 @@ class GenomeAnnotationAPI:
            "included_fields" of list of String, parameter
            "included_feature_fields" of list of String, parameter "downgrade"
            of type "boolean" (A boolean - 0 for false, 1 for true. @range (0,
-           1)), parameter "ignore_errors" of type "boolean" (A boolean - 0
-           for false, 1 for true. @range (0, 1)), parameter "no_data" of type
-           "boolean" (A boolean - 0 for false, 1 for true. @range (0, 1)),
-           parameter "no_metadata" of type "boolean" (A boolean - 0 for
-           false, 1 for true. @range (0, 1))
+           1)), parameter "no_merge" of type "boolean" (A boolean - 0 for
+           false, 1 for true. @range (0, 1)), parameter "ignore_errors" of
+           type "boolean" (A boolean - 0 for false, 1 for true. @range (0,
+           1)), parameter "no_data" of type "boolean" (A boolean - 0 for
+           false, 1 for true. @range (0, 1)), parameter "no_metadata" of type
+           "boolean" (A boolean - 0 for false, 1 for true. @range (0, 1))
         :returns: instance of type "GenomeDataSetV1" -> structure: parameter
            "genomes" of list of type "GenomeDataV1" -> structure: parameter
            "data" of type "Genome" (Genome object holds much of the data

@@ -23,7 +23,7 @@ class GenomeAnnotationAPI(object):
             self, url=None, timeout=30 * 60, user_id=None,
             password=None, token=None, ignore_authrc=False,
             trust_all_ssl_certificates=False,
-            auth_svc='https://kbase.us/services/authorization/Sessions/Login'):
+            auth_svc='https://ci.kbase.us/services/auth/api/legacy/KBase/Sessions/Login'):
         if url is None:
             raise ValueError('A url is required')
         self._service_ver = None
@@ -504,7 +504,9 @@ class GenomeAnnotationAPI(object):
         filters instead of arbitrary get subdata included paths.
         :param params: instance of type "GetGenomeParamsV1" (downgrade -
            optional, defaults to true. Convert new genome features into a
-           back-compatible representation.) -> structure: parameter "genomes"
+           back-compatible representation. no_merge - optional, defaults to
+           false. If a new genome is being downgraded, do not merge new
+           fields into the features field.) -> structure: parameter "genomes"
            of list of type "GenomeSelectorV1" (ref - genome refference
            feature array - optional, which array the
            included_feature_position_index refer to. defaults to "features".
@@ -517,11 +519,12 @@ class GenomeAnnotationAPI(object):
            "included_fields" of list of String, parameter
            "included_feature_fields" of list of String, parameter "downgrade"
            of type "boolean" (A boolean - 0 for false, 1 for true. @range (0,
-           1)), parameter "ignore_errors" of type "boolean" (A boolean - 0
-           for false, 1 for true. @range (0, 1)), parameter "no_data" of type
-           "boolean" (A boolean - 0 for false, 1 for true. @range (0, 1)),
-           parameter "no_metadata" of type "boolean" (A boolean - 0 for
-           false, 1 for true. @range (0, 1))
+           1)), parameter "no_merge" of type "boolean" (A boolean - 0 for
+           false, 1 for true. @range (0, 1)), parameter "ignore_errors" of
+           type "boolean" (A boolean - 0 for false, 1 for true. @range (0,
+           1)), parameter "no_data" of type "boolean" (A boolean - 0 for
+           false, 1 for true. @range (0, 1)), parameter "no_metadata" of type
+           "boolean" (A boolean - 0 for false, 1 for true. @range (0, 1))
         :returns: instance of type "GenomeDataSetV1" -> structure: parameter
            "genomes" of list of type "GenomeDataV1" -> structure: parameter
            "data" of type "Genome" (Genome object holds much of the data

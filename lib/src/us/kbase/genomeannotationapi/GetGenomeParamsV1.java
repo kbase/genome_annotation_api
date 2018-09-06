@@ -17,6 +17,8 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
  * <pre>
  * downgrade - optional, defaults to true. Convert new genome features into
  *     a back-compatible representation.
+ * no_merge - optional, defaults to false. If a new genome is being downgraded, do not merge
+ *     new fields into the features field.
  * </pre>
  * 
  */
@@ -27,6 +29,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
     "included_fields",
     "included_feature_fields",
     "downgrade",
+    "no_merge",
     "ignore_errors",
     "no_data",
     "no_metadata"
@@ -41,6 +44,8 @@ public class GetGenomeParamsV1 {
     private List<String> includedFeatureFields;
     @JsonProperty("downgrade")
     private Long downgrade;
+    @JsonProperty("no_merge")
+    private Long noMerge;
     @JsonProperty("ignore_errors")
     private Long ignoreErrors;
     @JsonProperty("no_data")
@@ -109,6 +114,21 @@ public class GetGenomeParamsV1 {
         return this;
     }
 
+    @JsonProperty("no_merge")
+    public Long getNoMerge() {
+        return noMerge;
+    }
+
+    @JsonProperty("no_merge")
+    public void setNoMerge(Long noMerge) {
+        this.noMerge = noMerge;
+    }
+
+    public GetGenomeParamsV1 withNoMerge(Long noMerge) {
+        this.noMerge = noMerge;
+        return this;
+    }
+
     @JsonProperty("ignore_errors")
     public Long getIgnoreErrors() {
         return ignoreErrors;
@@ -166,7 +186,7 @@ public class GetGenomeParamsV1 {
 
     @Override
     public java.lang.String toString() {
-        return ((((((((((((((((("GetGenomeParamsV1"+" [genomes=")+ genomes)+", includedFields=")+ includedFields)+", includedFeatureFields=")+ includedFeatureFields)+", downgrade=")+ downgrade)+", ignoreErrors=")+ ignoreErrors)+", noData=")+ noData)+", noMetadata=")+ noMetadata)+", additionalProperties=")+ additionalProperties)+"]");
+        return ((((((((((((((((((("GetGenomeParamsV1"+" [genomes=")+ genomes)+", includedFields=")+ includedFields)+", includedFeatureFields=")+ includedFeatureFields)+", downgrade=")+ downgrade)+", noMerge=")+ noMerge)+", ignoreErrors=")+ ignoreErrors)+", noData=")+ noData)+", noMetadata=")+ noMetadata)+", additionalProperties=")+ additionalProperties)+"]");
     }
 
 }
