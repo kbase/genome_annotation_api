@@ -8,9 +8,10 @@ import time
 import unittest
 import shutil
 import json
+import pprint
 
 # local imports
-from biokbase.workspace.client import Workspace
+from Workspace.WorkspaceClient import Workspace
 from GenomeAnnotationAPI.GenomeAnnotationAPIImpl import GenomeAnnotationAPI
 from GenomeAnnotationAPI.GenomeAnnotationAPIServer import MethodContext
 from GenomeFileUtil.GenomeFileUtilClient import GenomeFileUtil
@@ -144,11 +145,16 @@ class GenomeAnnotationAPITests(unittest.TestCase):
                         "ERROR: Invalid Genome reference {} from {}".format(ret[0], self.old_genome_ref))
 
     @log
-    def test_get_assembly(self):
+    def test_get_assembly_old(self):
         inputs = {'ref': self.old_genome_ref}
         ret = self.impl.get_assembly(self.ctx, inputs)
-        self.assertTrue(self.getType(ret[0]).startswith("KBaseGenomeAnnotations.Assembly"),
-                        "ERROR: Invalid ContigSet reference {} from {}".format(ret[0], self.old_genome_ref))
+        self.assertEqual(self.getType(ret[0]).split('-')[0], "KBaseGenomes.ContigSet")
+
+    @log
+    def test_get_assembly_new(self):
+        inputs = {'ref': self.new_genome_ref}
+        ret = self.impl.get_assembly(self.ctx, inputs)
+        self.assertEqual(self.getType(ret[0]).split('-')[0], "KBaseGenomeAnnotations.Assembly")
 
     @log
     def test_get_feature_types(self):
@@ -218,40 +224,29 @@ class GenomeAnnotationAPITests(unittest.TestCase):
     @log
     def test_get_feature_functions_all(self):
         inputs = {'ref': self.old_genome_ref}
-        ret = self.impl.get_feature_functions(self.ctx, inputs)
-        self.assertGreater(len(ret[0].keys()), 0, "ERROR: No functions for {}".format(self.old_genome_ref))
+        ret = self.impl.get_feature_functions(self.ctx, inputs)[0]
+        self.assertEqual(ret['kb|g.220339.CDS.3939'], 'DEAD/DEAH box helicase domain protein')
+        self.assertEqual(ret['kb|g.220339.rna.40'], 'Small Subunit Ribosomal RNA; ssuRNA; SSU rRNA')
+        self.assertEqual(len(ret.keys()), 4158)
 
     @log
-    def test_get_feature_aliases_all(self):
-        inputs = {'ref': self.old_genome_ref}
-        ret = self.impl.get_feature_aliases(self.ctx, inputs)
-        self.assertGreater(len(ret[0].keys()), 0, "ERROR: No aliases for {}".format(self.old_genome_ref))
+    def test_get_feature_functions_part(self):
+        inputs = {'ref': self.old_genome_ref,
+                  'feature_id_list': ['kb|g.220339.CDS.3939', 'kb|g.220339.rna.40']}
+        ret = self.impl.get_feature_functions(self.ctx, inputs)[0]
+        self.assertEqual(ret['kb|g.220339.CDS.3939'], 'DEAD/DEAH box helicase domain protein')
+        self.assertEqual(ret['kb|g.220339.rna.40'],
+                         'Small Subunit Ribosomal RNA; ssuRNA; SSU rRNA')
+        self.assertEqual(len(ret.keys()), 2)
 
-    @unittest.skip("not supported")
-    def test_get_cds_by_gene_all(self):
-        inputs = {'ref': self.old_genome_ref, 'filters': {'type_list': ['gene']}, 'group_by': 'type'}
-        gene_id_list = self.impl.get_feature_ids(self.ctx, inputs)[0]["by_type"]["gene"]
-        inputs = {'ref': self.old_genome_ref, 'gene_id_list': gene_id_list}
-        try:
-            ret = self.impl.get_cds_by_gene(self.ctx, inputs)
-            caught = False
-        except TypeError:
-            caught = True
-
-        self.assertTrue(caught)
-
-#     @log
-#     def test_get_cds_by_mrna_all(self):
-#         inputs = {'ref': self.old_genome_ref, 'filters': {'type_list': ['mRNA']}, 'group_by': 'type'}
-#         mrna_id_list = self.impl.get_feature_ids(self.ctx, inputs)[0]["by_type"]["mRNA"]
-#         inputs = {'ref': self.old_genome_ref, 'mrna_id_list': mrna_id_list}
-#         try:
-#             ret = self.impl.get_cds_by_mrna(self.ctx, inputs)
-#             caught = False
-#         except TypeError:
-#             caught = True
-#
-#         self.assertTrue(caught)
+    @log
+    def test_get_feature_functions_new(self):
+        inputs = {'ref': self.new_genome_ref}
+        ret = self.impl.get_feature_functions(self.ctx, inputs)[0]
+        pprint.pprint(ret)
+        self.assertEqual(ret['b4601'], 'product:stationary phase-induced protein')
+        self.assertEqual(ret['b4601_CDS_1'], 'product:stationary phase-induced protein')
+        self.assertEqual(len(ret.keys()), 9411)
 
 #     @log
 #     def test_get_gene_by_cds_all(self):
