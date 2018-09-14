@@ -2,11 +2,8 @@ import logging
 
 
 class Utils:
-    def __init__(self, workspace_client, services):
+    def __init__(self, workspace_client):
         self.ws = workspace_client
-        self.handle_url = services['handle_service_url']
-        self.shock_url = services['shock_service_url']
-        self.sw_url = services['service_wizard_url']
 
     @staticmethod
     def validate_params(params, expected, opt_param=set()):
