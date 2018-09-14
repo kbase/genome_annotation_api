@@ -36,7 +36,10 @@ class Utils:
     def get_feature_functions(self, params):
         functions = {}
         self.validate_params(params, {'ref', }, {'feature_id_list', })
-        feature_id_list = set(params.get('feature_id_list', []))
+        if params.get('feature_id_list'):
+            feature_id_list = set(params['feature_id_list'])
+        else:
+            feature_id_list = False
         feature_fields = ['features', 'mrnas', 'cdss', 'non_coding_features']
         ws_fields = [x + "/[*]/id" for x in feature_fields]
         ws_fields += [x + "/[*]/function" for x in feature_fields]
