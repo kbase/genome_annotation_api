@@ -6,6 +6,7 @@ import logging
 from Workspace.WorkspaceClient import Workspace
 
 from GenomeAnnotationAPI.GenomeInterfaceV1 import GenomeInterfaceV1
+from GenomeAnnotationAPI.utils import Utils
 
 #END_HEADER
 
@@ -114,14 +115,8 @@ class GenomeAnnotationAPI:
         # return variables are: returnVal
         #BEGIN get_assembly
         ws = Workspace(self.services['workspace_service_url'], token=ctx['token'])
-        objreq = {'objects': [{'ref': inputs_get_assembly['ref'], 
-                               'included': ['assembly_ref', 'contigset_ref']}]}
-        ref = ws.get_objects2(objreq)['data'][0]['data']
-        returnVal = None
-        if 'assembly_ref' in ref:
-            returnVal = ref['assembly_ref']
-        if 'contigset_ref' in ref:
-            returnVal = ref['contigset_ref']
+        utils = Utils(ws, self.services)
+        returnVal = utils.get_assembly(inputs_get_assembly)
         #END get_assembly
 
         # At some point might do deeper type checking...
@@ -476,12 +471,9 @@ class GenomeAnnotationAPI:
         # ctx is the context object
         # return variables are: returnVal
         #BEGIN get_feature_functions
-        ga = GenomeAnnotationAPI_local(self.services, ctx['token'], inputs_get_feature_functions['ref'])
-
-        if 'feature_id_list' in inputs_get_feature_functions:
-            returnVal = ga.get_feature_functions(inputs_get_feature_functions['feature_id_list'])
-        else:
-            returnVal = ga.get_feature_functions()
+        ws = Workspace(self.services['workspace_service_url'], token=ctx['token'])
+        utils = Utils(ws, self.services)
+        returnVal = utils.get_feature_functions(inputs_get_feature_functions)
         #END get_feature_functions
 
         # At some point might do deeper type checking...
