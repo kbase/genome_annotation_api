@@ -115,7 +115,7 @@ class GenomeAnnotationAPI:
         # return variables are: returnVal
         #BEGIN get_assembly
         ws = Workspace(self.services['workspace_service_url'], token=ctx['token'])
-        utils = Utils(ws, self.services)
+        utils = Utils(ws)
         returnVal = utils.get_assembly(inputs_get_assembly)
         #END get_assembly
 
@@ -472,7 +472,7 @@ class GenomeAnnotationAPI:
         # return variables are: returnVal
         #BEGIN get_feature_functions
         ws = Workspace(self.services['workspace_service_url'], token=ctx['token'])
-        utils = Utils(ws, self.services)
+        utils = Utils(ws)
         returnVal = utils.get_feature_functions(inputs_get_feature_functions)
         #END get_feature_functions
 
