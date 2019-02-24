@@ -115,11 +115,10 @@ class JSONRPCServiceCustom(JSONRPCService):
             # Exception was raised inside the method.
             newerr = JSONServerError()
             newerr.trace = traceback.format_exc()
-            if isinstance(e.message, str):
-                newerr.data = e.message
+            if len(e.args) == 1:
+                newerr.data = repr(e.args[0])
             else:
-                # Some exceptions embed other exceptions as the message
-                newerr.data = repr(e.message)
+                newerr.data = repr(e.args)
             raise newerr
         return result
 
@@ -359,18 +358,6 @@ class Application(object):
                              name='GenomeAnnotationAPI.get_feature_type_counts',
                              types=[dict])
         self.method_authentication['GenomeAnnotationAPI.get_feature_type_counts'] = 'required'  # noqa
-        self.rpc_service.add(impl_GenomeAnnotationAPI.get_feature_ids,
-                             name='GenomeAnnotationAPI.get_feature_ids',
-                             types=[dict])
-        self.method_authentication['GenomeAnnotationAPI.get_feature_ids'] = 'required'  # noqa
-        self.rpc_service.add(impl_GenomeAnnotationAPI.get_features,
-                             name='GenomeAnnotationAPI.get_features',
-                             types=[dict])
-        self.method_authentication['GenomeAnnotationAPI.get_features'] = 'required'  # noqa
-        self.rpc_service.add(impl_GenomeAnnotationAPI.get_features2,
-                             name='GenomeAnnotationAPI.get_features2',
-                             types=[dict])
-        self.method_authentication['GenomeAnnotationAPI.get_features2'] = 'required'  # noqa
         self.rpc_service.add(impl_GenomeAnnotationAPI.get_proteins,
                              name='GenomeAnnotationAPI.get_proteins',
                              types=[dict])
@@ -379,10 +366,6 @@ class Application(object):
                              name='GenomeAnnotationAPI.get_feature_locations',
                              types=[dict])
         self.method_authentication['GenomeAnnotationAPI.get_feature_locations'] = 'required'  # noqa
-        self.rpc_service.add(impl_GenomeAnnotationAPI.get_feature_publications,
-                             name='GenomeAnnotationAPI.get_feature_publications',
-                             types=[dict])
-        self.method_authentication['GenomeAnnotationAPI.get_feature_publications'] = 'required'  # noqa
         self.rpc_service.add(impl_GenomeAnnotationAPI.get_feature_dna,
                              name='GenomeAnnotationAPI.get_feature_dna',
                              types=[dict])
@@ -395,50 +378,6 @@ class Application(object):
                              name='GenomeAnnotationAPI.get_feature_aliases',
                              types=[dict])
         self.method_authentication['GenomeAnnotationAPI.get_feature_aliases'] = 'required'  # noqa
-        self.rpc_service.add(impl_GenomeAnnotationAPI.get_cds_by_gene,
-                             name='GenomeAnnotationAPI.get_cds_by_gene',
-                             types=[dict])
-        self.method_authentication['GenomeAnnotationAPI.get_cds_by_gene'] = 'required'  # noqa
-        self.rpc_service.add(impl_GenomeAnnotationAPI.get_cds_by_mrna,
-                             name='GenomeAnnotationAPI.get_cds_by_mrna',
-                             types=[dict])
-        self.method_authentication['GenomeAnnotationAPI.get_cds_by_mrna'] = 'required'  # noqa
-        self.rpc_service.add(impl_GenomeAnnotationAPI.get_gene_by_cds,
-                             name='GenomeAnnotationAPI.get_gene_by_cds',
-                             types=[dict])
-        self.method_authentication['GenomeAnnotationAPI.get_gene_by_cds'] = 'required'  # noqa
-        self.rpc_service.add(impl_GenomeAnnotationAPI.get_gene_by_mrna,
-                             name='GenomeAnnotationAPI.get_gene_by_mrna',
-                             types=[dict])
-        self.method_authentication['GenomeAnnotationAPI.get_gene_by_mrna'] = 'required'  # noqa
-        self.rpc_service.add(impl_GenomeAnnotationAPI.get_mrna_by_cds,
-                             name='GenomeAnnotationAPI.get_mrna_by_cds',
-                             types=[dict])
-        self.method_authentication['GenomeAnnotationAPI.get_mrna_by_cds'] = 'required'  # noqa
-        self.rpc_service.add(impl_GenomeAnnotationAPI.get_mrna_by_gene,
-                             name='GenomeAnnotationAPI.get_mrna_by_gene',
-                             types=[dict])
-        self.method_authentication['GenomeAnnotationAPI.get_mrna_by_gene'] = 'required'  # noqa
-        self.rpc_service.add(impl_GenomeAnnotationAPI.get_mrna_exons,
-                             name='GenomeAnnotationAPI.get_mrna_exons',
-                             types=[dict])
-        self.method_authentication['GenomeAnnotationAPI.get_mrna_exons'] = 'required'  # noqa
-        self.rpc_service.add(impl_GenomeAnnotationAPI.get_mrna_utrs,
-                             name='GenomeAnnotationAPI.get_mrna_utrs',
-                             types=[dict])
-        self.method_authentication['GenomeAnnotationAPI.get_mrna_utrs'] = 'required'  # noqa
-        self.rpc_service.add(impl_GenomeAnnotationAPI.get_summary,
-                             name='GenomeAnnotationAPI.get_summary',
-                             types=[dict])
-        self.method_authentication['GenomeAnnotationAPI.get_summary'] = 'required'  # noqa
-        self.rpc_service.add(impl_GenomeAnnotationAPI.save_summary,
-                             name='GenomeAnnotationAPI.save_summary',
-                             types=[dict])
-        self.method_authentication['GenomeAnnotationAPI.save_summary'] = 'required'  # noqa
-        self.rpc_service.add(impl_GenomeAnnotationAPI.get_combined_data,
-                             name='GenomeAnnotationAPI.get_combined_data',
-                             types=[dict])
-        self.method_authentication['GenomeAnnotationAPI.get_combined_data'] = 'required'  # noqa
         self.rpc_service.add(impl_GenomeAnnotationAPI.get_genome_v1,
                              name='GenomeAnnotationAPI.get_genome_v1',
                              types=[dict])
