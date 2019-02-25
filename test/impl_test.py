@@ -236,6 +236,22 @@ class GenomeAnnotationAPITests(unittest.TestCase):
         self.assertTrue(ret.get('b3356'))
 
     @log
+    def test_get_feature_aliases_all_old(self):
+        inputs = {'ref': self.old_genome_ref}
+        ret = self.impl.get_feature_aliases(self.ctx, inputs)[0]
+        self.assertEqual(len(list(ret.keys())), 4158)
+        self.assertEqual(ret.get('kb|g.220339.CDS.3956'), [''])
+
+    @log
+    def test_get_feature_aliases_all_new(self):
+        inputs = {'ref': self.new_genome_ref}
+        ret = self.impl.get_feature_aliases(self.ctx, inputs)[0]
+        self.assertEqual(len(list(ret.keys())), 9411)
+        self.assertEqual(ret.get('b3356'), ['EcoGene: EG11182', 'GeneID: 947860',
+                                            'gene_synonym: ECK3344; JW3319', 'locus_tag: b3356',
+                                            'protein_id: NP_417815.1', 'gene: yhfA'])
+
+    @log
     def test_get_feature_functions_all(self):
         inputs = {'ref': self.old_genome_ref}
         ret = self.impl.get_feature_functions(self.ctx, inputs)[0]
