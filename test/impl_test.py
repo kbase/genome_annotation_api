@@ -1,21 +1,18 @@
-# standard libraries
-import ConfigParser
+import configparser
 import functools
+import json
 import logging
 import os
+import shutil
 import sys
 import time
 import unittest
-import shutil
-import json
-import pprint
 
-# local imports
-from Workspace.WorkspaceClient import Workspace
 from GenomeAnnotationAPI.GenomeAnnotationAPIImpl import GenomeAnnotationAPI
 from GenomeAnnotationAPI.GenomeAnnotationAPIServer import MethodContext
 from GenomeAnnotationAPI.authclient import KBaseAuth as _KBaseAuth
-from AssemblyUtil.AssemblyUtilClient import AssemblyUtil
+from installed_clients.AssemblyUtilClient import AssemblyUtil
+from installed_clients.WorkspaceClient import Workspace
 
 unittest.installHandler()
 
@@ -51,7 +48,7 @@ class GenomeAnnotationAPITests(unittest.TestCase):
     def setUpClass(cls):
         token = os.environ.get('KB_AUTH_TOKEN', None)
         config_file = os.environ.get('KB_DEPLOYMENT_CONFIG', None)
-        config = ConfigParser.ConfigParser()
+        config = configparser.ConfigParser()
         config.read(config_file)
         cls.cfg = {n[0]: n[1] for n in config.items('GenomeAnnotationAPI')}
         authServiceUrl = cls.cfg.get('auth-service-url',
@@ -160,20 +157,20 @@ class GenomeAnnotationAPITests(unittest.TestCase):
         inputs = {'ref': self.old_genome_ref}
         ret = self.impl.get_feature_types(self.ctx, inputs)[0]
         self.assertEqual(len(ret), 2)
-        self.assertEqual(ret[0], 'rna')
+        self.assertEqual(ret[0], 'CDS')
 
     @log
     def test_get_feature_type_descriptions_all_old(self):
         inputs = {'ref': self.old_genome_ref}
         ret = self.impl.get_feature_type_descriptions(self.ctx, inputs)[0]
-        self.assertEqual(len(ret.keys()), 4158)
+        self.assertEqual(len(list(ret.keys())), 4158)
         self.assertEqual(ret.get('kb|g.220339.CDS.3956'), 'CDS')
 
     @log
     def test_get_feature_type_counts_all_old(self):
         inputs = {'ref': self.old_genome_ref}
         ret = self.impl.get_feature_type_counts(self.ctx, inputs)[0]
-        self.assertEqual(len(ret.keys()), 2)
+        self.assertEqual(len(list(ret.keys())), 2)
         self.assertEqual(ret.get('rna'), 42)
 
     @log
@@ -181,61 +178,61 @@ class GenomeAnnotationAPITests(unittest.TestCase):
         inputs = {'ref': self.new_genome_ref}
         ret = self.impl.get_feature_types(self.ctx, inputs)[0]
         self.assertEqual(len(ret), 12)
-        self.assertEqual(ret[0], 'misc_feature')
+        self.assertEqual(ret[0], 'CDS')
 
     @log
     def test_get_feature_type_descriptions_all_new(self):
         inputs = {'ref': self.new_genome_ref}
         ret = self.impl.get_feature_type_descriptions(self.ctx, inputs)[0]
-        self.assertEqual(len(ret.keys()), 5092)
+        self.assertEqual(len(list(ret.keys())), 5092)
         self.assertEqual(ret.get('b3356'), 'gene')
 
     @log
     def test_get_feature_type_counts_all_new(self):
         inputs = {'ref': self.new_genome_ref}
         ret = self.impl.get_feature_type_counts(self.ctx, inputs)[0]
-        self.assertEqual(len(ret.keys()), 12)
+        self.assertEqual(len(list(ret.keys())), 12)
         self.assertEqual(ret.get('misc_feature'), 11)
 
     def test_get_proteins_all_old(self):
         inputs = {'ref': self.old_genome_ref}
         ret = self.impl.get_proteins(self.ctx, inputs)[0]
-        self.assertEqual(len(ret.keys()), 4116)
+        self.assertEqual(len(list(ret.keys())), 4116)
         self.assertTrue(ret.get('kb|g.220339.CDS.3956'))
 
     def test_get_proteins_all_new(self):
         inputs = {'ref': self.new_genome_ref}
         ret = self.impl.get_proteins(self.ctx, inputs)[0]
-        self.assertEqual(len(ret.keys()), 8638)
+        self.assertEqual(len(list(ret.keys())), 8638)
         self.assertTrue(ret.get('b3356'))
 
     @log
     def test_get_feature_locations_all_old(self):
         inputs = {'ref': self.old_genome_ref}
         ret = self.impl.get_feature_locations(self.ctx, inputs)[0]
-        self.assertEqual(len(ret.keys()), 4158)
+        self.assertEqual(len(list(ret.keys())), 4158)
         self.assertEqual(ret.get('kb|g.220339.CDS.3956'),
-                         [[u'NODE_18_length_32298_cov_4.8199_ID_35', 11339, u'-', 420]])
+                         [['NODE_18_length_32298_cov_4.8199_ID_35', 11339, '-', 420]])
 
     @log
     def test_get_feature_locations_all_new(self):
         inputs = {'ref': self.new_genome_ref}
         ret = self.impl.get_feature_locations(self.ctx, inputs)[0]
-        self.assertEqual(len(ret.keys()), 9411)
-        self.assertEqual(ret.get('b3356'), [[u'NC_000913.3', 3485818, u'-', 405]])
+        self.assertEqual(len(list(ret.keys())), 9411)
+        self.assertEqual(ret.get('b3356'), [['NC_000913.3', 3485818, '-', 405]])
 
     @log
     def test_get_feature_dna_all_old(self):
         inputs = {'ref': self.old_genome_ref}
         ret = self.impl.get_feature_dna(self.ctx, inputs)[0]
-        self.assertEqual(len(ret.keys()), 4158)
+        self.assertEqual(len(list(ret.keys())), 4158)
         self.assertTrue(ret.get('kb|g.220339.CDS.3956'))
 
     @log
     def test_get_feature_dna_all_new(self):
         inputs = {'ref': self.new_genome_ref}
         ret = self.impl.get_feature_dna(self.ctx, inputs)[0]
-        self.assertEqual(len(ret.keys()), 9411)
+        self.assertEqual(len(list(ret.keys())), 9411)
         self.assertTrue(ret.get('b3356'))
 
     @log
@@ -245,7 +242,7 @@ class GenomeAnnotationAPITests(unittest.TestCase):
         self.assertEqual(ret['kb|g.220339.CDS.3939'], 'DEAD/DEAH box helicase domain protein')
         self.assertEqual(ret['kb|g.220339.rna.40'],
                          'Small Subunit Ribosomal RNA; ssuRNA; SSU rRNA')
-        self.assertEqual(len(ret.keys()), 4158)
+        self.assertEqual(len(list(ret.keys())), 4158)
 
     @log
     def test_get_feature_functions_part(self):
@@ -255,7 +252,7 @@ class GenomeAnnotationAPITests(unittest.TestCase):
         self.assertEqual(ret['kb|g.220339.CDS.3939'], 'DEAD/DEAH box helicase domain protein')
         self.assertEqual(ret['kb|g.220339.rna.40'],
                          'Small Subunit Ribosomal RNA; ssuRNA; SSU rRNA')
-        self.assertEqual(len(ret.keys()), 2)
+        self.assertEqual(len(list(ret.keys())), 2)
 
     @log
     def test_get_feature_functions_new(self):
@@ -263,4 +260,4 @@ class GenomeAnnotationAPITests(unittest.TestCase):
         ret = self.impl.get_feature_functions(self.ctx, inputs)[0]
         self.assertEqual(ret['b4601'], 'product:stationary phase-induced protein')
         self.assertEqual(ret['b4601_CDS_1'], 'product:stationary phase-induced protein')
-        self.assertEqual(len(ret.keys()), 9411)
+        self.assertEqual(len(list(ret.keys())), 9411)
