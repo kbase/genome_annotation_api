@@ -13,8 +13,8 @@ class Utils:
         opt_param = set(opt_param)
         pkeys = set(params)
         if expected - pkeys:
-            raise ValueError("Required keys {} not in supplied parameters"
-                             .format(", ".join(expected - pkeys)))
+            raise ValueError(
+                f"Required keys {', '.join(expected - pkeys)} not in supplied parameters")
         defined_param = expected | opt_param
         for param in params:
             if param not in defined_param:
@@ -131,7 +131,7 @@ class Utils:
             return Counter(self.get_feature_type_descriptions(params).values())
 
     def get_feature_types(self, params):
-        return list(set(self.get_feature_type_counts(params).keys()))
+        return sorted(set(self.get_feature_type_counts(params).keys()))
 
     def get_feature_locations(self, params):
         return self._get_field_from_ws(params, 'location')

@@ -1,27 +1,21 @@
-# standard libraries
-import ConfigParser
+import configparser
 import functools
+import io
+import json
 import logging
 import os
+import shutil
 import sys
 import time
 import unittest
-import shutil
-import json
 
-import requests
-import StringIO
-
-from pprint import pprint
-
-# local imports
-from biokbase.workspace.client import Workspace
 from GenomeAnnotationAPI.GenomeAnnotationAPIImpl import GenomeAnnotationAPI
 from GenomeAnnotationAPI.GenomeAnnotationAPIServer import MethodContext
-from DataFileUtil.DataFileUtilClient import DataFileUtil
-from GenomeAnnotationAPI.authclient import KBaseAuth as _KBaseAuth
-from AssemblyUtil.AssemblyUtilClient import AssemblyUtil
 from GenomeAnnotationAPI.GenomeInterfaceV1 import GenomeInterfaceV1
+from GenomeAnnotationAPI.authclient import KBaseAuth as _KBaseAuth
+from installed_clients.AssemblyUtilClient import AssemblyUtil
+from installed_clients.DataFileUtilClient import DataFileUtil
+from installed_clients.WorkspaceClient import Workspace
 
 unittest.installHandler()
 
@@ -56,7 +50,7 @@ class GenomeAnnotationAPITests(unittest.TestCase):
         print('Setting up class')
         token = os.environ.get('KB_AUTH_TOKEN', None)
         config_file = os.environ.get('KB_DEPLOYMENT_CONFIG', None)
-        config = ConfigParser.ConfigParser()
+        config = configparser.ConfigParser()
         config.read(config_file)
         cls.cfg = {n[0]: n[1] for n in config.items('GenomeAnnotationAPI')}
         authServiceUrl = cls.cfg.get('auth-service-url',
@@ -83,8 +77,8 @@ class GenomeAnnotationAPITests(unittest.TestCase):
         test_cfg_text = "[test]\n"
         with open(test_cfg_file, "r") as f:
             test_cfg_text += f.read()
-        config = ConfigParser.ConfigParser()
-        config.readfp(StringIO.StringIO(test_cfg_text))
+        config = configparser.ConfigParser()
+        config.read_file(io.StringIO(test_cfg_text))
         test_cfg_dict = dict(config.items("test"))
         if ('test_token2' not in test_cfg_dict):
             raise ValueError("Configuration in <module>/test_local/test.cfg file should " +
@@ -230,7 +224,7 @@ class GenomeAnnotationAPITests(unittest.TestCase):
         self._downgraded(down_data, merged=False)
 
     def test_bad_get_genome_input(self):
-        with self.assertRaisesRegexp(ValueError, 'must be a boolean'):
+        with self.assertRaisesRegex(ValueError, 'must be a boolean'):
             ret = self.impl.get_genome_v1(self.ctx,
                       {
                           'genomes': [{
@@ -238,7 +232,7 @@ class GenomeAnnotationAPITests(unittest.TestCase):
                           }],
                           'no_data': 'T'
                       })[0]
-        with self.assertRaisesRegexp(ValueError, 'must be a boolean'):
+        with self.assertRaisesRegex(ValueError, 'must be a boolean'):
             ret = self.impl.get_genome_v1(self.ctx,
                       {
                           'genomes': [{
@@ -246,7 +240,7 @@ class GenomeAnnotationAPITests(unittest.TestCase):
                           }],
                           'ignoreErrors': 'T'
                       })[0]
-        with self.assertRaisesRegexp(ValueError, 'must be a boolean'):
+        with self.assertRaisesRegex(ValueError, 'must be a boolean'):
             ret = self.impl.get_genome_v1(self.ctx,
                       {
                           'genomes': [{
@@ -254,7 +248,7 @@ class GenomeAnnotationAPITests(unittest.TestCase):
                           }],
                           'downgrade': 'T'
                       })[0]
-        with self.assertRaisesRegexp(ValueError, 'must be a boolean'):
+        with self.assertRaisesRegex(ValueError, 'must be a boolean'):
             ret = self.impl.get_genome_v1(self.ctx,
                       {
                           'genomes': [{

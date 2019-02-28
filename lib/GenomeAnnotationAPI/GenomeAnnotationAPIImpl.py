@@ -1,11 +1,10 @@
 # -*- coding: utf-8 -*-
 #BEGIN_HEADER
 import logging
-from Workspace.WorkspaceClient import Workspace
 
 from GenomeAnnotationAPI.GenomeInterfaceV1 import GenomeInterfaceV1
 from GenomeAnnotationAPI.utils import Utils
-
+from installed_clients.WorkspaceClient import Workspace
 #END_HEADER
 
 
@@ -24,16 +23,11 @@ class GenomeAnnotationAPI:
     # state. A method could easily clobber the state set by another while
     # the latter method is running.
     ######################################### noqa
-    VERSION = "0.3.4"
+    VERSION = "1.0.1"
     GIT_URL = "git@github.com:kbase/genome_annotation_api.git"
-    GIT_COMMIT_HASH = "686f24e31ce773a6300eef9c0b6d0d0332eb4fc4"
+    GIT_COMMIT_HASH = "8b8c111d492688ae9ea671ec278fdeaab7864331"
 
     #BEGIN_CLASS_HEADER
-    def _migrate_property_internal(self, from_dict, to_dict, prop_name, to_prop_name = None):
-        if not to_prop_name:
-            to_prop_name = prop_name
-        if to_prop_name not in to_dict and prop_name in from_dict:
-            to_dict[to_prop_name] = from_dict[prop_name]
     #END_CLASS_HEADER
 
     # config contains contents of config file in a hash or None if it couldn't
@@ -51,30 +45,6 @@ class GenomeAnnotationAPI:
             "handle_service_url": config['handle-service-url'],
             "service_wizard_url": config['service-wizard-url']
         }
-
-        try:
-            cache_dir = config['cache_dir']
-        except KeyError:
-            cache_dir = None
-
-        try:
-            redis_host = config['redis_host']
-            redis_port = config['redis_port']
-        except KeyError:
-            redis_host = None
-            redis_port = None
-
-        if redis_host is not None and redis_port is not None:
-            self.logger.info("Activating REDIS at host:{} port:{}".format(redis_host, redis_port))
-            cache.ObjectCache.cache_class = cache.RedisCache
-            cache.ObjectCache.cache_params = {'redis_host': redis_host, 'redis_port': redis_port}
-        elif cache_dir is not None:
-            self.logger.info("Activating File")
-            cache.ObjectCache.cache_class = cache.DBMCache
-            cache.ObjectCache.cache_params = {'path':cache_dir, 'name': 'data_api'}
-        else:
-            self.logger.info("Not activating REDIS")
-
         #END_CONSTRUCTOR
         pass
 
