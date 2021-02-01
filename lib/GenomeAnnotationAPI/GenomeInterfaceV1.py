@@ -66,7 +66,7 @@ class GenomeInterfaceV1:
         return returnPackage
 
     @staticmethod
-    def downgrade_genome(genome_data, merge=False):
+    def downgrade_genome(genome_data, merge=True):
         """This reverts a genome to an older style for back compatibility"""
         print("Downgrading Genome for back compatibility")
         ont_present = genome_data.get('ontologies_present', {})
