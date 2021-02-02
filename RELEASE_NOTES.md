@@ -1,4 +1,7 @@
 ###Release Notes
+**1.0.2**:
+Fixed broken uniitests and added github action
+
 **1.0.1**:
 Update to Python 3
 
