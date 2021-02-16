@@ -70,8 +70,8 @@ class GenomeInterfaceV1:
         """This reverts a genome to an older style for back compatibility"""
         print("Downgrading Genome for back compatibility")
         ont_present = genome_data.get('ontologies_present', {})
-        ont_ref = genome_data.get('ontology_events',
-                                  [{"ontology_ref": ""}])[0]['ontology_ref']
+        ont_events = genome_data.get('ontology_events', [{"ontology_ref": ""}])
+        ont_ref = ont_events[0].get('ontology_ref', "")
 
         for feat_array in (('features', 'gene'), ('mrnas', 'mRNA'),
                            ('cdss', 'CDS'), ('non_coding_features', 'gene')):
