@@ -100,6 +100,7 @@ class GenomeAnnotationAPITests(unittest.TestCase):
         wsName = "test_GenomeAnnotationAPI_" + str(suffix)
         ret = cls.ws.create_workspace({'workspace': wsName})
         cls.wsName = wsName
+        cls.dfu = DataFileUtil(os.environ['SDK_CALLBACK_URL'], token=token)
 
         # preload with reference data
         with open ('data/rhodobacter.json', 'r') as file:
@@ -197,13 +198,14 @@ class GenomeAnnotationAPITests(unittest.TestCase):
                                                's: Threonine; product:thr oper'
                                                'on leader peptide')
         self.assertEqual(one_feat['aliases'][0], 'ECK0001; JW4367')
+        obj_ref = self.ws.get_objects2({'objects': [{'ref': 'KBaseOntology/gene_ontology/1'}]})['data'][0]['path'][0]
         self.assertEqual(one_feat['ontology_terms'],
                          {'GO':
                              {'GO:0009088':
                                  {
                                      "evidence": [],
                                      "id": "GO:0009088",
-                                     "ontology_ref": "6308/3/2",
+                                     "ontology_ref": obj_ref,
                                      "term_lineage": [],
                                      "term_name": "threonine biosynthetic process"
                                  }}})
@@ -500,8 +502,7 @@ class GenomeAnnotationAPITests(unittest.TestCase):
         with open(temp_shock_file, "w") as f1:
             f1.write("Test Shock Handle")
         token1 = self.ctx['token']
-        dfu = DataFileUtil(os.environ['SDK_CALLBACK_URL'], token=token1)
-        handle1 = dfu.file_to_shock({'file_path': temp_shock_file, 'make_handle': 1})['handle']
+        handle1 = self.dfu.file_to_shock({'file_path': temp_shock_file, 'make_handle': 1})['handle']
         hid1 = handle1['hid']
         genome_name = "Genome.1"
         self.impl.save_one_genome_v1(self.ctx, {
