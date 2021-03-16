@@ -198,14 +198,19 @@ class GenomeAnnotationAPITests(unittest.TestCase):
                                                's: Threonine; product:thr oper'
                                                'on leader peptide')
         self.assertEqual(one_feat['aliases'][0], 'ECK0001; JW4367')
-        obj_ref = self.ws.get_objects2({'objects': [{'ref': 'KBaseOntology/gene_ontology/1'}]})['data'][0]['path'][0]
+        ontology_ref = one_feat['ontology_terms']['GO']['GO:0009088']["ontology_ref"]
+        # some ontology_ref in name style and other in digital id style
+        if ontology_ref[0].isalpha():
+            obj_id_ref = self.ws.get_objects2({'objects': [{'ref': ontology_ref}]})['data'][0]['path'][0]
+            one_feat['ontology_terms']['GO']['GO:0009088']["ontology_ref"] = obj_id_ref
+        truth_id_ref = self.ws.get_objects2({'objects': [{'ref': 'KBaseOntology/gene_ontology/1'}]})['data'][0]['path'][0]
         self.assertEqual(one_feat['ontology_terms'],
                          {'GO':
                              {'GO:0009088':
                                  {
                                      "evidence": [],
                                      "id": "GO:0009088",
-                                     "ontology_ref": obj_ref,
+                                     "ontology_ref": truth_id_ref,
                                      "term_lineage": [],
                                      "term_name": "threonine biosynthetic process"
                                  }}})
@@ -213,7 +218,6 @@ class GenomeAnnotationAPITests(unittest.TestCase):
         self.assertEqual(two_feat['type'], 'gene')
 
     @log
-    # error
     def test_genome_downgrade(self):
         with open('data/new_ecoli_genome.json') as data_file:
             data = json.load(data_file)
@@ -221,7 +225,6 @@ class GenomeAnnotationAPITests(unittest.TestCase):
         self._downgraded(down_data)
 
     @log
-    # error
     def test_genome_downgrade_no_merge(self):
         with open('data/new_ecoli_genome.json') as data_file:
             data = json.load(data_file)
@@ -261,7 +264,6 @@ class GenomeAnnotationAPITests(unittest.TestCase):
                           }],
                           'no_metadata': 'T'
                       })[0]
-
 
     @log
     def test_get_new_genome_downgrade(self):
