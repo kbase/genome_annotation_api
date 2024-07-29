@@ -23,9 +23,9 @@ class GenomeAnnotationAPI:
     # state. A method could easily clobber the state set by another while
     # the latter method is running.
     ######################################### noqa
-    VERSION = "1.0.1"
+    VERSION = "1.0.3"
     GIT_URL = "git@github.com:kbase/genome_annotation_api.git"
-    GIT_COMMIT_HASH = "8b8c111d492688ae9ea671ec278fdeaab7864331"
+    GIT_COMMIT_HASH = "caca43f1cfd8f61c86d3d3108b75aa5e25d10f85"
 
     #BEGIN_CLASS_HEADER
     #END_CLASS_HEADER
