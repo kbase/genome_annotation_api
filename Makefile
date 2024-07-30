@@ -56,6 +56,7 @@ build-test-script:
 	echo 'coverage report --skip-covered' >> $(TEST_DIR)/$(TEST_SCRIPT_NAME)
 	echo 'coverage xml' >> $(TEST_DIR)/$(TEST_SCRIPT_NAME)
 	echo 'cp .coverage /kb/module/work/.coverage' >> $(TEST_DIR)/$(TEST_SCRIPT_NAME)
+	echo 'cp coverage.xml /kb/module/work/coverage.xml' >> $(TEST_DIR)/$(TEST_SCRIPT_NAME)
 	chmod +x $(TEST_DIR)/$(TEST_SCRIPT_NAME)
 
 test:
